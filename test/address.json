@@ -1,0 +1,17 @@
+{
+  "@sql": {
+
+    "table": "address"
+
+  },
+  "line1": {
+
+    "@sql": {
+
+      "type":"text"
+
+    }
+
+  }
+
+}

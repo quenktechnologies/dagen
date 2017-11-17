@@ -1,0 +1,7 @@
+{% procedure 'CREATE_'+sql.table, '()' %}
+
+  SET ALGO = {{columns.password.algo}}
+
+  SELECT {{columns.name.type}};
+
+{% endprocedure %}

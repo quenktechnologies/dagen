@@ -1,0 +1,110 @@
+import {MainView,Container,Row,Column,Panel,PanelBody} from "@quenk/wml-widgets"
+import {Input,Button,Select, Fragment, BreadCrumbs, Crumb} from "@quenk/wml-widgets"
+import {editor} from "@cdms/client/wml/action_area"
+import {Icon} from "@cdms/client/ui/fa"
+import {Form} from "@cdms/client/app"
+
+<Fragment>
+
+  {% call editor('') %}
+
+  <MainView>
+
+    <Container>
+
+      <Row>
+        
+        <Column>
+
+          <BreadCrumbs>
+
+            <Crumb 
+              ww:href="#/debts"
+              ww:onClick={{=>this.tell(this.self(), Form.CANCEL)}}
+              ww:anchorClass="-unstyled-link">
+
+              <Icon 
+               fa:type="hand-o-left"/> 
+               
+               Debts
+
+            </Crumb>
+
+          </BreadCrumbs>
+
+          <h2>Add Debt</h2>
+
+        </Column>
+
+      </Row>
+
+    </Container>
+
+    <Container ww:class="-top-border">
+        
+      <Row>
+        
+        <Column ww:class="col-md-4">
+        
+          <h5>Details</h5>
+        
+        </Column>
+        
+        <Column ww:class="col-md-8">
+        
+          <Panel>
+        
+            <PanelBody>
+
+                <Input
+                 wml:id="Number"
+                 wml:group="controls"
+                 ww:name="number"
+                 ww:label="Number"
+                 ww:value={{this.values.number}}
+                 ww:onInput={{this::send}}
+                 ww:invalidate={{this.errors.number}}/>
+
+                <Input
+                 wml:id="Principal"
+                 wml:group="controls"
+                 ww:name="principal"
+                 ww:label="Principal"
+                 ww:value={{this.values.principal}}
+                 ww:required={{true}}
+                 ww:onInput={{this::send}}
+                 ww:invalidate={{this.errors.principal}}/>
+
+                <Input
+                 wml:id="Debtor"
+                 wml:group="controls"
+                 ww:name="debtor"
+                 ww:label="Debtor"
+                 ww:value={{this.values.debtor}}
+                 ww:required={{true}}
+                 ww:onInput={{this::send}}
+                 ww:invalidate={{this.errors.debtor}}/>
+
+                <Input
+                 wml:id="Client"
+                 wml:group="controls"
+                 ww:name="client"
+                 ww:label="Client"
+                 ww:value={{this.values.client}}
+                 ww:required={{true}}
+                 ww:onInput={{this::send}}
+                 ww:invalidate={{this.errors.client}}/>
+
+            </PanelBody>
+        
+          </Panel>
+        
+        </Column>
+        
+      </Row>
+      
+    </Container>
+
+  </MainView>
+
+</Fragment>

@@ -1,0 +1,23 @@
+{
+    "@sql:table": "user",
+    "username": {
+        "@sql": {
+            "type": "text"
+        },
+        "@puzzler": "test"
+    },
+    "password": {
+        "@sql": {
+            "type": "text"
+        },
+        "@sql:algo": "bcrypt"
+    },
+    "name": {
+        "@sql:type": "text",
+        "@sql:table": "profile"
+    },
+    "address": {
+        "$ref": "./address.json"
+    }
+
+}

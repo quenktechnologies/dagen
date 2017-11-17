@@ -1,0 +1,7 @@
+import {User} from "@cdms/validation/lib/Users"
+
+{% macro username(username:string, _: string, user:User) %}
+
+   <a href=`#/users/${user.id}`>{{username}}</a>
+
+{% endmacro %}

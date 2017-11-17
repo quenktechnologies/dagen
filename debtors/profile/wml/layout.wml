@@ -1,0 +1,48 @@
+import {MainView, Container, Column,Row} from "@quenk/wml-widgets"
+import {BusyIndicator, Fragment, Table, SortTableModel, Button} from "@quenk/wml-widgets"
+import {Panel, PanelBody} from "@quenk/wml-widgets"
+import {Search} from "@cdms/client/ui/ww"
+import {search} from "@cdms/client/wml/action_area"
+import { Form } from "@cdms/client/app"
+
+<Fragment>
+
+  {% call search %}
+
+  <MainView>
+
+    {% if (!this.data) %}
+    
+      <BusyIndicator/>
+    
+    {% else %}
+          
+      <Container>
+
+        <Row>
+
+          <Column ww:width=7>
+
+            <h3>{{`${this.data.first_name} ${this.data.last_name}` }}</h3>
+
+          </Column>
+
+          <Column ww:width=5>
+
+            <Button
+              ww:style="-warning"
+              ww:class="-right"
+              ww:text="Edit"
+              ww:onClick={{=>this.tell(this.self(), Form.EDIT)}}/>
+
+          </Column>
+
+        </Row>
+      
+    </Container>
+
+    {% endif %}
+   
+  </MainView>
+
+</Fragment>

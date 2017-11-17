@@ -1,0 +1,76 @@
+import {MainView, Container, Column,Row} from "@quenk/wml-widgets"
+import {BusyIndicator, Fragment, Table, SortTableModel, Button} from "@quenk/wml-widgets"
+import {Panel, PanelBody} from "@quenk/wml-widgets"
+import {Search} from "@cdms/client/ui/ww"
+import {search} from "@cdms/client/wml/action_area"
+import {empty} from "@cdms/client/wml/tables"
+
+<Fragment>
+
+  {% call search %}
+
+  <MainView>
+
+    <Container>
+
+      <Row>
+
+        <Column ww:width={{6}}>
+
+          <h1>Clients</h1>
+
+        </Column>
+
+        <Column ww:width={{6}}>
+
+          <Button
+            ww:style="-warning"
+            ww:class="-right"
+            ww:text="Add User"
+            ww:onClick={{=>this.tell(this.self(), 'create')}}/>
+
+        </Column>
+
+      </Row>
+      
+      <Row>
+
+        <Column>
+
+          {% if (!this.data) %}
+    
+            <BusyIndicator/>
+    
+          {% else %}
+    
+              <Panel>
+
+                <PanelBody>
+
+                  <Search 
+                   ww:placeholder="Search.."
+                   ww:name="q"
+                   ww:onSearch={{this::onSearch}}/>
+
+                   <Table
+                    wml:id="results"
+                    ww:fields={{this.fields}}
+                    ww:data={{this.data}}
+                    ww:model={{new SortTableModel()}}
+                    ww:emptyMacro={{empty}} />       
+
+                </PanelBody>
+                   
+            </Panel>
+                                                          
+          {% endif %}
+
+        </Column>
+
+      </Row>
+
+    </Container>
+
+  </MainView>
+
+</Fragment>
