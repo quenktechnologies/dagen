@@ -196,7 +196,8 @@ Example:
 ```
 
 ### Pre-Processing
-TODO
+This is the stage where plugins are run each plugin can modify the `Program`
+before templates are used to render output.
 
 ### Code Generation
 
@@ -214,24 +215,39 @@ elements from the JSON Schema Validation spec.
 ### Plugins
 
 Plugins provide the real power to dagen. It ships with none out of the box
-but are easily installed. They allow the final document to be altered just
-before code generation or printing to `STDOUT`.
+but are easily installed via the `--plugin PATH` flag.Plugins are expected
+to be regular node modules and the usual rules apply for look up.
+
+A plugin is essentially a function that takes the `Program` and returns a 
+new version of it wrapped in a bluebird `Promise`. See the index file
+for the type definition of `Program`.
+
+#### After Hook (Pre-Processing)
+
+Once a plugin is applied, it can add to or change the `Program.after` property.
+This is an array of plugins that will be called just before the output is 
+generated.
+
+Here you can modify the `context` property (see source code for type info)
+which will make values available to the template under the `context.<whatever>` path.
+
+The document itself is available at `context.document`.
 
 ### Things To Be Aware Of
 
 #### Concern
 
-Remember to set a concern with the `--concern=something` flag or `@` 
-properties will not be stripped..
+The concern is computed from the file extension of the template. If there is none
+or you want to force it, use the `--concern EXT` option.
 
 #### Types
 
 The type property is not limited to the values defined in the spec but instead can
-be whatever value the author desires. It is left up to pre-processors to decide how
+be whatever value the author desires. It is left up to plugins to decide how
 to treat with these values when they encounter them.
 
 #### Meaning
-In fact, once dagen restructures a document, it is really up to the pre-processor 
+In fact, once dagen restructures a document, it is really up to the plugins
 and/or templates to give it meaning.
 
 #### Refs
