@@ -17,10 +17,10 @@
     "bluebird": "^3.5.0",
     "docopt": "^0.6.2",
     "nunjucks": "^3.0.1",
-    "property-seek": "^3.1.1"
+    "property-seek": "^3.1.1",
+    "@quenk/polate": "^1.2.0"
   },
   "devDependencies": {
-    "@quenk/polate": "^1.2.0",
     "@types/bluebird": "^3.5.11",
     "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.20",
