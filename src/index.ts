@@ -437,7 +437,7 @@ export const generate = (p: Program): Promise<string> =>
     (p.template) ?
         Promise
             .fromCallback(cb => p.engine.render(p.template, { context: p.context }, cb)) :
-        resolve(JSON.stringify(p.context.document));
+        resolve(JSON.stringify(p.context.document ));
 
 /**
  * execute the stages involved in producing code.

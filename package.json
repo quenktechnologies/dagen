@@ -2,7 +2,7 @@
   "name": "@quenk/dagen",
   "version": "0.0.9",
   "description": "Generate code from data models.",
-  "main": "index.js",
+  "main": "lib/index.js",
   "bin": {
     "dagen": "./lib/cli.js"
   },
