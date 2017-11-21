@@ -7,7 +7,7 @@
     "dagen": "./lib/cli.js"
   },
   "scripts": {
-    "test": "rm -R ./node_modules/sql; ./node_modules/.bin/tsc --project ./test-plugins && npm install ./test-plugins && npm run -s build && ./node_modules/.bin/mocha --opts mocha.opts test",
+    "test": "rm -R ./node_modules/sql; ./node_modules/.bin/tsc --project ./test-plugins && cp package.json package.json.old && npm install ./test-plugins && mv package.json.old package.json && npm run -s build && ./node_modules/.bin/mocha --opts mocha.opts test",
     "build": "rm -R lib/*; ./node_modules/.bin/tsc -p src"
   },
   "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
@@ -18,8 +18,7 @@
     "bluebird": "^3.5.0",
     "docopt": "^0.6.2",
     "nunjucks": "^3.0.1",
-    "property-seek": "^3.1.1",
-    "sql": "file:test-plugins"
+    "property-seek": "^3.1.1"
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.11",
