@@ -1,4 +1,4 @@
-import { resolve as pathResolve, join as pathJoin, extname, dirname, isAbsolute } from 'path';
+import { resolve as pathResolve, join as pathJoin,  dirname, isAbsolute } from 'path';
 import * as fs from 'fs';
 import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
@@ -160,7 +160,7 @@ export interface Context extends JSONObject {
  */
 export interface Document extends JSONObject {
 
-  title?: string,
+    title?: string,
     type: string,
     properties: {
 
@@ -301,7 +301,7 @@ export const createEngine = (templates: string): Engine => {
 export const options2Program = (options: Options) => (document: Document): Program => ({
 
     file: options.file,
-    concern: options.concern ? options.concern : options.template ? extname(options.template) : '',
+    concern: options.concern,
     cwd: process.cwd(),
     document,
     template: options.template,
@@ -437,7 +437,7 @@ export const generate = (p: Program): Promise<string> =>
     (p.template) ?
         Promise
             .fromCallback(cb => p.engine.render(p.template, { context: p.context }, cb)) :
-        resolve(JSON.stringify(p.context.document ));
+        resolve(JSON.stringify(p.context.document));
 
 /**
  * execute the stages involved in producing code.

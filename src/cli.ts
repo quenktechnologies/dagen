@@ -13,6 +13,14 @@ const defaultOptions = () => ({
 
 });
 
+
+const concern = (s:string) => {
+
+    let ext = path.extname(s).split('.').join();
+    return ext ? ext : '';
+
+}
+
 /**
  * Arguments that are excepted from the command line.
  */
@@ -37,7 +45,7 @@ export const args2Options = (args: Arguments): Options =>
         contexts: args['--context'],
         templates: args['--templates'] || process.cwd(),
         plugins: args['--plugin'],
-        concern: args['--concern'] || ''
+        concern: args['--concern'] || concern(args['--template'])
     });
 
 const args = docopt.docopt<Arguments>(`
@@ -58,7 +66,7 @@ Options:
     });
 
 readDocument(args['<file>'])
-    .then(options2Program(fuse(defaultOptions(), args2Options(args) )))
+    .then(options2Program(fuse(defaultOptions(), args2Options(args))))
     .then(execute)
     .then(console.log)
     .catch(e => console.error(e.stack));
