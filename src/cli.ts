@@ -58,7 +58,7 @@ Options:
     });
 
 readDocument(args['<file>'])
-    .then(options2Program(fuse(args2Options(args), defaultOptions())))
+    .then(options2Program(fuse(defaultOptions(), args2Options(args) )))
     .then(execute)
     .then(console.log)
     .catch(e => console.error(e.stack));
