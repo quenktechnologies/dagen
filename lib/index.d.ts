@@ -113,6 +113,11 @@ export interface Context extends JSONObject {
  * Document
  */
 export interface Document extends JSONObject {
+    title?: string;
+    type: string;
+    properties: {
+        [key: string]: Document;
+    };
 }
 /**
  * Engine that is used to render templates

@@ -158,7 +158,17 @@ export interface Context extends JSONObject {
 /**
  * Document
  */
-export interface Document extends JSONObject { }
+export interface Document extends JSONObject {
+
+  title?: string,
+    type: string,
+    properties: {
+
+        [key: string]: Document
+
+    }
+
+}
 
 /**
  * Engine that is used to render templates
@@ -417,7 +427,7 @@ export const contextualize = (program: Program) => (document: Document) => {
 /**
  * afterwards applies the after effects
  */
-export const afterwards = (prog: Program): Promise<Program> => 
+export const afterwards = (prog: Program): Promise<Program> =>
     prog.after.reduce((p, c) => p.then(c), resolve(prog));
 
 /**
