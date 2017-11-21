@@ -1,0 +1,14 @@
+{
+
+    "types": {
+
+        "id": "INT",
+        "name": "VARCHAR(64)",
+        "password": "VARCHAR(128)",
+        "status": "VARCHAR(32)",
+        "text": "TEXT"
+
+    },
+    "status": { "locked": "locked"}
+
+}

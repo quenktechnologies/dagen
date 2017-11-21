@@ -1,0 +1,18 @@
+{
+
+    "title": "Company",
+    "@sql:table": "company",
+    "properties": {
+
+        "name": {
+
+            "type": "${types.name}"
+
+        },
+        "mailing_address": {
+            "$ref": "./address.json"
+        }
+
+    }
+
+}

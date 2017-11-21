@@ -4,25 +4,31 @@
   "description": "Generate code from data models.",
   "main": "index.js",
   "bin": {
-    "dasql": "./lib/sql.js"
+    "dagen": "./lib/cli.js"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "rm -R ./node_modules/sql; ./node_modules/.bin/tsc --project ./test-plugins && npm install ./test-plugins && npm run -s build && ./node_modules/.bin/mocha --opts mocha.opts test",
     "build": "rm -R lib/*; ./node_modules/.bin/tsc -p src"
   },
-  "author": "Quenk Technologies <info@quenk.com> (http://quenk.com)",
+  "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@types/bluebird": "^3.5.11",
     "afpl": "^0.9.0",
     "bluebird": "^3.5.0",
     "docopt": "^0.6.2",
     "nunjucks": "^3.0.1",
-    "source-map-support": "^0.4.18"
+    "property-seek": "^3.1.1",
+    "sql": "file:test-plugins"
   },
   "devDependencies": {
+    "@quenk/polate": "^1.2.0",
+    "@types/bluebird": "^3.5.11",
+    "@types/mocha": "^2.2.44",
     "@types/node": "^8.0.20",
     "@types/nunjucks": "0.0.33",
+    "mocha": "^4.0.1",
+    "must": "^0.13.4",
+    "ts-node": "^3.3.0",
     "typescript": "^2.5.2"
   }
 }

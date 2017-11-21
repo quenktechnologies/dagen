@@ -1,0 +1,21 @@
+{
+
+    "title": "Person",
+    "@sql:table": "person",
+    "properties": {
+
+        "first_name": {
+
+            "type": "string",
+            "@sql:type": "VARCHAR(200)"
+
+        },
+        "last_name": {
+
+            "type": "${types.name}"
+
+        }
+
+    }
+
+}

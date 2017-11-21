@@ -1,0 +1,14 @@
+{
+    "type": "object",
+    "title": "Address",
+    "@sql:table": "address",
+    "properties": {
+            "$ref": "./name.json",
+        "line1:type": "${types.text}",
+        "line2:type": "${types.text}",
+        "town:type": "${types.text}",
+        "state:type": "${types.text}",
+        "country:type": "${types.text}"
+    }
+
+}

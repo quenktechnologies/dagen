@@ -1,0 +1,10 @@
+{
+
+    "name": {
+
+        "type": "${types.name}",
+        "@sql:table": "names"
+
+    }
+
+}

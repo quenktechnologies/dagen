@@ -1,0 +1,43 @@
+{
+
+    "title": "User",
+    "@sql:table": "users",
+    "properties": {
+        "id": {
+
+            "type": "${types.id}",
+            "@sql:readOnly": true
+
+        },
+        "username": {
+            "type": "${types.name}",
+            "@sql:readOnly": true,
+            "@sql:table": "users"
+        },
+        "password": {
+            "type": "${types.password}"
+
+        },
+        "profile": {
+
+            "oneOf": [{
+                "$ref": "./person.json"
+            }, {
+                "$ref": "./company.json"
+            }]
+
+        },
+        "address": {
+            "$ref": "./address.json"
+        },
+        "status": {
+
+            "type": "${types.status}",
+            "@sql:readOnly": true,
+            "@ts:enum": ["active", "inactive", "${status.locked}"]
+
+        }
+
+    }
+
+}
