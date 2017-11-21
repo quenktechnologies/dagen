@@ -14,9 +14,9 @@ const defaultOptions = () => ({
 });
 
 
-const concern = (s:string) => {
+const concern = (s: string) => {
 
-    let ext = path.extname(s).split('.').join();
+    let ext = path.extname(s).substr(1);
     return ext ? ext : '';
 
 }
