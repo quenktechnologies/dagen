@@ -23,6 +23,7 @@ export declare const CONCERN_PREFIX = "@";
 export declare const polateOptions: {
     start: string;
     end: string;
+    applyFunctions: boolean;
 };
 /**
  * Arguments that are excepted from the command line.

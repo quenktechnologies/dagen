@@ -30,7 +30,7 @@ export const CONCERN_PREFIX = '@';
 /**
  * polateOptions for the polate function.
  */
-export const polateOptions = { start: '\\${', end: '}' }
+export const polateOptions = { start: '\\${', end: '}', applyFunctions:true }
 
 /**
  * Arguments that are excepted from the command line.

@@ -45,7 +45,7 @@ export const args2Options = (args: Arguments): Options =>
         contexts: args['--context'],
         templates: args['--templates'] || process.cwd(),
         plugins: args['--plugin'],
-        concern: args['--concern'] || concern(args['--template'])
+        concern: args['--concern'] || concern(args['--template']||'')
     });
 
 const args = docopt.docopt<Arguments>(`
