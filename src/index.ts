@@ -419,7 +419,7 @@ export const replace = (concern: string) => (o: JSONValue): JSONValue =>
 export const contextualize = (program: Program) => (document: Document) => {
 
     program.document = document;
-    program.context = { document };
+    program.context = fuse(program.context, { document });
     return program;
 
 }
