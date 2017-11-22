@@ -3,6 +3,7 @@
   "version": "0.0.12",
   "description": "Generate code from data models.",
   "main": "lib/index.js",
+  "types":"lib/index.d.ts",
   "bin": {
     "dagen": "./lib/cli.js"
   },
