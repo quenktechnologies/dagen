@@ -98,11 +98,11 @@ export declare type After = (p: Program) => Promise<Program>;
 export interface JSONObject {
     [key: string]: JSONValue;
 }
-export interface JSONArray {
-    [key: string]: JSONValue;
-    [key: number]: JSONValue;
-}
-export declare type JSONValue = string | number | boolean | null | JSONObject | JSONArray;
+export declare type JSONArray = (JSONString | JSONNumber | JSONBoolean | JSONObject)[];
+export declare type JSONValue = JSONString | JSONNumber | JSONBoolean | JSONObject | JSONArray;
+export declare type JSONNumber = number;
+export declare type JSONBoolean = boolean;
+export declare type JSONString = string;
 export declare type FilePath = string;
 /**
  * Context

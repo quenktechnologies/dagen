@@ -1,4 +1,4 @@
-import { resolve as pathResolve, join as pathJoin,  dirname, isAbsolute } from 'path';
+import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'path';
 import * as fs from 'fs';
 import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
@@ -30,7 +30,7 @@ export const CONCERN_PREFIX = '@';
 /**
  * polateOptions for the polate function.
  */
-export const polateOptions = { start: '\\${', end: '}', applyFunctions:true }
+export const polateOptions = { start: '\\${', end: '}', applyFunctions: true }
 
 /**
  * Arguments that are excepted from the command line.
@@ -128,21 +128,23 @@ export interface JSONObject {
 
 };
 
-export interface JSONArray {
-
-    [key: string]: JSONValue,
-    [key: number]: JSONValue
-
-}
+export type JSONArray
+    = (JSONString | JSONNumber | JSONBoolean | JSONObject)[]
+    ;
 
 export type JSONValue
-    = string
-    | number
-    | boolean
-    | null
+    = JSONString
+    | JSONNumber
+    | JSONBoolean
     | JSONObject
     | JSONArray
     ;
+
+export type JSONNumber = number;
+
+export type JSONBoolean = boolean;
+
+export type JSONString = string;
 
 export type FilePath = string;
 
