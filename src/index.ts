@@ -164,7 +164,8 @@ export interface Document extends JSONObject {
 
     title?: string,
     type: string,
-    properties: {
+    items: Document,
+    properties?: {
 
         [key: string]: Document
 
