@@ -331,7 +331,7 @@ export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
     type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
 
     get properties() {
-        return and<JSONValue, JSONObject>(isObject, visit<JSONObject, JSONValue, JSONObject>(propertiesCheck));
+        return  visit<JSONObject, JSONValue, JSONObject>(propertiesCheck);
     }
 
 };
@@ -360,10 +360,11 @@ export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
  * propertiesCheck for the properties property of ObjectTypes.
  */
 export const propertiesCheck: Precondition<JSONValue, JSONObject> =
-    when<JSONValue, JSONObject>(isObjectType, map<JSONObject, JSONValue, JSONObject>(objectTypeChecks),
-        when<JSONObject, JSONObject>(isArrayType, map<JSONObject, JSONValue, JSONObject>(arrayTypeChecks),
-            when<JSONObject, JSONObject>(isSumType, map<JSONObject, JSONValue, JSONObject>(sumTypeChecks),
-                map<JSONObject, JSONValue, JSONObject>(typeChecks))));
+    and<JSONValue, JSONObject>(isObject,
+        when<JSONValue, JSONObject>(isObjectType, map<JSONObject, JSONValue, JSONObject>(objectTypeChecks),
+            when<JSONObject, JSONObject>(isArrayType, map<JSONObject, JSONValue, JSONObject>(arrayTypeChecks),
+                when<JSONObject, JSONObject>(isSumType, map<JSONObject, JSONValue, JSONObject>(sumTypeChecks),
+                    map<JSONObject, JSONValue, JSONObject>(typeChecks)))));
 
 /**
  * documentChecks for the Document interface.
