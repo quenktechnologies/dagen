@@ -270,11 +270,6 @@ export interface ArrayType extends Type {
 export interface SumType extends Type {
 
     /**
-     * discriminator provided to tooling as to how to discriminate between the members of the sum.
-     */
-    discriminator?: string
-
-    /**
      * variants of the sum type.
      */
     variants: { [key: string]: Type }
@@ -357,7 +352,6 @@ export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
 export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
     type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    discriminator: optional<JSONValue, JSONValue>(isString),
     variants: partial<JSONObject, JSONValue, JSONObject>(typeChecks)
 
 };
