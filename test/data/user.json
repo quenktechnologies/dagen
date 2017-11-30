@@ -2,6 +2,7 @@
 
     "title": "User",
     "@sql:table": "users",
+    "type": "object",
     "properties": {
         "id": {
 
@@ -20,24 +21,27 @@
         },
         "profile": {
 
-            "oneOf": [{
-                "$ref": "./person.json"
-            }, {
-                "$ref": "./company.json"
-            }]
-
+            "type": "sum",
+            "variants": {
+                "Person": {
+                    "$ref": "./person.json"
+                },
+                "Company": {
+                    "$ref": "./company.json"
+                }
+            }
         },
-        "address": {
-            "$ref": "./address.json"
-        },
-        "status": {
+            "address": {
+                "$ref": "./address.json"
+            },
+            "status": {
 
-            "type": "${types.status}",
-            "@sql:readOnly": true,
-            "@ts:enum": ["active", "inactive", "${status.locked}"]
+                "type": "${types.status}",
+                "@sql:readOnly": true,
+                "@ts:enum": ["active", "inactive", "${status.locked}"]
+
+            }
 
         }
 
     }
-
-}

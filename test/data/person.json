@@ -1,5 +1,6 @@
 {
 
+  "type":"object",
     "title": "Person",
     "@sql:table": "person",
     "properties": {

@@ -13,10 +13,8 @@ import {
     equals,
     optional,
     partial,
-    visit,
     object as isObject,
     string as isString,
-    Failure,
     Precondition,
     Preconditions
 } from '@quenk/preconditions';
@@ -52,9 +50,9 @@ export const OBJECT_TYPE = 'object';
 export const ARRAY_TYPE = 'array';
 
 /**
- * SUM_TYPE
+ * UNION_TYPE
  */
-export const SUM_TYPE = 'sum';
+export const UNION_TYPE = 'union';
 
 /**
  * polateOptions for the polate function.
@@ -66,7 +64,6 @@ export const polateOptions = { start: '\\${', end: '}', applyFunctions: true }
  */
 export const errors = {
 
-    string: 'must be a string!'
 
 };
 
@@ -265,19 +262,21 @@ export interface ArrayType extends Type {
 }
 
 /**
- * SumType describes the properties expected when the type = 'sum' is declared.
+ * UnionType describes the properties expected when the type = 'union' is declared.
  */
-export interface SumType extends Type {
+export interface UnionType extends Type {
+
+    type: 'union',
 
     /**
-     * discriminator provided to tooling as to how to discriminate between the members of the sum.
+     * hint provided to tooling as to how to discriminate between the members of the union.
      */
-    discriminator?: string
+    hint?: string
 
     /**
-     * variants of the sum type.
+     * members of the type union.
      */
-    variants: { [key: string]: Type }
+    members: { [key: string]: Type }
 
 }
 
@@ -285,6 +284,68 @@ export interface SumType extends Type {
  * UserType are user specified and have no constraints beyond the type field.
  */
 export interface UserType extends Type { }
+
+/**
+ * typeChecks for the Type interface.
+ */
+export const typeChecks: () => Preconditions<JSONValue, JSONValue> = () => ({
+
+    type: isString
+
+})
+
+/**
+ * propertyChecks for the properties property of ObjectTypes.
+ */
+export const propertyChecks: () => Precondition<JSONValue, JSONObject> = () =>
+    and<JSONValue, JSONObject>(isObject, objectTypePropCheck(arrayTypePropCheck(dataTypePropCheck())));
+
+const objectTypePropCheck = (p: Precondition<JSONValue, JSONObject>) =>
+    when<JSONValue, JSONObject>(isObjectType, map<JSONObject, JSONValue, JSONObject>(objectTypeChecks()), p);
+
+const arrayTypePropCheck = (p: Precondition<JSONValue, JSONObject>) =>
+    when(isArrayType, map<JSONObject, JSONValue, JSONObject>(arrayTypeChecks()), p);
+
+const dataTypePropCheck = () => when(isUnionType, map<JSONObject, JSONValue, JSONObject>(unionTypeChecks()),
+    map<JSONObject, JSONValue, JSONObject>(typeChecks()));
+
+/**
+ * objectTypeChecks for the ObjectType interface.
+ */
+export const objectTypeChecks: () => Preconditions<JSONValue, JSONValue> = () => ({
+
+    type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
+    properties: propertyChecks()
+
+});
+
+/**
+ * arrayTypeChecks for the ArrayType interface.
+ */
+export const arrayTypeChecks: () => Preconditions<JSONValue, JSONValue> = () => ({
+
+    type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
+    items: map<JSONObject, JSONValue, JSONObject>(typeChecks())
+
+});
+
+/**
+ * unionTypeChecks for the UnionType interface.
+ */
+export const unionTypeChecks: () => Preconditions<JSONValue, JSONValue> = () => ({
+
+    type: equals<JSONValue, JSONValue>(UNION_TYPE),
+    hint: optional<JSONValue, JSONValue>(isString),
+    members: partial<JSONObject, JSONValue, JSONObject>(typeChecks())
+
+});
+
+/**
+ * documentChecks for the Document interface.
+ */
+export const documentChecks: () => Preconditions<JSONValue, JSONValue> = () =>
+    fuse<Preconditions<JSONValue, JSONValue>, Preconditions<JSONValue, JSONValue>>
+        (objectTypeChecks(), { title: optional<JSONValue, JSONValue>(isString) });
 
 /**
  * isObjectType type guard.
@@ -303,12 +364,12 @@ export const isArrayType = (doc: JSONValue): doc is ArrayType =>
         (doc.type === ARRAY_TYPE)) ? true : false;
 
 /**
- * isSumType type guard.
+ * isUnionType type guard.
  */
-export const isSumType = (doc: JSONValue): doc is SumType =>
+export const isUnionType = (doc: JSONValue): doc is UnionType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === SUM_TYPE)) ? true : false;
+        (doc.type === UNION_TYPE)) ? true : false;
 
 /**
  * isUserType type guard.
@@ -317,66 +378,6 @@ export const isUserType = (doc: JSONValue): doc is UserType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ([OBJECT_TYPE, ARRAY_TYPE].indexOf(String(doc.type)) < 0)) ? true : false;
-
-
-/**
- * typeChecks for the Type interface.
- */
-export const typeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: isString
-
-};
-
-/**
- * objectTypeChecks for the ObjectType interface.
- */
-export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
-
-    get properties() {
-        return and<JSONValue, JSONObject>(isObject, visit<JSONObject, JSONValue, JSONObject>(propertiesCheck));
-    }
-
-};
-
-/**
- * arrayTypeChecks for the ArrayType interface.
- */
-export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
-    get items() { return propertiesCheck; }
-
-};
-
-/**
- * sumTypeChecks for the SumType interface.
- */
-export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    discriminator: optional<JSONValue, JSONValue>(isString),
-    variants: partial<JSONObject, JSONValue, JSONObject>(typeChecks)
-
-};
-
-/**
- * propertiesCheck for the properties property of ObjectTypes.
- */
-export const propertiesCheck: Precondition<JSONValue, JSONObject> =
-    when<JSONValue, JSONObject>(isObjectType, map<JSONObject, JSONValue, JSONObject>(objectTypeChecks),
-        when<JSONObject, JSONObject>(isArrayType, map<JSONObject, JSONValue, JSONObject>(arrayTypeChecks),
-            when<JSONObject, JSONObject>(isSumType, map<JSONObject, JSONValue, JSONObject>(sumTypeChecks),
-                map<JSONObject, JSONValue, JSONObject>(typeChecks))));
-
-/**
- * documentChecks for the Document interface.
- */
-export const documentChecks: Preconditions<JSONValue, JSONValue> =
-    fuse<Preconditions<JSONValue, JSONValue>, Preconditions<JSONValue, JSONValue>>
-        (objectTypeChecks, { title: optional<JSONValue, JSONValue>(isString) });
 
 /**
  * Engine that is used to render templates
@@ -526,7 +527,6 @@ const _refError = (path: string) => (e: Error) =>
 
 /**
  * resolveRef resolves the ref property on an object.
- * @todo: reduce the tornado
  */
 export const resolveRef = (path: FilePath) => (json: JSONObject): Promise<JSONObject> =>
     reduce(json, (previous, current, key) =>
@@ -602,7 +602,7 @@ export const expand = (o: JSONValue): JSONValue =>
             set(k.split(DOCUMENT_PATH_SEPERATOR).join('.'), expand(c), p), {}) : o;
 
 /**
- * interpolation of variables in strings where ever they occur.
+ * interpolation variables in strins where ever they occur.
  */
 export const interpolation = (context: object) => (o: JSONValue): JSONValue =>
     Array.isArray(o) ? o.map(interpolation(context)) :
@@ -622,16 +622,11 @@ export const replace = (concern: string) => (o: JSONValue): JSONValue =>
                     (`${CONCERN_PREFIX}${concern}` === k && (typeof c === 'object')) ?
                         fuse(p, (c)) : p : fuse(p, { [k]: replace(concern)(c) }), {}) : o;
 
-const _checkError = (schema: object) => (err: Failure<Document>) =>
-    reject(new Error(
-        `Error while processing schema '` +
-        `${JSON.stringify(schema)}'\n: ${JSON.stringify(err.explain(errors))}`));
-
 /**
  * check the document to ensure it conforms to the expected schema.
  */
 export const check = (p: Precondition<JSONObject, JSONObject>) => (doc: Document): Promise<Document> =>
-    p(doc).cata(_checkError(doc), () => resolve(doc));
+    p(doc).cata(f => reject(new Error(JSON.stringify(f.explain(errors)))), resolve);
 
 /**
  * contextualize places the document into the view engine context.
@@ -672,7 +667,7 @@ export const execute = (prog: Program): Promise<string> =>
                 .then(expand)
                 .then(interpolation(program.context))
                 .then(replace(program.concern))
-                .then(check(map<JSONObject, JSONValue, JSONObject>(documentChecks)))
+                .then(check(map<JSONObject, JSONValue, JSONObject>(documentChecks())))
                 .then(contextualize(program))
                 .then(afterwards)
                 .then(generate));

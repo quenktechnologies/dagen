@@ -1,6 +1,7 @@
 {
 
     "title": "Company",
+    "type":"object",
     "@sql:table": "company",
     "properties": {
 

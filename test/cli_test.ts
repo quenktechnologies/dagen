@@ -12,6 +12,7 @@ const SQL_CONTEXT = `${__dirname}/data/sql_context.json`;
 const sqlOutput = {
     "title": "User",
     "table": "users",
+    "type": "object",
     "properties": {
         "id": {
             "type": "INT",
@@ -26,52 +27,58 @@ const sqlOutput = {
             "type": "VARCHAR(128)"
         },
         "profile": {
-            "oneOf": [{
-                "title": "Person",
-                "table": "person",
-                "properties": {
-                    "first_name": {
-                        "type": "VARCHAR(200)"
-                    },
-                    "last_name": {
-                        "type": "VARCHAR(64)"
+            "type": "sum",
+            "variants": {
+                "Person": {
+                    "title": "Person",
+                    "table": "person",
+                    "type": "object",
+                    "properties": {
+                        "first_name": {
+                            "type": "VARCHAR(200)"
+                        },
+                        "last_name": {
+                            "type": "VARCHAR(64)"
+                        }
                     }
-                }
-            }, {
-                "title": "Company",
-                "table": "company",
-                "properties": {
-                    "name": {
-                        "type": "VARCHAR(64)"
-                    },
-                    "mailing_address": {
-                        "type": "object",
-                        "title": "Address",
-                        "table": "address",
-                        "properties": {
-                            "name": {
-                                "type": "VARCHAR(64)",
-                                "table": "names"
-                            },
-                            "line1": {
-                                "type": "TEXT"
-                            },
-                            "line2": {
-                                "type": "TEXT"
-                            },
-                            "town": {
-                                "type": "TEXT"
-                            },
-                            "state": {
-                                "type": "TEXT"
-                            },
-                            "country": {
-                                "type": "TEXT"
+                },
+                "Company": {
+                    "title": "Company",
+                    "table": "company",
+                    "type": "object",
+                    "properties": {
+                        "name": {
+                            "type": "VARCHAR(64)"
+                        },
+                        "mailing_address": {
+                            "type": "object",
+                            "title": "Address",
+                            "table": "address",
+                            "properties": {
+                                "name": {
+                                    "type": "VARCHAR(64)",
+                                    "table": "names"
+                                },
+                                "line1": {
+                                    "type": "TEXT"
+                                },
+                                "line2": {
+                                    "type": "TEXT"
+                                },
+                                "town": {
+                                    "type": "TEXT"
+                                },
+                                "state": {
+                                    "type": "TEXT"
+                                },
+                                "country": {
+                                    "type": "TEXT"
+                                }
                             }
                         }
                     }
                 }
-            }]
+            }
         },
         "address": {
             "type": "object",
@@ -149,7 +156,7 @@ describe('dagen', () => {
                     if (etext)
                         console.error(etext);
 
-                  must(text.trim()).eql(procedureTemplateOutput.trim());
+                    must(text.trim()).eql(procedureTemplateOutput.trim());
 
                     rs();
 

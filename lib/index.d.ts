@@ -1,6 +1,7 @@
 import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
 import { Either } from 'afpl';
+import { Precondition, Preconditions } from '@quenk/preconditions';
 /**
  * REF keyword.
  */
@@ -18,12 +19,30 @@ export declare const DOCUMENT_PATH_SEPERATOR = ":";
  */
 export declare const CONCERN_PREFIX = "@";
 /**
+ * OBJECT_TYPE
+ */
+export declare const OBJECT_TYPE = "object";
+/**
+ * ARRAY_TYPE
+ */
+export declare const ARRAY_TYPE = "array";
+/**
+ * SUM_TYPE
+ */
+export declare const SUM_TYPE = "sum";
+/**
  * polateOptions for the polate function.
  */
 export declare const polateOptions: {
     start: string;
     end: string;
     applyFunctions: boolean;
+};
+/**
+ * errors are messages for failed preconditions.
+ */
+export declare const errors: {
+    string: string;
 };
 /**
  * Arguments that are excepted from the command line.
@@ -98,11 +117,29 @@ export declare type After = (p: Program) => Promise<Program>;
 export interface JSONObject {
     [key: string]: JSONValue;
 }
+/**
+ * JSONArray represents JSON arrays.
+ */
 export declare type JSONArray = (JSONString | JSONNumber | JSONBoolean | JSONObject)[];
+/**
+ * JSONValue are values that can appear in a JSON document.
+ */
 export declare type JSONValue = JSONString | JSONNumber | JSONBoolean | JSONObject | JSONArray;
+/**
+ * JSONNumber representation.
+ */
 export declare type JSONNumber = number;
+/**
+ * JSONBoolean representation.
+ */
 export declare type JSONBoolean = boolean;
+/**
+ * JSONString representation.
+ */
 export declare type JSONString = string;
+/**
+ * FilePath
+ */
 export declare type FilePath = string;
 /**
  * Context
@@ -111,16 +148,102 @@ export interface Context extends JSONObject {
     document: Document;
 }
 /**
- * Document
+ * Document describes the top level JSON document in a file.
  */
-export interface Document extends JSONObject {
+export interface Document extends ObjectType {
     title?: string;
+}
+/**
+ * Type refers to a property on a Document and describes
+ * the fields that may appear.
+ */
+export interface Type extends JSONObject {
+    /**
+     * type specifies the type of a property.
+     */
     type: string;
-    items: Document;
+}
+/**
+ * ObjectType describes the properties when type = 'object' is declared.
+ */
+export interface ObjectType extends Type {
+    /**
+     * properties of the object type.
+     */
     properties?: {
-        [key: string]: Document;
+        [key: string]: Type;
     };
 }
+/**
+ *
+ * ArrayType describes the properties expected when type = 'array' is declared.
+ */
+export interface ArrayType extends Type {
+    /**
+     * items describes the what Types can be members of the array.
+     */
+    item: Type;
+}
+/**
+ * SumType describes the properties expected when the type = 'sum' is declared.
+ */
+export interface SumType extends Type {
+    /**
+     * discriminator provided to tooling as to how to discriminate between the members of the sum.
+     */
+    discriminator?: string;
+    /**
+     * variants of the sum type.
+     */
+    variants: {
+        [key: string]: Type;
+    };
+}
+/**
+ * UserType are user specified and have no constraints beyond the type field.
+ */
+export interface UserType extends Type {
+}
+/**
+ * isObjectType type guard.
+ */
+export declare const isObjectType: (doc: JSONValue) => doc is ObjectType;
+/**
+ * isArrayType type guard.
+ */
+export declare const isArrayType: (doc: JSONValue) => doc is ArrayType;
+/**
+ * isSumType type guard.
+ */
+export declare const isSumType: (doc: JSONValue) => doc is SumType;
+/**
+ * isUserType type guard.
+ */
+export declare const isUserType: (doc: JSONValue) => doc is UserType;
+/**
+ * typeChecks for the Type interface.
+ */
+export declare const typeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * objectTypeChecks for the ObjectType interface.
+ */
+export declare const objectTypeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * arrayTypeChecks for the ArrayType interface.
+ */
+export declare const arrayTypeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * sumTypeChecks for the SumType interface.
+ */
+export declare const sumTypeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * propertiesCheck for the properties property of ObjectTypes.
+ */
+export declare const propertiesCheck: Precondition<JSONValue, JSONObject>;
+/**
+ * documentChecks for the Document interface.
+ */
+export declare const documentChecks: Preconditions<JSONValue, JSONValue>;
 /**
  * Engine that is used to render templates
  */
@@ -168,6 +291,7 @@ export declare const createEngine: (templates: string) => nunjucks.Environment;
 export declare const options2Program: (options: Options) => (document: Document) => Program;
 /**
  * resolveRef resolves the ref property on an object.
+ * @todo: reduce the tornado
  */
 export declare const resolveRef: (path: string) => (json: JSONObject) => Promise<JSONObject>;
 /**
@@ -183,13 +307,17 @@ export declare const readRef: (path: string) => Promise<JSONValue>;
  */
 export declare const expand: (o: JSONValue) => JSONValue;
 /**
- * interpolation variables in strins where ever they occur.
+ * interpolation of variables in strings where ever they occur.
  */
 export declare const interpolation: (context: object) => (o: JSONValue) => JSONValue;
 /**
  * replace keys in a document based on the file extension of the provided template.
  */
 export declare const replace: (concern: string) => (o: JSONValue) => JSONValue;
+/**
+ * check the document to ensure it conforms to the expected schema.
+ */
+export declare const check: (p: Precondition<JSONObject, JSONObject>) => (doc: Document) => Promise<Document>;
 /**
  * contextualize places the document into the view engine context.
  */
