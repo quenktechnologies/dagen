@@ -138,7 +138,7 @@ describe('dagen', () => {
 
                     if (etext)
                         console.error(etext);
-
+console.error('le text ', text);
                     must(JSON.parse(text)).eql(sqlOutput);
 
                     onGood();

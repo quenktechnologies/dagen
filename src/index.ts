@@ -6,20 +6,9 @@ import { set } from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
 import { merge, fuse, reduce } from 'afpl/lib/util';
-import {
-    map,
-    when,
-    and,
-    equals,
-    optional,
-    partial,
-    visit,
-    object as isObject,
-    string as isString,
-    Failure,
-    Precondition,
-    Preconditions
-} from '@quenk/preconditions';
+import { union } from '@quenk/preconditions/lib/object';
+import { Failure, Precondition } from '@quenk/preconditions';
+import { ObjectType, documentChecks } from './checks';
 
 /**
  * REF keyword.
@@ -41,20 +30,6 @@ export const DOCUMENT_PATH_SEPERATOR = ':';
  */
 export const CONCERN_PREFIX = '@';
 
-/**
- * OBJECT_TYPE
- */
-export const OBJECT_TYPE = 'object';
-
-/**
- * ARRAY_TYPE
- */
-export const ARRAY_TYPE = 'array';
-
-/**
- * SUM_TYPE
- */
-export const SUM_TYPE = 'sum';
 
 /**
  * polateOptions for the polate function.
@@ -221,157 +196,6 @@ export interface Document extends ObjectType {
     title?: string
 
 }
-
-/**
- * Type refers to a property on a Document and describes
- * the fields that may appear.
- */
-export interface Type extends JSONObject {
-
-    /**
-     * type specifies the type of a property.
-     */
-    type: string
-
-}
-
-/**
- * ObjectType describes the properties when type = 'object' is declared.
- */
-export interface ObjectType extends Type {
-
-    /**
-     * properties of the object type.
-     */
-    properties?: {
-
-        [key: string]: Type
-
-    }
-
-}
-
-/**
- *
- * ArrayType describes the properties expected when type = 'array' is declared.
- */
-export interface ArrayType extends Type {
-
-    /**
-     * items describes the what Types can be members of the array.
-     */
-    item: Type
-
-}
-
-/**
- * SumType describes the properties expected when the type = 'sum' is declared.
- */
-export interface SumType extends Type {
-
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
-
-}
-
-/**
- * UserType are user specified and have no constraints beyond the type field.
- */
-export interface UserType extends Type { }
-
-/**
- * isObjectType type guard.
- */
-export const isObjectType = (doc: JSONValue): doc is ObjectType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc['type'] === OBJECT_TYPE)) ? true : false;
-
-/**
- * isArrayType type guard.
- */
-export const isArrayType = (doc: JSONValue): doc is ArrayType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === ARRAY_TYPE)) ? true : false;
-
-/**
- * isSumType type guard.
- */
-export const isSumType = (doc: JSONValue): doc is SumType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === SUM_TYPE)) ? true : false;
-
-/**
- * isUserType type guard.
- */
-export const isUserType = (doc: JSONValue): doc is UserType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        ([OBJECT_TYPE, ARRAY_TYPE].indexOf(String(doc.type)) < 0)) ? true : false;
-
-
-/**
- * typeChecks for the Type interface.
- */
-export const typeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: isString
-
-};
-
-/**
- * objectTypeChecks for the ObjectType interface.
- */
-export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
-
-    get properties() {
-        return  visit<JSONObject, JSONValue, JSONObject>(propertiesCheck);
-    }
-
-};
-
-/**
- * arrayTypeChecks for the ArrayType interface.
- */
-export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
-    get items() { return propertiesCheck; }
-
-};
-
-/**
- * sumTypeChecks for the SumType interface.
- */
-export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
-
-    type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    variants: partial<JSONObject, JSONValue, JSONObject>(typeChecks)
-
-};
-
-/**
- * propertiesCheck for the properties property of ObjectTypes.
- */
-export const propertiesCheck: Precondition<JSONValue, JSONObject> =
-    and<JSONValue, JSONObject>(isObject,
-        when<JSONValue, JSONObject>(isObjectType, map<JSONObject, JSONValue, JSONObject>(objectTypeChecks),
-            when<JSONObject, JSONObject>(isArrayType, map<JSONObject, JSONValue, JSONObject>(arrayTypeChecks),
-                when<JSONObject, JSONObject>(isSumType, map<JSONObject, JSONValue, JSONObject>(sumTypeChecks),
-                    map<JSONObject, JSONValue, JSONObject>(typeChecks)))));
-
-/**
- * documentChecks for the Document interface.
- */
-export const documentChecks: Preconditions<JSONValue, JSONValue> =
-    fuse<Preconditions<JSONValue, JSONValue>, Preconditions<JSONValue, JSONValue>>
-        (objectTypeChecks, { title: optional<JSONValue, JSONValue>(isString) });
 
 /**
  * Engine that is used to render templates
@@ -667,7 +491,7 @@ export const execute = (prog: Program): Promise<string> =>
                 .then(expand)
                 .then(interpolation(program.context))
                 .then(replace(program.concern))
-                .then(check(map<JSONObject, JSONValue, JSONObject>(documentChecks)))
+                .then(check(union<JSONObject, JSONValue, JSONObject>(documentChecks)))
                 .then(contextualize(program))
                 .then(afterwards)
                 .then(generate));
