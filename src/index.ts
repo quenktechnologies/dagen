@@ -324,9 +324,6 @@ export const createEngine = (templates: string): Engine => {
 const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
 
     let [path, value] = kvp.split('=');
-console.error('reere ',  set(path, value.startsWith('require://') ?
-        readModule(value.split('require://')[1]) : value, p));
-
 
     return set(path, value.startsWith('require://') ?
         readModule(value.split('require://')[1]) : value, p);
