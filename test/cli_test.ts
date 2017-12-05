@@ -129,7 +129,7 @@ const chmod = () => new Promise((rs, rj) =>
 
 describe('dagen', () => {
 
-    xit('should have the correct context when concern spefified', () =>
+    it('should have the correct context when concern spefified', () =>
         chmod()
             .then(() => new Promise((onGood, onBad) =>
 
@@ -145,7 +145,7 @@ describe('dagen', () => {
 
                 }))))
 
-    xit('should generate a template correctly', () =>
+    it('should generate a template correctly', () =>
 
         chmod()
             .then(() => new Promise((rs, rj) =>
