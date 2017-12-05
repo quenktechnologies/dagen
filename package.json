@@ -1,6 +1,6 @@
 {
   "name": "@quenk/dagen",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Generate code from data models.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
