@@ -144,9 +144,7 @@ export interface JSONObject {
 /**
  * JSONArray represents JSON arrays.
  */
-export type JSONArray
-    = (JSONString | JSONNumber | JSONBoolean | JSONObject)[]
-    ;
+export interface JSONArray extends Array<JSONValue> {}
 
 /**
  * JSONValue are values that can appear in a JSON document.
