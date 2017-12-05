@@ -64,7 +64,8 @@ export interface Options {
     templates: string,
     contexts: string[],
     plugins: string[],
-    concern: string
+    concern: string,
+    sets: string[]
 
 }
 
@@ -144,7 +145,7 @@ export interface JSONObject {
 /**
  * JSONArray represents JSON arrays.
  */
-export interface JSONArray extends Array<JSONValue> {}
+export interface JSONArray extends Array<JSONValue> { }
 
 /**
  * JSONValue are values that can appear in a JSON document.
@@ -320,6 +321,18 @@ export const createEngine = (templates: string): Engine => {
 
 }
 
+const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
+
+    let [path, value] = kvp.split('=');
+console.error('reere ',  set(path, value.startsWith('require://') ?
+        readModule(value.split('require://')[1]) : value, p));
+
+
+    return set(path, value.startsWith('require://') ?
+        readModule(value.split('require://')[1]) : value, p);
+
+}, {});
+
 /**
  * options2Program converts an Options record to a a Program record.
  */
@@ -331,7 +344,10 @@ export const options2Program = (options: Options) => (document: Document): Progr
     document,
     template: options.template,
     engine: createEngine(options.templates),
-    context: <Context>options.contexts.reduce((p, c) => fuse(p, readModule(c)), {}),
+
+    context: <Context>fuse(_sets2Context(options.sets),
+        options.contexts.reduce((p, c) => fuse(p, readModule(c)), {})),
+
     options,
     plugins: <Plugin[]>options.plugins.map(readModule),
     after: <After[]>[]

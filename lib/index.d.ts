@@ -49,6 +49,7 @@ export interface Options {
     contexts: string[];
     plugins: string[];
     concern: string;
+    sets: string[];
 }
 /**
  * Program can be seen as the execution context various stages depend on.

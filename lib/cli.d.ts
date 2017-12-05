@@ -10,6 +10,7 @@ export interface Arguments {
     '--templates'?: string;
     '--plugin'?: string[];
     '--concern'?: string;
+    '--set'?: string[];
 }
 /**
  * args2Options converts command line options to an Options record.

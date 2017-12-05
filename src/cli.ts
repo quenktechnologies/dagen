@@ -13,7 +13,6 @@ const defaultOptions = () => ({
 
 });
 
-
 const concern = (s: string) => {
 
     let ext = path.extname(s).substr(1);
@@ -32,6 +31,7 @@ export interface Arguments {
     '--templates'?: string,
     '--plugin'?: string[],
     '--concern'?: string
+    '--set'?: string[],
 
 }
 
@@ -45,13 +45,14 @@ export const args2Options = (args: Arguments): Options =>
         contexts: args['--context'],
         templates: args['--templates'] || process.cwd(),
         plugins: args['--plugin'],
-        concern: args['--concern'] || concern(args['--template']||'')
+        concern: args['--concern'] || concern(args['--template'] || ''),
+        sets: args['--set'] || []
     });
 
 const args = docopt.docopt<Arguments>(`
 
 Usage:
-   ${BIN} [options] [--plugin=PATH...] [--context=PATH...] <file>
+   ${BIN} [options] [--plugin=PATH...] [--context=PATH...] [--set=KVP...] <file>
 
 Options:
   -h --help                  Show this screen.
@@ -60,6 +61,7 @@ Options:
   --plugin PATH              Path to a plugin that will be loaded at runtime.
   --context PATH             Path to a javascript object that will be merged into the document's context.
   --concern EXT              Forces the concern to be EXT.
+  --set PATH=VALUE           Sets a value in the context, prefix the value with 'require://' to load from file.
   --version                  Show version.
 `, {
         version: require('../package.json').version
