@@ -1,0 +1,17 @@
+{
+ "$ref": "./ref2.json",
+  "name":"Makeda",
+  "alias": "Agatha",
+  "flags": {
+
+    "active": true,
+    "horns": {
+
+      "ivory": false
+
+    }
+
+  },
+  "hits": [1]
+
+}

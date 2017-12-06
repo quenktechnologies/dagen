@@ -5,7 +5,7 @@ import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'p
 import { set } from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
-import { merge, fuse, reduce } from 'afpl/lib/util';
+import { fuse, reduce } from 'afpl/lib/util';
 import { union } from '@quenk/preconditions/lib/object';
 import { Failure, Precondition } from '@quenk/preconditions';
 import { ObjectType, documentChecks } from './checks';
@@ -315,7 +315,7 @@ export const createEngine = (templates: string): Engine => {
 
     e.addFilter('sortdict', (o: any) =>
         Object.keys(isObject(o)).sort().reduce((p: any, k) =>
-            merge(p, { [k]: o[k] }), {}));
+            fuse(p, { [k]: o[k] }), {}));
 
     return e;
 
@@ -325,7 +325,7 @@ const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
 
     let [path, value] = kvp.split('=');
 
-    return set(path, value.startsWith('require://') ?
+    return set(path, startsWith('require://', value) ?
         readModule(value.split('require://')[1]) : value, p);
 
 }, {});
@@ -366,38 +366,31 @@ export const resolveRef = (path: FilePath) => (json: JSONObject): Promise<JSONOb
                     .then(doc =>
                         Promise
                             .all(current.map(p => pathResolve(dirname(path), String(p))))
-                            .then(list => list.reduce(merge, doc))) :
+                            .then(list => list.reduce(fuse, doc))) :
                 previous
                     .then(doc => readRef(pathResolve(dirname(path), String(current)))
-                        .then(ref => merge(doc, ref)))) :
+                        .then(ref => fuse(doc, ref)))) :
 
             Array.isArray(current) ?
                 (previous
                     .then(doc =>
                         resolve(current)
                             .then(resolveListRefs(path))
-                            .then(v => resolve(merge(doc, { [key]: v }))))) :
+                            .then(v => resolve(fuse(doc,{ [key]: v }))))) :
 
                 (typeof current === 'object') ?
-                    (previous
+                    previous
                         .then(doc =>
                             resolve(current)
                                 .then(resolveRef(path))
-                                .then(r => merge(doc, { [key]: r })))) :
+                                .then(v => resolve(fuse(doc,{ [key]: v })))) :
 
-                    (typeof current === 'object') ?
-                        previous
-                            .then(doc =>
-                                resolve(current)
-                                    .then(resolveRef(path))
-                                    .then(v => resolve(merge(doc, { [key]: v })))) :
+                    previous
+                        .then(doc => fuse(doc, {
 
-                        previous
-                            .then(doc => merge(doc, {
+                            [key]: current
 
-                                [key]: current
-
-                            })), resolve({}))
+                        } )), resolve({}))
 
         .catch(_refError(path))
 

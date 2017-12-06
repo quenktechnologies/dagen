@@ -1,0 +1,16 @@
+{
+
+    "alias": "Bertha",
+    "flags": {
+
+        "blocked": "false",
+        "horns": {
+
+            "gold": true
+
+        }
+
+    },
+    "hits": [2,3]
+
+}
