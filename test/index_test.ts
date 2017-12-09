@@ -27,7 +27,7 @@ describe('resolveRef', function() {
         let path = `${__dirname}/data/refArray.json`;
 
         return resolveRef(path)(require(path))
-            .then(v => console.error('-------------_> ', JSON.stringify(v), '\n') || must(v).eql({
+            .then(v => must(v).eql({
                 "name": "Akshun",
                 "alias": "Facerasc",
                 "profiles": {
