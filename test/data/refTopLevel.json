@@ -1,5 +1,5 @@
 {
- "$ref": "./ref2.json",
+ "$ref": "./topLevel.json",
   "name":"Makeda",
   "alias": "Agatha",
   "flags": {

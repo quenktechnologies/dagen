@@ -203,6 +203,10 @@ export declare const resolveListRefs: (path: string) => (list: JSONValue[]) => P
  */
 export declare const readRef: (path: string) => Promise<JSONValue>;
 /**
+ * readRefs reads multiple ref paths into memory recursively.
+ */
+export declare const readRefs: (paths: string[]) => Promise<JSONValue[]>;
+/**
  * expand short form properties in a document.
  */
 export declare const expand: (o: JSONValue) => JSONValue;

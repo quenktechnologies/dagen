@@ -1,0 +1,11 @@
+{
+
+    "name": "Akshun",
+    "alias": "Facerasc",
+    "profiles": {
+
+        "$ref": ["./refTopLevel.json", "./topLevel.json", "./person.json"]
+
+    }
+
+}

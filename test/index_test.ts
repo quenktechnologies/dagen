@@ -3,9 +3,9 @@ import { resolveRef } from '../src';
 
 describe('resolveRef', function() {
 
-    it('should recursively merge documents', function() {
+    xit('should recursively merge documents', function() {
 
-        let path = `${__dirname}/data/ref1.json`;
+        let path = `${__dirname}/data/refTopLevel.json`;
 
         return resolveRef(path)(require(path))
             .then(v => must(v).eql({
@@ -18,6 +18,42 @@ describe('resolveRef', function() {
                 },
                 alias: 'Agatha',
                 name: 'Makeda'
+            }))
+
+    });
+
+    it('should merge arrays', function() {
+
+        let path = `${__dirname}/data/refArray.json`;
+
+        return resolveRef(path)(require(path))
+            .then(v => console.error('-------------_> ', JSON.stringify(v), '\n') || must(v).eql({
+                "name": "Akshun",
+                "alias": "Facerasc",
+                "profiles": {
+
+                    "alias": "Bertha",
+                    "flags": {
+                        "blocked": "false",
+                        "horns": {
+                            "gold": true,
+                            "ivory": false
+                        }, "active": true
+                    },
+                    "hits": [2, 3, 1, 2, 3],
+                    "name": "Makeda",
+                    "type": "object",
+                    "title": "Person",
+                    "@sql:table": "person",
+                    "properties": {
+                        "first_name": {
+                            "type": "string",
+                            "@sql:type": "VARCHAR(200)"
+                        }, "last_name": {
+                            "type": "${types.name}"
+                        }
+                    }
+                }
             }))
 
     });

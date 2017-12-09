@@ -219,6 +219,9 @@ export const node = Promise.fromCallback;
 const startsWith = (tok: string, str: any): boolean =>
     str.startsWith(tok);
 
+const pathsResolve = (path: string) => (paths: string[]) =>
+    paths.map(p => pathResolve(path, p));
+
 /**
  * readModule reads a module into memory using node's require machinery.
  */
@@ -354,6 +357,16 @@ export const options2Program = (options: Options) => (document: Document): Progr
 const _refError = (path: string) => (e: Error) =>
     reject(new Error(`Error '${path}': ${e.stack}`));
 
+const _fuseRef = (path: string, ref: string) =>
+    (doc: JSONObject): Promise<JSONObject> =>
+        readRef(pathResolve(path, ref))
+            .then(ref => resolve(fuse(doc, ref)));
+
+const _fuseRefList = (path: string, list: string[]) =>
+    (doc: JSONObject): Promise<JSONObject> =>
+        readRefs(pathsResolve(path)(list))
+            .then((list: JSONObject[]) => resolve(list.reduce((p, c) => <JSONObject>fuse(p, c), doc)));
+
 /**
  * resolveRef resolves the ref property on an object.
  * @todo: reduce the tornado
@@ -363,34 +376,30 @@ export const resolveRef = (path: FilePath) => (json: JSONObject): Promise<JSONOb
         (key === REF) ?
             (Array.isArray(current) ?
                 previous
-                    .then(doc =>
-                        Promise
-                            .all(current.map(p => pathResolve(dirname(path), String(p))))
-                            .then(list => list.reduce(fuse, doc))) :
+                    .then(_fuseRefList(dirname(path), <string[]>current)) :
                 previous
-                    .then(doc => readRef(pathResolve(dirname(path), String(current)))
-                        .then(ref => fuse(doc, ref)))) :
+                    .then(_fuseRef(dirname(path), <string>current))) :
 
             Array.isArray(current) ?
                 (previous
                     .then(doc =>
                         resolve(current)
                             .then(resolveListRefs(path))
-                            .then(v => resolve(fuse(doc,{ [key]: v }))))) :
+                            .then(v => resolve(fuse(doc, { [key]: v }))))) :
 
                 (typeof current === 'object') ?
                     previous
                         .then(doc =>
                             resolve(current)
                                 .then(resolveRef(path))
-                                .then(v => resolve(fuse(doc,{ [key]: v })))) :
+                                .then(v => resolve(fuse(doc, { [key]: v })))) :
 
                     previous
                         .then(doc => fuse(doc, {
 
                             [key]: current
 
-                        } )), resolve({}))
+                        })), resolve({}))
 
         .catch(_refError(path))
 
@@ -415,6 +424,12 @@ export const resolveListRefs = (path: FilePath) => (list: JSONValue[]): Promise<
  */
 export const readRef = (path: FilePath): Promise<JSONValue> =>
     readDocument(path).then(resolveRef(path))
+
+/**
+ * readRefs reads multiple ref paths into memory recursively.
+ */
+export const readRefs = (paths: string[]): Promise<JSONValue[]> =>
+    Promise.all(paths.map(readRef));
 
 /**
  * expand short form properties in a document.
