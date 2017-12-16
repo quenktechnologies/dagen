@@ -129,7 +129,7 @@ const chmod = () => new Promise((rs, rj) =>
 
 describe('dagen', () => {
 
-    xit('should have the correct context when concern spefified', () =>
+    it('should have the correct context when concern spefified', () =>
         chmod()
             .then(() => new Promise((onGood, onBad) =>
 
@@ -145,7 +145,7 @@ describe('dagen', () => {
 
                 }))))
 
-    xit('should generate a template correctly', () =>
+    it('should generate a template correctly', () =>
 
         chmod()
             .then(() => new Promise((rs, rj) =>
@@ -162,7 +162,7 @@ describe('dagen', () => {
 
                 }))))
 
-    xit('should allow setting values via --set', () =>
+    it('should allow setting values via --set', () =>
 
         chmod()
             .then(() => new Promise((rs, rj) =>
@@ -180,6 +180,26 @@ describe('dagen', () => {
 
                         must(JSON.parse(text)).eql(require('./data/sqlContextWithSets'));
 
+                        rs();
+
+                    }))))
+
+    it('should allow passing args to plugins', () =>
+
+        chmod()
+            .then(() => new Promise((rs, rj) =>
+
+                exec(`${BIN} --context ${SQL_CONTEXT} ` +
+                    `--plugin "[sql,1, 2, 3]" ` +
+                    `--template test/templates/args.sql ` +
+                    `${DOC}`, (err, text, etext) => {
+
+                        if (err) return rj(err);
+
+                        if (etext)
+                            console.error(etext);
+
+                        must(text.trim()).eql('[1,2,3]');
                         rs();
 
                     }))))

@@ -234,6 +234,37 @@ export const readModule = (path: string) => {
 }
 
 /**
+ * readPlugin loads a plugin into memory.
+ */
+export const readPlugin = (path: string): Promise<Plugin> => {
+
+    if ((path[0] === '[') && (path[path.length - 1] === ']')) {
+
+        let point: number = path.indexOf(',');
+        let realPath: string = path.slice(1, point);
+        let args = `[${path.slice(point + 1, path.length - 1)}]`;
+
+        try {
+
+            let tmp = JSON.parse(args);
+            if (Array.isArray(tmp))
+                return Promise.resolve(readModule(realPath)(tmp));
+
+        } catch (e) {
+
+            Promise.reject(new Error(`Plugin "${realPath}" error: ${e.message}`));
+
+        }
+
+    } else {
+
+        return readModule(path)();
+
+    }
+
+}
+
+/**
  * readFile wrapper.
  */
 export const readFile = (path: string): Promise<string> =>
@@ -336,23 +367,26 @@ const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
 /**
  * options2Program converts an Options record to a a Program record.
  */
-export const options2Program = (options: Options) => (document: Document): Program => ({
+export const options2Program = (options: Options) => (document: Document): Promise<Program> =>
+    Promise
+        .all(options.plugins.map(readPlugin))
+        .then(plugins => Promise.resolve({
 
-    file: options.file,
-    concern: options.concern,
-    cwd: process.cwd(),
-    document,
-    template: options.template,
-    engine: createEngine(options.templates),
+            file: options.file,
+            concern: options.concern,
+            cwd: process.cwd(),
+            document,
+            template: options.template,
+            engine: createEngine(options.templates),
 
-    context: <Context>fuse(_sets2Context(options.sets),
-        options.contexts.reduce((p, c) => fuse(p, readModule(c)), {})),
+            context: <Context>fuse(_sets2Context(options.sets),
+                options.contexts.reduce((p, c) => fuse(p, readModule(c)), {})),
 
-    options,
-    plugins: <Plugin[]>options.plugins.map(readModule),
-    after: <After[]>[]
+            options,
+            plugins,
+            after: <After[]>[]
 
-});
+        }));
 
 const _refError = (path: string) => (e: Error) =>
     reject(new Error(`Error '${path}': ${e.stack}`));

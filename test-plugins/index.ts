@@ -96,8 +96,7 @@ export const groupByTable = (s: any, main: string) =>
 
     }), {});
 
-
-export default (prog: any) => {
+export default (args:string[]) => (prog: any) => {
 
     prog.engine.addExtension('procedure', new ProcedureExtension());
     prog.engine.addExtension('function', new FunctionExtension());
@@ -106,6 +105,7 @@ export default (prog: any) => {
 
         p.context.tables = groupByTable(p.context.document, String(p.context.document['title']));
         p.context['columns'] = p.context.document.properties;
+      p.context['args'] = args;
 
         return resolve(p);
 

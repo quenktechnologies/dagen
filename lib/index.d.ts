@@ -165,6 +165,10 @@ export declare const node: typeof Promise.fromCallback;
  */
 export declare const readModule: (path: string) => any;
 /**
+ * readPlugin loads a plugin into memory.
+ */
+export declare const readPlugin: (path: string) => Promise<Plugin>;
+/**
  * readFile wrapper.
  */
 export declare const readFile: (path: string) => Promise<string>;
@@ -188,7 +192,7 @@ export declare const createEngine: (templates: string) => nunjucks.Environment;
 /**
  * options2Program converts an Options record to a a Program record.
  */
-export declare const options2Program: (options: Options) => (document: Document) => Program;
+export declare const options2Program: (options: Options) => (document: Document) => Promise<Program>;
 /**
  * resolveRef resolves the ref property on an object.
  * @todo: reduce the tornado

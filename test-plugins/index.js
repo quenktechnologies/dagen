@@ -75,14 +75,15 @@ exports.groupByTable = function (s, main) {
         var _a, _b;
     }, {});
 };
-exports.default = function (prog) {
+exports.default = function (args) { return function (prog) {
     prog.engine.addExtension('procedure', new ProcedureExtension());
     prog.engine.addExtension('function', new FunctionExtension());
     prog.after.push(function (p) {
         p.context.tables = exports.groupByTable(p.context.document, String(p.context.document['title']));
         p.context['columns'] = p.context.document.properties;
+        p.context['args'] = args;
         return resolve(p);
     });
     return resolve(prog);
-};
+}; };
 //# sourceMappingURL=index.js.map

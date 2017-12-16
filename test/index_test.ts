@@ -3,7 +3,7 @@ import { resolveRef } from '../src';
 
 describe('resolveRef', function() {
 
-    xit('should recursively merge documents', function() {
+    it('should recursively merge documents', function() {
 
         let path = `${__dirname}/data/refTopLevel.json`;
 

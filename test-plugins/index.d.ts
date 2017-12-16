@@ -18,5 +18,5 @@ export declare class FunctionExtension {
  * to the table specificer.
  */
 export declare const groupByTable: (s: any, main: string) => any;
-declare const _default: (prog: any) => Promise<any>;
+declare const _default: (args: string[]) => (prog: any) => Promise<any>;
 export default _default;
