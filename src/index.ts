@@ -257,7 +257,6 @@ export const readModule = (path: string) => {
 }
 
 const _resolvePlugin = (argv: string) => (p: PluginModule<object>) =>
-    console.error(`passes->${argv}<==`) ||
     Promise.resolve((p.docopt !== '') ?
         p.init(docopt(p.docopt, { argv })) : p.init({}));
 
