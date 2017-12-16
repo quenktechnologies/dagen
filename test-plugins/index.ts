@@ -96,21 +96,36 @@ export const groupByTable = (s: any, main: string) =>
 
     }), {});
 
-export default (args:string[]) => (prog: any) => {
+const docopt = ` 
+SQL plugin.
 
-    prog.engine.addExtension('procedure', new ProcedureExtension());
-    prog.engine.addExtension('function', new FunctionExtension());
+Usage:
+  sql [--list=<string>...]
 
-    prog.after.push((p: any) => {
+Options:
+  --list=<string>  List of things.
+`;
 
-        p.context.tables = groupByTable(p.context.document, String(p.context.document['title']));
-        p.context['columns'] = p.context.document.properties;
-      p.context['args'] = args;
+export default {
+    name: 'sql',
+    docopt,
+    init: (args: any) => (prog: any) => {
 
-        return resolve(p);
+        prog.engine.addExtension('procedure', new ProcedureExtension());
+        prog.engine.addExtension('function', new FunctionExtension());
 
-    });
+        prog.after.push((p: any) => {
 
-    return resolve(prog);
+            p.context.tables = groupByTable(p.context.document, String(p.context.document['title']));
+            p.context['columns'] = p.context.document.properties;
+            p.context['args'] = args;
+
+            return resolve(p);
+
+        });
+
+        return resolve(prog);
+
+    }
 
 }

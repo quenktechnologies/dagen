@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
+import { docopt } from 'docopt';
 import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'path';
 import { set } from 'property-seek';
 import { polate } from '@quenk/polate';
@@ -8,7 +9,7 @@ import { Either } from 'afpl';
 import { fuse, reduce } from 'afpl/lib/util';
 import { union } from '@quenk/preconditions/lib/object';
 import { Failure, Precondition } from '@quenk/preconditions';
-import { ObjectType, documentChecks } from './checks';
+import { ObjectType, documentChecks, pluginModuleCheck } from './checks';
 
 /**
  * REF keyword.
@@ -127,6 +128,28 @@ export interface Program {
 }
 
 /**
+ * PluginModule is used to initialized plugins.
+ */
+export interface PluginModule<A> {
+
+    /**
+     * name of the plugin.
+     */
+    name: string,
+
+    /**
+     * docopt string for parsing arguments passed on the command line.
+     */
+    docopt: string
+
+    /**
+     * init intializes the plugin.
+     */
+    init: (args: A) => Plugin
+
+}
+
+/**
  * Plugins are allowed to modify the program before code generation.
  */
 export type Plugin = (p: Program) => Promise<Program>;
@@ -233,6 +256,15 @@ export const readModule = (path: string) => {
 
 }
 
+const _resolvePlugin = (argv: string) => (p: PluginModule<object>) =>
+    console.error(`passes->${argv}<==`) ||
+    Promise.resolve((p.docopt !== '') ?
+        p.init(docopt(p.docopt, { argv })) : p.init({}));
+
+const _rejectPlugin = (path: string) => (f: Failure<PluginModule<object>>) =>
+    Promise
+        .reject(new Error(`Plugin "${path}" is invalid!\n ${JSON.stringify(f.explain())}`));
+
 /**
  * readPlugin loads a plugin into memory.
  */
@@ -240,25 +272,21 @@ export const readPlugin = (path: string): Promise<Plugin> => {
 
     if ((path[0] === '[') && (path[path.length - 1] === ']')) {
 
-        let point: number = path.indexOf(',');
-        let realPath: string = path.slice(1, point);
-        let args = `[${path.slice(point + 1, path.length - 1)}]`;
+        let parts = path.slice(1, path.length - 1).split(' ');
+        let realPath: string = parts[0];
+        let argv = parts.slice(1).join(' ').trim();
 
-        try {
-
-            let tmp = JSON.parse(args);
-            if (Array.isArray(tmp))
-                return Promise.resolve(readModule(realPath)(tmp));
-
-        } catch (e) {
-
-            Promise.reject(new Error(`Plugin "${realPath}" error: ${e.message}`));
-
-        }
+        return pluginModuleCheck(readModule(realPath))
+            .map(_resolvePlugin(argv))
+            .orRight(_rejectPlugin(realPath))
+            .takeRight();
 
     } else {
 
-        return readModule(path)();
+        return pluginModuleCheck(readModule(path))
+            .map(_resolvePlugin(''))
+            .orRight(_rejectPlugin(path))
+            .takeRight();
 
     }
 

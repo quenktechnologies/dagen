@@ -97,6 +97,23 @@ export interface Program {
     after: After[];
 }
 /**
+ * PluginModule is used to initialized plugins.
+ */
+export interface PluginModule<A> {
+    /**
+     * name of the plugin.
+     */
+    name: string;
+    /**
+     * docopt string for parsing arguments passed on the command line.
+     */
+    docopt: string;
+    /**
+     * init intializes the plugin.
+     */
+    init: (args: A) => Plugin;
+}
+/**
  * Plugins are allowed to modify the program before code generation.
  */
 export declare type Plugin = (p: Program) => Promise<Program>;

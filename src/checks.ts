@@ -1,8 +1,9 @@
 import { fuse } from 'afpl/lib/util';
 import { isString } from '@quenk/preconditions/lib/string';
-import { Preconditions, isObject, map, union, intersect } from '@quenk/preconditions/lib/object';
+import { isFunction } from '@quenk/preconditions/lib/function';
+import { Preconditions, isObject, restrict,map, union, intersect } from '@quenk/preconditions/lib/object';
 import { Precondition, when, and, equals, optional } from '@quenk/preconditions';
-import { JSONValue, JSONObject } from './';
+import { JSONValue, JSONObject, PluginModule } from './';
 
 /**
  * OBJECT_TYPE
@@ -112,6 +113,19 @@ export const isUserType = (doc: JSONValue): doc is UserType =>
         ([OBJECT_TYPE, ARRAY_TYPE].indexOf(String(doc.type)) < 0)) ? true : false;
 
 /**
+ * pluginModuleChecks for loaded plugin modules.
+ */
+export const pluginModuleChecks: Preconditions<any, string | Function> = {
+
+    name: isString,
+
+    docopt: isString,
+
+    init: isFunction
+
+};
+
+/**
  * typeChecks for the Type interface.
  */
 export const typeChecks: Preconditions<JSONValue, JSONValue> = {
@@ -152,6 +166,12 @@ export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
     variants: intersect<JSONObject, JSONValue, JSONObject>(typeChecks)
 
 };
+
+/**
+ * pluginModuleCheck 
+ */
+export const pluginModuleCheck: Precondition<any, PluginModule<object>> =
+    restrict<any, string | Function, PluginModule<object>>(pluginModuleChecks);
 
 /**
  * propertiesCheck for the properties property of ObjectTypes.

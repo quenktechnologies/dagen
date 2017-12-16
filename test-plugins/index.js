@@ -75,15 +75,20 @@ exports.groupByTable = function (s, main) {
         var _a, _b;
     }, {});
 };
-exports.default = function (args) { return function (prog) {
-    prog.engine.addExtension('procedure', new ProcedureExtension());
-    prog.engine.addExtension('function', new FunctionExtension());
-    prog.after.push(function (p) {
-        p.context.tables = exports.groupByTable(p.context.document, String(p.context.document['title']));
-        p.context['columns'] = p.context.document.properties;
-        p.context['args'] = args;
-        return resolve(p);
-    });
-    return resolve(prog);
-}; };
+var docopt = " \nSQL plugin.\n\nUsage:\n  sql [--list=<string>...]\n\nOptions:\n  --list=<string>  List of things.\n";
+exports.default = {
+    name: 'sql',
+    docopt: docopt,
+    init: function (args) { return function (prog) {
+        prog.engine.addExtension('procedure', new ProcedureExtension());
+        prog.engine.addExtension('function', new FunctionExtension());
+        prog.after.push(function (p) {
+            p.context.tables = exports.groupByTable(p.context.document, String(p.context.document['title']));
+            p.context['columns'] = p.context.document.properties;
+            p.context['args'] = args;
+            return resolve(p);
+        });
+        return resolve(prog);
+    }; }
+};
 //# sourceMappingURL=index.js.map

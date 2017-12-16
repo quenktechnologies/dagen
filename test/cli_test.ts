@@ -190,7 +190,7 @@ describe('dagen', () => {
             .then(() => new Promise((rs, rj) =>
 
                 exec(`${BIN} --context ${SQL_CONTEXT} ` +
-                    `--plugin "[sql,1, 2, 3]" ` +
+                    `--plugin "[sql --list 1 --list 2 --list 3]" ` +
                     `--template test/templates/args.sql ` +
                     `${DOC}`, (err, text, etext) => {
 
@@ -199,7 +199,7 @@ describe('dagen', () => {
                         if (etext)
                             console.error(etext);
 
-                        must(text.trim()).eql('[1,2,3]');
+                        must(text.trim()).eql('{"--list":["1","2","3"]}');
                         rs();
 
                     }))))

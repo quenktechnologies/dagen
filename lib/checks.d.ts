@@ -1,6 +1,6 @@
 import { Preconditions } from '@quenk/preconditions/lib/object';
 import { Precondition } from '@quenk/preconditions';
-import { JSONValue, JSONObject } from './';
+import { JSONValue, JSONObject, PluginModule } from './';
 /**
  * OBJECT_TYPE
  */
@@ -77,6 +77,10 @@ export declare const isSumType: (doc: JSONValue) => doc is SumType;
  */
 export declare const isUserType: (doc: JSONValue) => doc is UserType;
 /**
+ * pluginModuleChecks for loaded plugin modules.
+ */
+export declare const pluginModuleChecks: Preconditions<any, string | Function>;
+/**
  * typeChecks for the Type interface.
  */
 export declare const typeChecks: Preconditions<JSONValue, JSONValue>;
@@ -92,6 +96,10 @@ export declare const arrayTypeChecks: Preconditions<JSONValue, JSONValue>;
  * sumTypeChecks for the SumType interface.
  */
 export declare const sumTypeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * pluginModuleCheck
+ */
+export declare const pluginModuleCheck: Precondition<any, PluginModule<object>>;
 /**
  * propertiesCheck for the properties property of ObjectTypes.
  */
