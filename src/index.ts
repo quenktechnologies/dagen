@@ -369,6 +369,14 @@ export const createEngine = (templates: string): Engine => {
 
     });
 
+  e.addGlobal('isArray', Array.isArray);
+  e.addGlobal('isObject', (a:any)=> ((typeof a === 'object') && (!Array.isArray(a))));
+  e.addGlobal('isFunction', (a:any)=> (typeof a === 'function'));
+  e.addGlobal('isNumber', (a:any)=> (typeof a === 'number'));
+  e.addGlobal('isString', (a:any)=> (typeof a === 'string'));
+  e.addGlobal('isBoolean', (a:any)=> (typeof a === 'boolean'));
+  e.addGlobal('isPrim', (a:any)=> ((typeof a !== 'object') && (typeof a !== 'function')));
+
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
     e.addFilter('wrap', (a: any[], s: string) => isArray(a).map(v => `${s}${v}${s}`));
     e.addFilter('error', (a: any) => console.error(a) || a);
