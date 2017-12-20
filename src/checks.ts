@@ -21,6 +21,21 @@ export const ARRAY_TYPE = 'array';
 export const SUM_TYPE = 'sum';
 
 /**
+ * STRING_TYPE
+ */
+export const STRING_TYPE = 'string';
+
+/**
+ * NUMBER_TYPE
+ */
+export const NUMBER_TYPE = 'number';
+
+/**
+ * BOOLEAN_TYPE
+ */
+export const BOOLEAN_TYPE = 'boolean';
+
+/**
  * Type refers to a property on a Document and describes
  * the fields that may appear.
  */
@@ -75,6 +90,41 @@ export interface SumType extends Type {
 }
 
 /**
+ * StringType describes the properties expected when the type = 'string' is declared.
+ */
+export interface StringType extends Type {}
+
+export interface NumberType extends Type {}
+
+export interface BooleanType extends Type {}
+
+/**
+ * SumType describes the properties expected when the type = 'sum' is declared.
+ */
+export interface SumType extends Type {
+
+    /**
+     * variants of the sum type.
+     */
+    variants: { [key: string]: Type }
+
+}
+
+/**
+ *
+ * SumType describes the properties expected when the type = 'sum' is declared.
+ */
+export interface SumType extends Type {
+
+    /**
+     * variants of the sum type.
+     */
+    variants: { [key: string]: Type }
+
+}
+
+
+/**
  * UserType are user specified and have no constraints beyond the type field.
  */
 export interface UserType extends Type { }
@@ -102,6 +152,30 @@ export const isSumType = (doc: JSONValue): doc is SumType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         (doc.type === SUM_TYPE)) ? true : false;
+
+/**
+ * isStringType type guard.
+ */
+export const isStringType = (doc:JSONValue): doc is StringType => 
+((typeof doc === 'object') &&
+  (!Array.isArray(doc))&&
+  (doc.type === STRING_TYPE));
+
+/**
+ * isNumberType type guard.
+ */
+export const isNumberType =(doc:JSONValue): doc is NumberType  => 
+  ((typeof doc === 'object') && 
+  (!Array.isArray(doc))&&
+    (doc.type === NUMBER_TYPE));
+
+/**
+ * isBooleanType type guard.
+ */
+export const isBooleanType =(doc:JSONValue): doc is BooleanType  => 
+  ((typeof doc === 'object') && 
+  (!Array.isArray(doc))&&
+    (doc.type === BOOLEAN_TYPE));
 
 /**
  * isUserType type guard.

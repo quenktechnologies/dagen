@@ -9,7 +9,17 @@ import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
 import { fuse, merge, reduce } from 'afpl/lib/util';
 import { Failure, Precondition } from '@quenk/preconditions';
-import { ObjectType, documentCheck, pluginModuleCheck } from './checks';
+import {
+    ObjectType,
+    documentCheck,
+    pluginModuleCheck,
+    isObjectType,
+    isArrayType,
+    isSumType,
+    isNumberType,
+    isBooleanType,
+    isStringType,
+} from './checks';
 
 /**
  * REF keyword.
@@ -376,6 +386,12 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('isString', (a: any) => (typeof a === 'string'));
     e.addGlobal('isBoolean', (a: any) => (typeof a === 'boolean'));
     e.addGlobal('isPrim', (a: any) => ((typeof a !== 'object') && (typeof a !== 'function')));
+    e.addGlobal('isArrayType', isArrayType);
+    e.addGlobal('isObjectType', isObjectType);
+    e.addGlobal('isStringType', isStringType);
+  e.addGlobal('isNumberType', isNumberType);
+    e.addGlobal('isBooleanType', isBooleanType);
+  e.addGlobal('isSumType', isSumType);
     e.addGlobal('merge', merge);
     e.addGlobal('fuse', merge);
     e.addGlobal('get', get);
@@ -384,8 +400,8 @@ export const createEngine = (templates: string): Engine => {
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
     e.addFilter('wrap', (a: any[], s: string) => isArray(a).map(v => `${s}${v}${s}`));
-    e.addFilter('error', (msg:string) => { throw new Error(msg) });
-    e.addFilter('console', (a:any, fac:string)=> (<any>console)[fac](a));
+    e.addFilter('error', (msg: string) => { throw new Error(msg) });
+    e.addFilter('console', (a: any, fac: string) => (<any>console)[fac](a));
     e.addFilter('split', (a: string, marker = ',') => a.split(marker));
 
     e.addFilter('sortdict', (o: any) =>

@@ -14,6 +14,18 @@ export declare const ARRAY_TYPE = "array";
  */
 export declare const SUM_TYPE = "sum";
 /**
+ * STRING_TYPE
+ */
+export declare const STRING_TYPE = "string";
+/**
+ * NUMBER_TYPE
+ */
+export declare const NUMBER_TYPE = "number";
+/**
+ * BOOLEAN_TYPE
+ */
+export declare const BOOLEAN_TYPE = "boolean";
+/**
  * Type refers to a property on a Document and describes
  * the fields that may appear.
  */
@@ -56,6 +68,38 @@ export interface SumType extends Type {
     };
 }
 /**
+ * StringType describes the properties expected when the type = 'string' is declared.
+ */
+export interface StringType extends Type {
+}
+export interface NumberType extends Type {
+}
+export interface BooleanType extends Type {
+}
+/**
+ * SumType describes the properties expected when the type = 'sum' is declared.
+ */
+export interface SumType extends Type {
+    /**
+     * variants of the sum type.
+     */
+    variants: {
+        [key: string]: Type;
+    };
+}
+/**
+ *
+ * SumType describes the properties expected when the type = 'sum' is declared.
+ */
+export interface SumType extends Type {
+    /**
+     * variants of the sum type.
+     */
+    variants: {
+        [key: string]: Type;
+    };
+}
+/**
  * UserType are user specified and have no constraints beyond the type field.
  */
 export interface UserType extends Type {
@@ -72,6 +116,18 @@ export declare const isArrayType: (doc: JSONValue) => doc is ArrayType;
  * isSumType type guard.
  */
 export declare const isSumType: (doc: JSONValue) => doc is SumType;
+/**
+ * isStringType type guard.
+ */
+export declare const isStringType: (doc: JSONValue) => doc is StringType;
+/**
+ * isNumberType type guard.
+ */
+export declare const isNumberType: (doc: JSONValue) => doc is NumberType;
+/**
+ * isBooleanType type guard.
+ */
+export declare const isBooleanType: (doc: JSONValue) => doc is BooleanType;
 /**
  * isUserType type guard.
  */
