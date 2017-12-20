@@ -7,7 +7,7 @@ import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'p
 import { set } from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
-import { fuse, reduce } from 'afpl/lib/util';
+import { fuse, merge, reduce } from 'afpl/lib/util';
 import { Failure, Precondition } from '@quenk/preconditions';
 import { ObjectType, documentCheck, pluginModuleCheck } from './checks';
 
@@ -376,6 +376,8 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('isString', (a: any) => (typeof a === 'string'));
     e.addGlobal('isBoolean', (a: any) => (typeof a === 'boolean'));
     e.addGlobal('isPrim', (a: any) => ((typeof a !== 'object') && (typeof a !== 'function')));
+    e.addGlobal('merge', merge);
+    e.addGlobal('fuse', merge);
     e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
