@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
+import * as os from 'os';
 import { docopt } from 'docopt';
 import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'path';
 import { set } from 'property-seek';
@@ -376,6 +377,7 @@ export const createEngine = (templates: string): Engine => {
   e.addGlobal('isString', (a:any)=> (typeof a === 'string'));
   e.addGlobal('isBoolean', (a:any)=> (typeof a === 'boolean'));
   e.addGlobal('isPrim', (a:any)=> ((typeof a !== 'object') && (typeof a !== 'function')));
+  e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
     e.addFilter('wrap', (a: any[], s: string) => isArray(a).map(v => `${s}${v}${s}`));
