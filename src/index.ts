@@ -389,13 +389,14 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('isArrayType', isArrayType);
     e.addGlobal('isObjectType', isObjectType);
     e.addGlobal('isStringType', isStringType);
-  e.addGlobal('isNumberType', isNumberType);
+    e.addGlobal('isNumberType', isNumberType);
     e.addGlobal('isBooleanType', isBooleanType);
-  e.addGlobal('isSumType', isSumType);
+    e.addGlobal('isSumType', isSumType);
     e.addGlobal('merge', merge);
     e.addGlobal('fuse', merge);
     e.addGlobal('get', get);
     e.addGlobal('set', set);
+    e.addGlobal('put', (k:string, v:any, o:object)=> merge(o, set(k,v,o)));
     e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
