@@ -4,7 +4,7 @@ import * as nunjucks from 'nunjucks';
 import * as os from 'os';
 import { docopt } from 'docopt';
 import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'path';
-import { set } from 'property-seek';
+import {get, set} from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
 import { fuse, merge, reduce } from 'afpl/lib/util';
@@ -378,6 +378,8 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('isPrim', (a: any) => ((typeof a !== 'object') && (typeof a !== 'function')));
     e.addGlobal('merge', merge);
     e.addGlobal('fuse', merge);
+  e.addGlobal('get', get);
+  e.addGlobal('set', set);
     e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
