@@ -101,10 +101,10 @@ export declare const sumTypeChecks: Preconditions<JSONValue, JSONValue>;
  */
 export declare const pluginModuleCheck: Precondition<any, PluginModule<object>>;
 /**
- * propertiesCheck for the properties property of ObjectTypes.
+ * propertyCheck for the properties property of ObjectTypes.
  */
-export declare const propertiesCheck: Precondition<JSONValue, JSONObject>;
+export declare const propertyCheck: Precondition<JSONValue, JSONObject>;
 /**
- * documentChecks for the Document interface.
+ * documentCheck for the Document interface.
  */
-export declare const documentChecks: Preconditions<JSONValue, JSONValue>;
+export declare const documentCheck: Precondition<JSONValue, JSONObject>;

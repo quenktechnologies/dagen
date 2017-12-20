@@ -8,9 +8,8 @@ import { set } from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
 import { fuse, reduce } from 'afpl/lib/util';
-import { union } from '@quenk/preconditions/lib/object';
 import { Failure, Precondition } from '@quenk/preconditions';
-import { ObjectType, documentChecks, pluginModuleCheck } from './checks';
+import { ObjectType, documentCheck, pluginModuleCheck } from './checks';
 
 /**
  * REF keyword.
@@ -370,14 +369,14 @@ export const createEngine = (templates: string): Engine => {
 
     });
 
-  e.addGlobal('isArray', Array.isArray);
-  e.addGlobal('isObject', (a:any)=> ((typeof a === 'object') && (!Array.isArray(a))));
-  e.addGlobal('isFunction', (a:any)=> (typeof a === 'function'));
-  e.addGlobal('isNumber', (a:any)=> (typeof a === 'number'));
-  e.addGlobal('isString', (a:any)=> (typeof a === 'string'));
-  e.addGlobal('isBoolean', (a:any)=> (typeof a === 'boolean'));
-  e.addGlobal('isPrim', (a:any)=> ((typeof a !== 'object') && (typeof a !== 'function')));
-  e.addGlobal('EOL', os.EOL);
+    e.addGlobal('isArray', Array.isArray);
+    e.addGlobal('isObject', (a: any) => ((typeof a === 'object') && (!Array.isArray(a))));
+    e.addGlobal('isFunction', (a: any) => (typeof a === 'function'));
+    e.addGlobal('isNumber', (a: any) => (typeof a === 'number'));
+    e.addGlobal('isString', (a: any) => (typeof a === 'string'));
+    e.addGlobal('isBoolean', (a: any) => (typeof a === 'boolean'));
+    e.addGlobal('isPrim', (a: any) => ((typeof a !== 'object') && (typeof a !== 'function')));
+    e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
     e.addFilter('wrap', (a: any[], s: string) => isArray(a).map(v => `${s}${v}${s}`));
@@ -539,7 +538,8 @@ const _checkError = (schema: object) => (err: Failure<Document>) =>
 /**
  * check the document to ensure it conforms to the expected schema.
  */
-export const check = (p: Precondition<JSONObject, JSONObject>) => (doc: Document): Promise<Document> =>
+export const check = (p: Precondition<JSONValue, JSONObject>) => (doc: Document)
+    : Promise<Document> =>
     p(doc).cata(_checkError(doc), () => resolve(doc));
 
 /**
@@ -581,7 +581,7 @@ export const execute = (prog: Program): Promise<string> =>
                 .then(expand)
                 .then(interpolation(program.context))
                 .then(replace(program.concern))
-                .then(check(union<JSONObject, JSONValue, JSONObject>(documentChecks)))
+                .then(check(documentCheck))
                 .then(contextualize(program))
                 .then(afterwards)
                 .then(generate));

@@ -242,7 +242,7 @@ export declare const replace: (concern: string) => (o: JSONValue) => JSONValue;
 /**
  * check the document to ensure it conforms to the expected schema.
  */
-export declare const check: (p: Precondition<JSONObject, JSONObject>) => (doc: Document) => Promise<Document>;
+export declare const check: (p: Precondition<JSONValue, JSONObject>) => (doc: Document) => Promise<Document>;
 /**
  * contextualize places the document into the view engine context.
  */

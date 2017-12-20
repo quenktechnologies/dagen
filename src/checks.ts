@@ -1,8 +1,8 @@
-import { fuse } from 'afpl/lib/util';
 import { isString } from '@quenk/preconditions/lib/string';
 import { isFunction } from '@quenk/preconditions/lib/function';
-import { Preconditions, isObject, restrict,map, union, intersect } from '@quenk/preconditions/lib/object';
-import { Precondition, when, and, equals, optional } from '@quenk/preconditions';
+import { match, caseOf } from '@quenk/preconditions';
+import { Preconditions, isObject, restrict, map, union, intersect } from '@quenk/preconditions/lib/object';
+import { Precondition, and, equals, optional } from '@quenk/preconditions';
 import { JSONValue, JSONObject, PluginModule } from './';
 
 /**
@@ -19,7 +19,6 @@ export const ARRAY_TYPE = 'array';
  * SUM_TYPE
  */
 export const SUM_TYPE = 'sum';
-
 
 /**
  * Type refers to a property on a Document and describes
@@ -142,7 +141,7 @@ export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
     type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
 
     get properties() {
-        return map<JSONObject, JSONValue, JSONObject>(propertiesCheck);
+        return map<JSONObject, JSONValue, JSONObject>(propertyCheck);
     }
 
 };
@@ -153,7 +152,7 @@ export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
 export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
     type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
-    get items() { return propertiesCheck; }
+    get items() { return propertyCheck; }
 
 };
 
@@ -174,18 +173,18 @@ export const pluginModuleCheck: Precondition<any, PluginModule<object>> =
     restrict<any, string | Function, PluginModule<object>>(pluginModuleChecks);
 
 /**
- * propertiesCheck for the properties property of ObjectTypes.
+ * propertyCheck for the properties property of ObjectTypes.
  */
-export const propertiesCheck: Precondition<JSONValue, JSONObject> =
-    and<JSONValue, JSONObject>(isObject,
-        when<JSONValue, JSONObject>(isObjectType, union<JSONObject, JSONValue, JSONObject>(objectTypeChecks),
-            when<JSONObject, JSONObject>(isArrayType, union<JSONObject, JSONValue, JSONObject>(arrayTypeChecks),
-                when<JSONObject, JSONObject>(isSumType, union<JSONObject, JSONValue, JSONObject>(sumTypeChecks),
-                    union<JSONObject, JSONValue, JSONObject>(typeChecks)))));
+export const propertyCheck: Precondition<JSONValue, JSONObject> =
+    and<JSONValue, JSONObject>(isObject, match(
+        caseOf({ type: OBJECT_TYPE }, union<JSONObject, JSONValue, JSONObject>(objectTypeChecks)),
+        caseOf({ type: ARRAY_TYPE }, union<JSONObject, JSONValue, JSONObject>(arrayTypeChecks)),
+        caseOf({ type: SUM_TYPE }, union<JSONObject, JSONValue, JSONObject>(sumTypeChecks)),
+        union<JSONObject, JSONValue, JSONObject>(typeChecks)));
 
 /**
- * documentChecks for the Document interface.
+ * documentCheck for the Document interface.
  */
-export const documentChecks: Preconditions<JSONValue, JSONValue> =
-    fuse<Preconditions<JSONValue, JSONValue>, Preconditions<JSONValue, JSONValue>>
-        (objectTypeChecks, { title: optional<JSONValue, JSONValue>(isString) });
+export const documentCheck: Precondition<JSONValue, JSONObject> =
+    and<JSONValue, JSONObject>(propertyCheck,
+        union<JSONObject, JSONValue, JSONObject>({ title: optional<JSONValue, JSONValue>(isString) }));
