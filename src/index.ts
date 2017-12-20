@@ -4,7 +4,7 @@ import * as nunjucks from 'nunjucks';
 import * as os from 'os';
 import { docopt } from 'docopt';
 import { resolve as pathResolve, join as pathJoin, dirname, isAbsolute } from 'path';
-import {get, set} from 'property-seek';
+import { get, set } from 'property-seek';
 import { polate } from '@quenk/polate';
 import { Either } from 'afpl';
 import { fuse, merge, reduce } from 'afpl/lib/util';
@@ -378,13 +378,14 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('isPrim', (a: any) => ((typeof a !== 'object') && (typeof a !== 'function')));
     e.addGlobal('merge', merge);
     e.addGlobal('fuse', merge);
-  e.addGlobal('get', get);
-  e.addGlobal('set', set);
+    e.addGlobal('get', get);
+    e.addGlobal('set', set);
     e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
     e.addFilter('wrap', (a: any[], s: string) => isArray(a).map(v => `${s}${v}${s}`));
-    e.addFilter('error', (a: any) => console.error(a) || a);
+    e.addFilter('error', (msg:string) => { throw new Error(msg) });
+    e.addFilter('console', (a:any, fac:string)=> (<any>console)[fac](a));
     e.addFilter('split', (a: string, marker = ',') => a.split(marker));
 
     e.addFilter('sortdict', (o: any) =>
