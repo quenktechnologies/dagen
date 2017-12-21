@@ -396,7 +396,7 @@ export const createEngine = (templates: string): Engine => {
     e.addGlobal('fuse', merge);
     e.addGlobal('get', get);
     e.addGlobal('set', set);
-    e.addGlobal('put', (k: string, v: any, o: any) => { o[k] = v });
+    e.addGlobal('put', (k: string, v: any, o: any) => { o[k] = v; return '' });
     e.addGlobal('EOL', os.EOL);
 
     e.addFilter('prefix', (a: any[], s: string) => isArray(a).map(v => `${s}${v}`));
