@@ -180,11 +180,11 @@ export declare const node: typeof Promise.fromCallback;
 /**
  * readModule reads a module into memory using node's require machinery.
  */
-export declare const readModule: (path: string) => any;
+export declare const readModule: (context: JSONObject) => (path: string) => any;
 /**
  * readPlugin loads a plugin into memory.
  */
-export declare const readPlugin: (path: string) => Promise<Plugin>;
+export declare const readPlugin: (ctx: Context) => (path: string) => Promise<Plugin>;
 /**
  * readFile wrapper.
  */

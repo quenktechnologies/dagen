@@ -41,7 +41,6 @@ export const DOCUMENT_PATH_SEPERATOR = ':';
  */
 export const CONCERN_PREFIX = '@';
 
-
 /**
  * polateOptions for the polate function.
  */
@@ -258,10 +257,14 @@ const pathsResolve = (path: string) => (paths: string[]) =>
 /**
  * readModule reads a module into memory using node's require machinery.
  */
-export const readModule = (path: string) => {
-    let m = require.main.require(isAbsolute(path) ? path :
-        startsWith('.', String(path)) ? require.resolve(pathJoin(process.cwd(), path)) : path);
+export const readModule = (context: JSONObject) => (path: string) => {
 
+    let p = isAbsolute(path) ? path :
+        startsWith('.', String(path)) ?
+            require.resolve(pathJoin(process.cwd(), path)) :
+            path;
+
+    let m = require.main.require(polate(p, context, polateOptions));
     return m.default ? m.default : m;
 
 }
@@ -277,7 +280,7 @@ const _rejectPlugin = (path: string) => (f: Failure<PluginModule<object>>) =>
 /**
  * readPlugin loads a plugin into memory.
  */
-export const readPlugin = (path: string): Promise<Plugin> => {
+export const readPlugin = (ctx: Context) => (path: string): Promise<Plugin> => {
 
     if ((path[0] === '[') && (path[path.length - 1] === ']')) {
 
@@ -285,14 +288,14 @@ export const readPlugin = (path: string): Promise<Plugin> => {
         let realPath: string = parts[0];
         let argv = parts.slice(1).join(' ').trim();
 
-        return pluginModuleCheck(readModule(realPath))
+        return pluginModuleCheck(readModule(ctx)(realPath))
             .map(_resolvePlugin(argv))
             .orRight(_rejectPlugin(realPath))
             .takeRight();
 
     } else {
 
-        return pluginModuleCheck(readModule(path))
+        return pluginModuleCheck(readModule(ctx)(path))
             .map(_resolvePlugin(''))
             .orRight(_rejectPlugin(path))
             .takeRight();
@@ -418,16 +421,16 @@ const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
     let [path, value] = kvp.split('=');
 
     return set(path, startsWith('require://', value) ?
-        readModule(value.split('require://')[1]) : value, p);
+        readModule(p)(value.split('require://')[1]) : value, p);
 
-}, {});
+}, <Context>{});
 
 /**
  * options2Program converts an Options record to a a Program record.
  */
 export const options2Program = (options: Options) => (document: Document): Promise<Program> =>
     Promise
-        .all(options.plugins.map(readPlugin))
+        .all(options.plugins.map(readPlugin(<Context>{})))
         .then(plugins => Promise.resolve({
 
             file: options.file,
@@ -438,7 +441,7 @@ export const options2Program = (options: Options) => (document: Document): Promi
             engine: createEngine(options.templates),
 
             context: <Context>fuse(_sets2Context(options.sets),
-                options.contexts.reduce((p, c) => fuse(p, readModule(c)), {})),
+                options.contexts.reduce((p: Context, c) => fuse(p, readModule(p)(c)), {})),
 
             options,
             plugins,

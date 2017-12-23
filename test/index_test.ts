@@ -1,5 +1,5 @@
 import * as must from 'must/register';
-import { resolveRef } from '../src';
+import { resolveRef, readModule } from '../src';
 
 describe('resolveRef', function() {
 
@@ -59,4 +59,30 @@ describe('resolveRef', function() {
     });
 
 });
+
+describe('readModule', () => {
+
+    it('should allow for templates in include paths', () => {
+
+        must(readModule({ path: 'topLevel.json' })(__dirname + '/data/${path}'))
+            .eql({
+
+    "alias": "Bertha",
+    "flags": {
+
+        "blocked": "false",
+        "horns": {
+
+            "gold": true
+
+        }
+
+    },
+    "hits": [2,3]
+
+});
+
+    });
+
+})
 
