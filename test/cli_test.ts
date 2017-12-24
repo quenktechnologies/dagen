@@ -204,5 +204,27 @@ describe('dagen', () => {
 
                     }))))
 
+    it('should allow for templates in include paths', () =>
+
+        chmod()
+            .then(() => new Promise((rs, rj) =>
+
+                exec(`${BIN} --context ${SQL_CONTEXT} ` +
+                    `--set address=eval://${__dirname}/data/address.json ` +
+                    `--template test/templates/context.sql ` +
+                    `${DOC}`, (err, text, etext) => {
+
+                        if (err) return rj(err);
+                        console.error(text);
+
+                        if (etext)
+                            console.error(etext);
+
+                      must(JSON.parse(text)).eql(require('./data/shouldSupportEval.json'));
+
+                        rs();
+
+                    }))))
+
 });
 

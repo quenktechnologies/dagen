@@ -41,6 +41,10 @@ export const DOCUMENT_PATH_SEPERATOR = ':';
  */
 export const CONCERN_PREFIX = '@';
 
+export const MODULE_SCHEME = 'require';
+
+export const EVAL_SCHEME = 'eval';
+
 /**
  * polateOptions for the polate function.
  */
@@ -215,7 +219,7 @@ export type FilePath = string;
  */
 export interface Context extends JSONObject {
 
-    document: Document
+    document?: Document
 
 }
 
@@ -257,14 +261,14 @@ const pathsResolve = (path: string) => (paths: string[]) =>
 /**
  * readModule reads a module into memory using node's require machinery.
  */
-export const readModule = (context: JSONObject) => (path: string) => {
+export const readModule = (path: string) => {
 
     let p = isAbsolute(path) ? path :
         startsWith('.', String(path)) ?
             require.resolve(pathJoin(process.cwd(), path)) :
             path;
 
-    let m = require.main.require(polate(p, context, polateOptions));
+    let m = require.main.require(p);
     return m.default ? m.default : m;
 
 }
@@ -280,7 +284,7 @@ const _rejectPlugin = (path: string) => (f: Failure<PluginModule<object>>) =>
 /**
  * readPlugin loads a plugin into memory.
  */
-export const readPlugin = (ctx: Context) => (path: string): Promise<Plugin> => {
+export const readPlugin = (path: string): Promise<Plugin> => {
 
     if ((path[0] === '[') && (path[path.length - 1] === ']')) {
 
@@ -288,14 +292,14 @@ export const readPlugin = (ctx: Context) => (path: string): Promise<Plugin> => {
         let realPath: string = parts[0];
         let argv = parts.slice(1).join(' ').trim();
 
-        return pluginModuleCheck(readModule(ctx)(realPath))
+        return pluginModuleCheck(readModule(realPath))
             .map(_resolvePlugin(argv))
             .orRight(_rejectPlugin(realPath))
             .takeRight();
 
     } else {
 
-        return pluginModuleCheck(readModule(ctx)(path))
+        return pluginModuleCheck(readModule(path))
             .map(_resolvePlugin(''))
             .orRight(_rejectPlugin(path))
             .takeRight();
@@ -416,22 +420,32 @@ export const createEngine = (templates: string): Engine => {
 
 }
 
-const _sets2Context = (value: string[]) => value.reduce((p, kvp) => {
+const _fuseContexts = (ctx: Context, path: string) => fuse(ctx, readModule(path));
 
-    let [path, value] = kvp.split('=');
+const _set2Context = (values: string[]) => (program: Program): Promise<Program> =>
+    Promise.resolve(values.reduce((p, kvp) =>
+        p.then(prog => {
 
-    return set(path, startsWith('require://', value) ?
-        readModule(p)(value.split('require://')[1]) : value, p);
+            let [path, value] = kvp.split('=');
+            let dest = `context.${path}`;
 
-}, <Context>{});
+            return startsWith(MODULE_SCHEME, value) ?
+                resolve(set(dest, readModule(value.split(`${MODULE_SCHEME}://`)[1]), prog)) :
+                startsWith(EVAL_SCHEME, value) ?
+                    resolve(readModule(value.split(`${EVAL_SCHEME}://`)[1]))
+                        .then(evaluate(prog))
+                        .then(v => resolve(set(dest, v, prog))) :
+                    resolve(set(dest, value, prog))
+
+        }), resolve(program)));
 
 /**
  * options2Program converts an Options record to a a Program record.
  */
 export const options2Program = (options: Options) => (document: Document): Promise<Program> =>
     Promise
-        .all(options.plugins.map(readPlugin(<Context>{})))
-        .then(plugins => Promise.resolve({
+        .all(options.plugins.map(readPlugin))
+        .then(plugins => resolve({
 
             file: options.file,
             concern: options.concern,
@@ -439,54 +453,57 @@ export const options2Program = (options: Options) => (document: Document): Promi
             document,
             template: options.template,
             engine: createEngine(options.templates),
-
-            context: <Context>fuse(_sets2Context(options.sets),
-                options.contexts.reduce((p: Context, c) => fuse(p, readModule(p)(c)), {})),
-
+            context: {},
             options,
             plugins,
             after: <After[]>[]
 
-        }));
+        }))
+        .then(prog =>
+            resolve(options.contexts.reduce(_fuseContexts, {}))
+                .then(ctx => set('context', ctx, prog))
+                .then(_set2Context(options.sets)));
 
-const _refError = (path: string) => (e: Error) =>
-    reject(new Error(`Error '${path}': ${e.stack}`));
+const _refError = (path: string) => {
+    if (!path) throw new Error('not path'); return (e: Error) =>
+        reject(new Error(`Error occured while processing ref path '${path}': ${e.stack}`));
+}
 
-const _fuseRef = (path: string, ref: string) =>
+const _fuseRef = (path: string, ref: string, program: Program) =>
     (doc: JSONObject): Promise<JSONObject> =>
-        readRef(pathResolve(path, ref))
+        readRef(program)(pathResolve(path, ref))
             .then(ref => resolve(fuse(doc, ref)));
 
-const _fuseRefList = (path: string, list: string[]) =>
+const _fuseRefList = (path: string, list: string[], program: Program) =>
     (doc: JSONObject): Promise<JSONObject> =>
-        readRefs(pathsResolve(path)(list))
+        readRefs(program)(pathsResolve(path)(list))
             .then((list: JSONObject[]) => resolve(list.reduce((p, c) => <JSONObject>fuse(p, c), doc)));
 
 /**
  * resolveRef resolves the ref property on an object.
  * @todo: reduce the tornado
  */
-export const resolveRef = (path: FilePath) => (json: JSONObject): Promise<JSONObject> =>
+export const resolveRef = (program: Program) => (path: FilePath) => (json: JSONObject): Promise<JSONObject> =>
     reduce(json, (previous, current, key) =>
         (key === REF) ?
             (Array.isArray(current) ?
                 previous
-                    .then(_fuseRefList(dirname(path), <string[]>current)) :
+                    .then(_fuseRefList(dirname(path), <string[]>current, program)) :
                 previous
-                    .then(_fuseRef(dirname(path), <string>current))) :
+                    .then(_fuseRef(dirname(path), <string>current, program))) :
 
             Array.isArray(current) ?
                 (previous
                     .then(doc =>
                         resolve(current)
-                            .then(resolveListRefs(path))
+                            .then(resolveListRefs(program)(path))
                             .then(v => resolve(fuse(doc, { [key]: v }))))) :
 
                 (typeof current === 'object') ?
                     previous
                         .then(doc =>
                             resolve(current)
-                                .then(resolveRef(path))
+                                .then(resolveRef(program)(path))
                                 .then(v => resolve(fuse(doc, { [key]: v })))) :
 
                     previous
@@ -501,30 +518,51 @@ export const resolveRef = (path: FilePath) => (json: JSONObject): Promise<JSONOb
 /**
  * resolveRefList
  */
-export const resolveListRefs = (path: FilePath) => (list: JSONValue[]): Promise<JSONValue[]> =>
+export const resolveListRefs = (program: Program) => (path: FilePath) => (list: JSONValue[]): Promise<JSONValue[]> =>
     list.reduce((p, c) =>
         p.then(list =>
             Array.isArray(c) ?
                 resolve(c)
-                    .then(resolveListRefs(path))
+                    .then(resolveListRefs(program)(path))
                     .then(m => resolve(list.concat(m))) :
                 (typeof c === 'object') ?
                     resolve(c)
-                        .then(resolveRef(path))
+                        .then(resolveRef(program)(path))
                         .then(m => resolve(list.concat(m))) :
                     resolve(list.concat(c))), resolve([]));
 
 /**
  * readRef into memory.
  */
-export const readRef = (path: FilePath): Promise<JSONValue> =>
-    readDocument(path).then(resolveRef(path))
+export const readRef = (program: Program) => (path: FilePath): Promise<JSONValue> =>
+    readJSONFile(path)
+        .then(evaluate(program))
+        .then(resolveRef(program)(path))
 
 /**
  * readRefs reads multiple ref paths into memory recursively.
  */
-export const readRefs = (paths: string[]): Promise<JSONValue[]> =>
-    Promise.all(paths.map(readRef));
+export const readRefs = (program: Program) => (paths: string[]): Promise<JSONValue[]> =>
+    Promise.all(paths.map(readRef(program)));
+
+/**
+ * evaluate allows for the recursive procsessing of json values.
+ *
+ * It provides interpolation, expansion and replacement based on the 
+ * Program configuration.
+ */
+export const evaluate = (program: Program) => (json: JSONValue): Promise<JSONValue> =>
+        Array.isArray(json) ?
+            Promise
+                .all(json.map(evaluate(program))) :
+            (typeof json === 'object') ?
+                resolve(json)
+                    .then(interpolation(program.context))
+                    .then(expand)
+                    .then(replace(program.concern))
+                    .then(resolveRef(program)(program.file)) :
+                resolve(json)
+
 
 /**
  * expand short form properties in a document.
@@ -535,7 +573,7 @@ export const expand = (o: JSONValue): JSONValue =>
             set(k.split(DOCUMENT_PATH_SEPERATOR).join('.'), expand(c), p), {}) : o;
 
 /**
- * interpolation of variables in strings where ever they occur.
+ * interpolation of variables in strings whereever they occur.
  */
 export const interpolation = (context: object) => (o: JSONValue): JSONValue =>
     Array.isArray(o) ? o.map(interpolation(context)) :
@@ -602,7 +640,7 @@ export const execute = (prog: Program): Promise<string> =>
         .reduce((p, n) => p.then(n), resolve(prog))
         .then(program =>
             resolve(program.document)
-                .then(resolveRef(program.file))
+                .then(resolveRef(program)(program.file))
                 .then(expand)
                 .then(interpolation(program.context))
                 .then(replace(program.concern))

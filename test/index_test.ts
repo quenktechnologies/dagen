@@ -1,5 +1,28 @@
 import * as must from 'must/register';
-import { resolveRef, readModule } from '../src';
+import { Program, resolveRef, createEngine } from '../src';
+
+const program: Program = {
+
+    file: `${__dirname}/data/refTopLevel.json`,
+    concern: '',
+    cwd: process.cwd(),
+    document: { type: 'string' },
+    template: '',
+    engine: createEngine(''),
+    context: {
+        types: {
+
+            name: 'VARCHAR(64)',
+            password: 'VARCHAR(128)',
+            status: 'VARCHAR(32)',
+            text: 'TEXT'
+
+        }
+    },
+    options: <any>{},
+    plugins: [],
+    after: []
+};
 
 describe('resolveRef', function() {
 
@@ -7,7 +30,7 @@ describe('resolveRef', function() {
 
         let path = `${__dirname}/data/refTopLevel.json`;
 
-        return resolveRef(path)(require(path))
+        return resolveRef(program)(path)(require(path))
             .then(v => must(v).eql({
                 hits: [2, 3, 1],
                 flags:
@@ -26,7 +49,7 @@ describe('resolveRef', function() {
 
         let path = `${__dirname}/data/refArray.json`;
 
-        return resolveRef(path)(require(path))
+        return resolveRef(program)(path)(require(path))
             .then(v => must(v).eql({
                 "name": "Akshun",
                 "alias": "Facerasc",
@@ -44,13 +67,17 @@ describe('resolveRef', function() {
                     "name": "Makeda",
                     "type": "object",
                     "title": "Person",
-                    "@sql:table": "person",
+                    "@sql": {
+                        "table": "person",
+                    },
                     "properties": {
                         "first_name": {
                             "type": "string",
-                            "@sql:type": "VARCHAR(200)"
+                            "@sql": {
+                                "type": "VARCHAR(200)"
+                            }
                         }, "last_name": {
-                            "type": "${types.name}"
+                            "type": "VARCHAR(64)"
                         }
                     }
                 }
@@ -59,30 +86,3 @@ describe('resolveRef', function() {
     });
 
 });
-
-describe('readModule', () => {
-
-    it('should allow for templates in include paths', () => {
-
-        must(readModule({ path: 'topLevel.json' })(__dirname + '/data/${path}'))
-            .eql({
-
-    "alias": "Bertha",
-    "flags": {
-
-        "blocked": "false",
-        "horns": {
-
-            "gold": true
-
-        }
-
-    },
-    "hits": [2,3]
-
-});
-
-    });
-
-})
-

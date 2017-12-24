@@ -19,6 +19,8 @@ export declare const DOCUMENT_PATH_SEPERATOR = ":";
  * CONCERN_PREFIX symbol
  */
 export declare const CONCERN_PREFIX = "@";
+export declare const MODULE_SCHEME = "require";
+export declare const EVAL_SCHEME = "eval";
 /**
  * polateOptions for the polate function.
  */
@@ -153,7 +155,7 @@ export declare type FilePath = string;
  * Context
  */
 export interface Context extends JSONObject {
-    document: Document;
+    document?: Document;
 }
 /**
  * Document describes the top level JSON document in a file.
@@ -180,11 +182,11 @@ export declare const node: typeof Promise.fromCallback;
 /**
  * readModule reads a module into memory using node's require machinery.
  */
-export declare const readModule: (context: JSONObject) => (path: string) => any;
+export declare const readModule: (path: string) => any;
 /**
  * readPlugin loads a plugin into memory.
  */
-export declare const readPlugin: (ctx: Context) => (path: string) => Promise<Plugin>;
+export declare const readPlugin: (path: string) => Promise<Plugin>;
 /**
  * readFile wrapper.
  */
@@ -214,25 +216,32 @@ export declare const options2Program: (options: Options) => (document: Document)
  * resolveRef resolves the ref property on an object.
  * @todo: reduce the tornado
  */
-export declare const resolveRef: (path: string) => (json: JSONObject) => Promise<JSONObject>;
+export declare const resolveRef: (program: Program) => (path: string) => (json: JSONObject) => Promise<JSONObject>;
 /**
  * resolveRefList
  */
-export declare const resolveListRefs: (path: string) => (list: JSONValue[]) => Promise<JSONValue[]>;
+export declare const resolveListRefs: (program: Program) => (path: string) => (list: JSONValue[]) => Promise<JSONValue[]>;
 /**
  * readRef into memory.
  */
-export declare const readRef: (path: string) => Promise<JSONValue>;
+export declare const readRef: (program: Program) => (path: string) => Promise<JSONValue>;
 /**
  * readRefs reads multiple ref paths into memory recursively.
  */
-export declare const readRefs: (paths: string[]) => Promise<JSONValue[]>;
+export declare const readRefs: (program: Program) => (paths: string[]) => Promise<JSONValue[]>;
+/**
+ * evaluate allows for the recursive procsessing of json values.
+ *
+ * It provides interpolation, expansion and replacement based on the
+ * Program configuration.
+ */
+export declare const evaluate: (program: Program) => (json: JSONValue) => Promise<JSONValue>;
 /**
  * expand short form properties in a document.
  */
 export declare const expand: (o: JSONValue) => JSONValue;
 /**
- * interpolation of variables in strings where ever they occur.
+ * interpolation of variables in strings whereever they occur.
  */
 export declare const interpolation: (context: object) => (o: JSONValue) => JSONValue;
 /**
