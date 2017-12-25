@@ -235,7 +235,7 @@ export declare const readRefs: (program: Program) => (paths: string[]) => Promis
  * It provides interpolation, expansion and replacement based on the
  * Program configuration.
  */
-export declare const evaluate: (program: Program) => (json: JSONValue) => Promise<JSONValue>;
+export declare const evaluate: (program: Program) => (path: string) => Promise<JSONValue>;
 /**
  * expand short form properties in a document.
  */

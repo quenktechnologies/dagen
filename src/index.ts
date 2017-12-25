@@ -432,7 +432,7 @@ const _set2Context = (values: string[]) => (program: Program): Promise<Program> 
             return startsWith(MODULE_SCHEME, value) ?
                 resolve(set(dest, readModule(value.split(`${MODULE_SCHEME}://`)[1]), prog)) :
                 startsWith(EVAL_SCHEME, value) ?
-                    resolve(readModule(value.split(`${EVAL_SCHEME}://`)[1]))
+                    resolve(value.split(`${EVAL_SCHEME}://`)[1])
                         .then(evaluate(prog))
                         .then(v => resolve(set(dest, v, prog))) :
                     resolve(set(dest, value, prog))
@@ -535,9 +535,9 @@ export const resolveListRefs = (program: Program) => (path: FilePath) => (list: 
  * readRef into memory.
  */
 export const readRef = (program: Program) => (path: FilePath): Promise<JSONValue> =>
-    readJSONFile(path)
+    resolve(path)
         .then(evaluate(program))
-        .then(resolveRef(program)(path))
+        .then(resolveRef(program)(path));
 
 /**
  * readRefs reads multiple ref paths into memory recursively.
@@ -551,8 +551,9 @@ export const readRefs = (program: Program) => (paths: string[]): Promise<JSONVal
  * It provides interpolation, expansion and replacement based on the 
  * Program configuration.
  */
-export const evaluate = (program: Program) => (json: JSONValue): Promise<JSONValue> =>
-        Array.isArray(json) ?
+export const evaluate = (program: Program) => (path: FilePath): Promise<JSONValue> =>
+    resolve(readModule(path))
+        .then(json => Array.isArray(json) ?
             Promise
                 .all(json.map(evaluate(program))) :
             (typeof json === 'object') ?
@@ -560,9 +561,8 @@ export const evaluate = (program: Program) => (json: JSONValue): Promise<JSONVal
                     .then(interpolation(program.context))
                     .then(expand)
                     .then(replace(program.concern))
-                    .then(resolveRef(program)(program.file)) :
-                resolve(json)
-
+                    .then(resolveRef(program)(path)) :
+                resolve(json));
 
 /**
  * expand short form properties in a document.
