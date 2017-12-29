@@ -2,6 +2,7 @@
 ///<reference path='docopt.d.ts'/>
 import * as path from 'path';
 import * as docopt from 'docopt';
+import { resolve } from 'bluebird';
 import { fuse } from 'afpl/lib/util';
 import { execute, options2Program, readDocument, Options } from '.';
 
@@ -53,6 +54,7 @@ const args = docopt.docopt<Arguments>(`
 
 Usage:
    ${BIN} [options] [--plugin=PATH...] [--context=PATH...] [--set=KVP...] <file>
+   ${BIN} [options] [--plugin=PATH...] [--context=PATH...] [--set=KVP...]
 
 Options:
   -h --help                  Show this screen.
@@ -67,7 +69,9 @@ Options:
         version: require('../package.json').version
     });
 
-readDocument(args['<file>'])
+(args['<file>'] ?
+    readDocument(args['<file>']) :
+    resolve({ type: 'object', properties: {} }))
     .then(options2Program(fuse(defaultOptions(), args2Options(args))))
     .then(execute)
     .then(console.log)

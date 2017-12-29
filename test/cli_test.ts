@@ -220,7 +220,28 @@ describe('dagen', () => {
                         if (etext)
                             console.error(etext);
 
-                      must(JSON.parse(text)).eql(require('./data/shouldSupportEval.json'));
+                        must(JSON.parse(text)).eql(require('./data/shouldSupportEval.json'));
+
+                        rs();
+
+                    }))))
+
+    it('should work without a file', () =>
+
+        chmod()
+            .then(() => new Promise((rs, rj) =>
+
+                exec(`${BIN} --context ${SQL_CONTEXT} ` +
+                    `--set value=12 ` +
+                    `--template test/templates/context.sql `, (err, text, etext) => {
+
+                        if (err) return rj(err);
+                        console.error(text);
+
+                        if (etext)
+                            console.error(etext);
+
+                        must(JSON.parse(text).value).eql('12');
 
                         rs();
 
