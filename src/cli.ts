@@ -69,10 +69,13 @@ Options:
         version: require('../package.json').version
     });
 
-(args['<file>'] ?
-    readDocument(args['<file>']) :
-    resolve({ type: 'object', properties: {} }))
-    .then(options2Program(fuse(defaultOptions(), args2Options(args))))
-    .then(execute)
-    .then(console.log)
-    .catch(e => console.error(e.stack));
+Promise
+    .resolve( args['<file>'] == null ? args['<file>'] : String(args['<file>']).trim())
+    .then(file =>
+        (file ?
+            readDocument(args['<file>']) :
+            resolve({ type: 'object', properties: {} }))
+            .then(options2Program(fuse(defaultOptions(), args2Options(args))))
+            .then(execute)
+            .then(console.log)
+            .catch(e => console.error(e.stack)));
