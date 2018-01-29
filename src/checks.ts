@@ -92,11 +92,11 @@ export interface SumType extends Type {
 /**
  * StringType describes the properties expected when the type = 'string' is declared.
  */
-export interface StringType extends Type {}
+export interface StringType extends Type { }
 
-export interface NumberType extends Type {}
+export interface NumberType extends Type { }
 
-export interface BooleanType extends Type {}
+export interface BooleanType extends Type { }
 
 /**
  * SumType describes the properties expected when the type = 'sum' is declared.
@@ -156,26 +156,26 @@ export const isSumType = (doc: JSONValue): doc is SumType =>
 /**
  * isStringType type guard.
  */
-export const isStringType = (doc:JSONValue): doc is StringType => 
-((typeof doc === 'object') &&
-  (!Array.isArray(doc))&&
-  (doc.type === STRING_TYPE));
+export const isStringType = (doc: JSONValue): doc is StringType =>
+    ((typeof doc === 'object') &&
+        (!Array.isArray(doc)) &&
+        (doc.type === STRING_TYPE));
 
 /**
  * isNumberType type guard.
  */
-export const isNumberType =(doc:JSONValue): doc is NumberType  => 
-  ((typeof doc === 'object') && 
-  (!Array.isArray(doc))&&
-    (doc.type === NUMBER_TYPE));
+export const isNumberType = (doc: JSONValue): doc is NumberType =>
+    ((typeof doc === 'object') &&
+        (!Array.isArray(doc)) &&
+        (doc.type === NUMBER_TYPE));
 
 /**
  * isBooleanType type guard.
  */
-export const isBooleanType =(doc:JSONValue): doc is BooleanType  => 
-  ((typeof doc === 'object') && 
-  (!Array.isArray(doc))&&
-    (doc.type === BOOLEAN_TYPE));
+export const isBooleanType = (doc: JSONValue): doc is BooleanType =>
+    ((typeof doc === 'object') &&
+        (!Array.isArray(doc)) &&
+        (doc.type === BOOLEAN_TYPE));
 
 /**
  * isUserType type guard.
@@ -236,7 +236,7 @@ export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
 export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
     type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    variants: intersect<JSONObject, JSONValue, JSONObject>(typeChecks)
+    variants: and<JSONValue, JSONObject>(isObject, intersect<JSONObject, JSONValue, JSONObject>(typeChecks))
 
 };
 
