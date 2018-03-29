@@ -1,5 +1,5 @@
 import * as must from 'must/register';
-import { Program, resolveRef, createEngine } from '../src';
+import { Program, resolveRef, resolveListRefs, createEngine } from '../src';
 
 const program: Program = {
 
@@ -82,6 +82,38 @@ describe('resolveRef', function() {
                     }
                 }
             }))
+
+    });
+
+});
+
+describe('resolveListRefs', function() {
+
+    it('should not flatten arrays', function() {
+
+        let path = `${__dirname}/data/noFlatten.json`;
+
+        return resolveListRefs(program)(path)(require(path))
+            .then(v => must(v).eql([{
+                "@sql": {
+                    "table": "person"
+                },
+                "merged": ["<string>", ["<array>"], [["<multi-dimension>"]]],
+                "properties": {
+                    "first_name": {
+                        "@sql": {
+                            "type": "VARCHAR(200)"
+                        },
+                        "type": "string"
+                    },
+                    "last_name": {
+                        "type": "VARCHAR(64)"
+                    }
+                },
+                "title": "Person",
+                "type": "object"
+            },
+            ["<string>", ["<array>"], [["<multi-dimension>"]]]]))
 
     });
 

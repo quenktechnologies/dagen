@@ -2,9 +2,10 @@
 ///<reference path='docopt.d.ts'/>
 import * as path from 'path';
 import * as docopt from 'docopt';
+import * as Promise from 'bluebird';
 import { resolve } from 'bluebird';
 import { fuse } from 'afpl/lib/util';
-import { execute, options2Program, readDocument, Options } from '.';
+import { Document, execute, options2Program, readDocument, Options } from '.';
 
 const BIN = path.basename(__filename);
 
@@ -50,6 +51,10 @@ export const args2Options = (args: Arguments): Options =>
         sets: args['--set'] || []
     });
 
+const _read = (args: Arguments) => (file: string): Promise<Document> => file ?
+    readDocument(args['<file>']) :
+    resolve({ type: 'object', properties: {} });
+
 const args = docopt.docopt<Arguments>(`
 
 Usage:
@@ -70,12 +75,10 @@ Options:
     });
 
 Promise
-    .resolve( args['<file>'] == null ? args['<file>'] : String(args['<file>']).trim())
+    .resolve(args['<file>'] == null ? args['<file>'] : String(args['<file>']).trim())
     .then(file =>
-        (file ?
-            readDocument(args['<file>']) :
-            resolve({ type: 'object', properties: {} }))
+        (_read(args)(file))
             .then(options2Program(fuse(defaultOptions(), args2Options(args))))
             .then(execute)
             .then(console.log)
-            .catch(e => console.error(e.stack)));
+            .catch((e: Error) => console.error(e.stack)));

@@ -319,8 +319,8 @@ export const readFile = (path: string): Promise<string> =>
  */
 export const readDocument = (path: string): Promise<Document> => readJSONFile<Document>(path);
 
-const _invalidJSON = <O extends JSONObject>(path: string) =>
-    reject<O>(new Error(`The file "${path}" contains invalid JSON!`));
+const _invalidJSON = (path: string) =>
+    reject(new Error(`The file "${path}" contains invalid JSON!`));
 
 /**
  * readJSONFile recursively reads a json file and treats any
@@ -329,7 +329,7 @@ const _invalidJSON = <O extends JSONObject>(path: string) =>
 export const readJSONFile = <O extends JSONObject>(p: string): Promise<O> =>
     readFile(p)
         .then(parseJSON)
-        .then((e: Either<Error, O>) => e.cata(() => _invalidJSON<O>(p), o => resolve(o)));
+        .then((e: Either<Error, O>) => e.cata(() => _invalidJSON(p), o => resolve(o)));
 
 /**
  * parseJSON from a string.
@@ -497,7 +497,7 @@ export const resolveRef = (program: Program) => (path: FilePath) => (json: JSONO
                     .then(doc =>
                         resolve(current)
                             .then(resolveListRefs(program)(path))
-                            .then(v => resolve(fuse(doc, { [key]: v }))))) :
+                            .then(v => resolve( fuse(doc, { [key]: v }))))) :
 
                 (typeof current === 'object') ?
                     previous
@@ -524,7 +524,7 @@ export const resolveListRefs = (program: Program) => (path: FilePath) => (list: 
             Array.isArray(c) ?
                 resolve(c)
                     .then(resolveListRefs(program)(path))
-                    .then(m => resolve(list.concat(m))) :
+                    .then(m => resolve(list.concat([m]))) :
                 (typeof c === 'object') ?
                     resolve(c)
                         .then(resolveRef(program)(path))
