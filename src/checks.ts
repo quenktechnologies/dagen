@@ -41,10 +41,10 @@ export const BOOLEAN_TYPE = 'boolean';
  */
 export interface Type extends JSONObject {
 
-    /**
-     * type specifies the type of a property.
-     */
-    type: string
+  /**
+   * type specifies the type of a property.
+   */
+  type: string
 
 }
 
@@ -53,14 +53,14 @@ export interface Type extends JSONObject {
  */
 export interface ObjectType extends Type {
 
-    /**
-     * properties of the object type.
-     */
-    properties?: {
+  /**
+   * properties of the object type.
+   */
+  properties?: {
 
-        [key: string]: Type
+    [key: string]: Type
 
-    }
+  }
 
 }
 
@@ -70,10 +70,10 @@ export interface ObjectType extends Type {
  */
 export interface ArrayType extends Type {
 
-    /**
-     * items describes the what Types can be members of the array.
-     */
-    item: Type
+  /**
+   * items describes the what Types can be members of the array.
+   */
+  item: Type
 
 }
 
@@ -82,10 +82,10 @@ export interface ArrayType extends Type {
  */
 export interface SumType extends Type {
 
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
+  /**
+   * variants of the sum type.
+   */
+  variants: { [key: string]: Type }
 
 }
 
@@ -103,10 +103,10 @@ export interface BooleanType extends Type { }
  */
 export interface SumType extends Type {
 
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
+  /**
+   * variants of the sum type.
+   */
+  variants: { [key: string]: Type }
 
 }
 
@@ -116,10 +116,10 @@ export interface SumType extends Type {
  */
 export interface SumType extends Type {
 
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
+  /**
+   * variants of the sum type.
+   */
+  variants: { [key: string]: Type }
 
 }
 
@@ -133,68 +133,68 @@ export interface UserType extends Type { }
  * isObjectType type guard.
  */
 export const isObjectType = (doc: JSONValue): doc is ObjectType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc['type'] === OBJECT_TYPE)) ? true : false;
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc['type'] === OBJECT_TYPE)) ? true : false;
 
 /**
  * isArrayType type guard.
  */
 export const isArrayType = (doc: JSONValue): doc is ArrayType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === ARRAY_TYPE)) ? true : false;
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc.type === ARRAY_TYPE)) ? true : false;
 
 /**
  * isSumType type guard.
  */
 export const isSumType = (doc: JSONValue): doc is SumType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === SUM_TYPE)) ? true : false;
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc.type === SUM_TYPE)) ? true : false;
 
 /**
  * isStringType type guard.
  */
 export const isStringType = (doc: JSONValue): doc is StringType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === STRING_TYPE));
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc.type === STRING_TYPE));
 
 /**
  * isNumberType type guard.
  */
 export const isNumberType = (doc: JSONValue): doc is NumberType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === NUMBER_TYPE));
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc.type === NUMBER_TYPE));
 
 /**
  * isBooleanType type guard.
  */
 export const isBooleanType = (doc: JSONValue): doc is BooleanType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        (doc.type === BOOLEAN_TYPE));
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    (doc.type === BOOLEAN_TYPE));
 
 /**
  * isUserType type guard.
  */
 export const isUserType = (doc: JSONValue): doc is UserType =>
-    ((typeof doc === 'object') &&
-        (!Array.isArray(doc)) &&
-        ([OBJECT_TYPE, ARRAY_TYPE].indexOf(String(doc.type)) < 0)) ? true : false;
+  ((typeof doc === 'object') &&
+    (!Array.isArray(doc)) &&
+    ([OBJECT_TYPE, ARRAY_TYPE].indexOf(String(doc.type)) < 0)) ? true : false;
 
 /**
  * pluginModuleChecks for loaded plugin modules.
  */
 export const pluginModuleChecks: Preconditions<any, string | Function> = {
 
-    name: isString,
+  name: isString,
 
-    docopt: isString,
+  docopt: isString,
 
-    init: isFunction
+  init: isFunction
 
 };
 
@@ -203,7 +203,7 @@ export const pluginModuleChecks: Preconditions<any, string | Function> = {
  */
 export const typeChecks: Preconditions<JSONValue, JSONValue> = {
 
-    type: isString
+  type: isString
 
 };
 
@@ -212,11 +212,11 @@ export const typeChecks: Preconditions<JSONValue, JSONValue> = {
  */
 export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
-    type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
+  type: equals<JSONValue, JSONValue>(OBJECT_TYPE),
 
-    get properties() {
-        return map<JSONObject, JSONValue, JSONObject>(propertyCheck);
-    }
+  get properties() {
+    return map<JSONObject, JSONValue, JSONObject>(propertyCheck);
+  }
 
 };
 
@@ -225,8 +225,8 @@ export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
  */
 export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
-    type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
-    get items() { return propertyCheck; }
+  type: equals<JSONValue, JSONValue>(ARRAY_TYPE),
+  get items() { return propertyCheck; }
 
 };
 
@@ -235,30 +235,44 @@ export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
  */
 export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
-    type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    variants: and<JSONValue, JSONObject>(isObject, intersect<JSONObject, JSONValue, JSONObject>(typeChecks))
+  type: equals<JSONValue, JSONValue>(SUM_TYPE),
+  variants: and<JSONValue, JSONObject>(isObject, intersect<JSONObject, JSONValue, JSONObject>(typeChecks))
 
 };
 
+export const documentSumTypeChecks: Preconditions<JSONValue, JSONValue> = {
+
+  type: equals<JSONValue, JSONValue>(SUM_TYPE),
+
+  get variants() {
+    return and<JSONValue, JSONObject>(isObject, map(
+      union<JSONObject, JSONValue, JSONObject>(objectTypeChecks)))
+  }
+
+}
+
 /**
- * pluginModuleCheck 
+ * pluginModuleCheck
  */
 export const pluginModuleCheck: Precondition<any, PluginModule<object>> =
-    restrict<any, string | Function, PluginModule<object>>(pluginModuleChecks);
+  restrict<any, string | Function, PluginModule<object>>(pluginModuleChecks);
 
 /**
  * propertyCheck for the properties property of ObjectTypes.
  */
 export const propertyCheck: Precondition<JSONValue, JSONObject> =
-    and<JSONValue, JSONObject>(isObject, match(
-        caseOf({ type: OBJECT_TYPE }, union<JSONObject, JSONValue, JSONObject>(objectTypeChecks)),
-        caseOf({ type: ARRAY_TYPE }, union<JSONObject, JSONValue, JSONObject>(arrayTypeChecks)),
-        caseOf({ type: SUM_TYPE }, union<JSONObject, JSONValue, JSONObject>(sumTypeChecks)),
-        union<JSONObject, JSONValue, JSONObject>(typeChecks)));
+  and<JSONValue, JSONObject>(isObject, match(
+    caseOf({ type: OBJECT_TYPE }, union<JSONObject, JSONValue, JSONObject>(objectTypeChecks)),
+    caseOf({ type: ARRAY_TYPE }, union<JSONObject, JSONValue, JSONObject>(arrayTypeChecks)),
+    caseOf({ type: SUM_TYPE }, union<JSONObject, JSONValue, JSONObject>(sumTypeChecks)),
+    union<JSONObject, JSONValue, JSONObject>(typeChecks)));
 
 /**
  * documentCheck for the Document interface.
  */
-export const documentCheck: Precondition<JSONValue, JSONObject> =
-    and<JSONValue, JSONObject>(propertyCheck,
-        union<JSONObject, JSONValue, JSONObject>({ title: optional<JSONValue, JSONValue>(isString) }));
+export const documentCheck: Precondition<JSONValue, JSONObject> = match(
+  caseOf({type: SUM_TYPE}, union<JSONObject, JSONValue, JSONObject>(documentSumTypeChecks)),
+  caseOf({type: OBJECT_TYPE}, and<JSONValue, JSONObject>(
+    union<JSONObject, JSONValue, JSONObject>({
+      title: optional<JSONValue, JSONValue>(isString)
+    }),union<JSONObject, JSONValue, JSONObject>(objectTypeChecks))));

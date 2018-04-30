@@ -152,6 +152,7 @@ export declare const arrayTypeChecks: Preconditions<JSONValue, JSONValue>;
  * sumTypeChecks for the SumType interface.
  */
 export declare const sumTypeChecks: Preconditions<JSONValue, JSONValue>;
+export declare const documentSumTypeChecks: Preconditions<JSONValue, JSONValue>;
 /**
  * pluginModuleCheck
  */
