@@ -84,29 +84,6 @@ export interface NumberType extends Type {
 export interface BooleanType extends Type {
 }
 /**
- * SumType describes the properties expected when the type = 'sum' is declared.
- */
-export interface SumType extends Type {
-    /**
-     * variants of the sum type.
-     */
-    variants: {
-        [key: string]: Type;
-    };
-}
-/**
- *
- * SumType describes the properties expected when the type = 'sum' is declared.
- */
-export interface SumType extends Type {
-    /**
-     * variants of the sum type.
-     */
-    variants: {
-        [key: string]: Type;
-    };
-}
-/**
  * UserType are user specified and have no constraints beyond the type field.
  */
 export interface UserType extends Type {
@@ -147,6 +124,10 @@ export declare const pluginModuleChecks: Preconditions<any, string | Function>;
  * typeChecks for the Type interface.
  */
 export declare const typeChecks: Preconditions<JSONValue, JSONValue>;
+/**
+ * discriminatorChecks for the discriminator field of sum types.
+ */
+export declare const discriminatorChecks: Preconditions<JSONValue, JSONValue>;
 /**
  * objectTypeChecks for the ObjectType interface.
  */

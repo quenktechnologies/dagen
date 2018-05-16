@@ -28,6 +28,7 @@ const sqlOutput = {
         },
         "profile": {
             "type": "sum",
+          "discriminator": {"type": "shape"},
             "variants": {
                 "Person": {
                     "title": "Person",

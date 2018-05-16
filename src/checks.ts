@@ -110,32 +110,6 @@ export interface NumberType extends Type { }
 export interface BooleanType extends Type { }
 
 /**
- * SumType describes the properties expected when the type = 'sum' is declared.
- */
-export interface SumType extends Type {
-
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
-
-}
-
-/**
- *
- * SumType describes the properties expected when the type = 'sum' is declared.
- */
-export interface SumType extends Type {
-
-    /**
-     * variants of the sum type.
-     */
-    variants: { [key: string]: Type }
-
-}
-
-
-/**
  * UserType are user specified and have no constraints beyond the type field.
  */
 export interface UserType extends Type { }
@@ -219,6 +193,15 @@ export const typeChecks: Preconditions<JSONValue, JSONValue> = {
 };
 
 /**
+ * discriminatorChecks for the discriminator field of sum types.
+ */
+export const discriminatorChecks : Preconditions<JSONValue, JSONValue> = {
+
+  type:isString
+
+};
+
+/**
  * objectTypeChecks for the ObjectType interface.
  */
 export const objectTypeChecks: Preconditions<JSONValue, JSONValue> = {
@@ -247,7 +230,12 @@ export const arrayTypeChecks: Preconditions<JSONValue, JSONValue> = {
 export const sumTypeChecks: Preconditions<JSONValue, JSONValue> = {
 
     type: equals<JSONValue, JSONValue>(SUM_TYPE),
-    variants: and<JSONValue, JSONObject>(isObject, intersect<JSONObject, JSONValue, JSONObject>(typeChecks))
+
+  variants: and<JSONValue, JSONObject>(isObject,
+    intersect<JSONObject, JSONValue, JSONObject>(typeChecks)),
+
+  discriminator: and<JSONValue, JSONObject>(isObject,
+    intersect<JSONObject, JSONValue, JSONObject>(discriminatorChecks))
 
 };
 

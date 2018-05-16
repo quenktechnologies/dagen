@@ -6,8 +6,10 @@ describe('propertyCheck', function() {
     it('should not crash when sum types omit variants', function() {
 
         must(propertyCheck({ type: 'sum' }).takeLeft().explain()).eql({
-        
-          variants: 'isObject'
+
+            variants: 'isObject',
+
+          discriminator: 'isObject'
 
         });
 

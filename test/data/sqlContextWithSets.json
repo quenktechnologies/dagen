@@ -1,1 +1,132 @@
-{"value":"value","string":"string","title":"User","@sql":{"table":"users"},"type":"object","properties":{"id":{"type":"INT","@sql":{"readOnly":true}},"username":{"type":"VARCHAR(64)","@sql":{"readOnly":true,"table":"users"}},"password":{"type":"VARCHAR(128)"},"profile":{"type":"sum","variants":{"Person":{"type":"object","title":"Person","@sql":{"table":"person"},"properties":{"first_name":{"type":"string","@sql":{"type":"VARCHAR(200)"}},"last_name":{"type":"VARCHAR(64)"}}},"Company":{"title":"Company","type":"object","@sql":{"table":"company"},"properties":{"name":{"type":"VARCHAR(64)"},"mailing_address":{"type":"object","title":"Address","@sql":{"table":"address"},"properties":{"name":{"type":"VARCHAR(64)","@sql":{"table":"names"}},"line1":{"type":"TEXT"},"line2":{"type":"TEXT"},"town":{"type":"TEXT"},"state":{"type":"TEXT"},"country":{"type":"TEXT"}}}}}}},"address":{"type":"object","title":"Address","@sql":{"table":"address"},"properties":{"name":{"type":"VARCHAR(64)","@sql":{"table":"names"}},"line1":{"type":"TEXT"},"line2":{"type":"TEXT"},"town":{"type":"TEXT"},"state":{"type":"TEXT"},"country":{"type":"TEXT"}}},"status":{"type":"VARCHAR(32)","@sql":{"readOnly":true},"@ts":{"enum":["active","inactive","locked"]}}}}
+{
+    "value": "value",
+    "string": "string",
+    "title": "User",
+    "@sql": {
+        "table": "users"
+    },
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": "INT",
+            "@sql": {
+                "readOnly": true
+            }
+        },
+        "username": {
+            "type": "VARCHAR(64)",
+            "@sql": {
+                "readOnly": true,
+                "table": "users"
+            }
+        },
+        "password": {
+            "type": "VARCHAR(128)"
+        },
+        "profile": {
+            "type": "sum",
+            "discriminator": {"type":"shape"},
+            "variants": {
+                "Person": {
+                    "type": "object",
+                    "title": "Person",
+                    "@sql": {
+                        "table": "person"
+                    },
+                    "properties": {
+                        "first_name": {
+                            "type": "string",
+                            "@sql": {
+                                "type": "VARCHAR(200)"
+                            }
+                        },
+                        "last_name": {
+                            "type": "VARCHAR(64)"
+                        }
+                    }
+                },
+                "Company": {
+                    "title": "Company",
+                    "type": "object",
+                    "@sql": {
+                        "table": "company"
+                    },
+                    "properties": {
+                        "name": {
+                            "type": "VARCHAR(64)"
+                        },
+                        "mailing_address": {
+                            "type": "object",
+                            "title": "Address",
+                            "@sql": {
+                                "table": "address"
+                            },
+                            "properties": {
+                                "name": {
+                                    "type": "VARCHAR(64)",
+                                    "@sql": {
+                                        "table": "names"
+                                    }
+                                },
+                                "line1": {
+                                    "type": "TEXT"
+                                },
+                                "line2": {
+                                    "type": "TEXT"
+                                },
+                                "town": {
+                                    "type": "TEXT"
+                                },
+                                "state": {
+                                    "type": "TEXT"
+                                },
+                                "country": {
+                                    "type": "TEXT"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "address": {
+            "type": "object",
+            "title": "Address",
+            "@sql": {
+                "table": "address"
+            },
+            "properties": {
+                "name": {
+                    "type": "VARCHAR(64)",
+                    "@sql": {
+                        "table": "names"
+                    }
+                },
+                "line1": {
+                    "type": "TEXT"
+                },
+                "line2": {
+                    "type": "TEXT"
+                },
+                "town": {
+                    "type": "TEXT"
+                },
+                "state": {
+                    "type": "TEXT"
+                },
+                "country": {
+                    "type": "TEXT"
+                }
+            }
+        },
+        "status": {
+            "type": "VARCHAR(32)",
+            "@sql": {
+                "readOnly": true
+            },
+            "@ts": {
+                "enum": ["active", "inactive", "locked"]
+            }
+        }
+    }
+}
