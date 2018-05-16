@@ -66,6 +66,13 @@ export interface SumType extends Type {
     variants: {
         [key: string]: Type;
     };
+    /**
+     * discriminator indicates who the members of the sum should be discriminated
+     */
+    discriminator: {
+        [key: string]: JSONValue;
+        type: string;
+    };
 }
 /**
  * StringType describes the properties expected when the type = 'string' is declared.
