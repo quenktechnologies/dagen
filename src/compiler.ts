@@ -2,6 +2,7 @@ import * as Promise from 'bluebird';
 import { set } from 'property-seek';
 import { expand } from './schema/path';
 import { normalize } from './schema/path/namespace';
+import { Loader } from './schema/loader';
 import { Schema } from './schema';
 
 export const PATH_SEPERATOR = '.';
@@ -16,12 +17,17 @@ export interface Context {
     /**
      * schema for the data model.
      */
-  schema: Schema,
+    schema: Schema,
 
     /**
      * ns list used to distinguish which schema properties are in effect.
      */
-    ns: string[]
+    ns: string[],
+
+    /**
+     * loader used to resolve fragment references.
+     */
+    loader: Loader
 
 }
 
@@ -38,9 +44,9 @@ export const pathExpansion = (c: Context): Promise<Context> =>
  *
  * During this tage the processing program calculates the effective namespace.
  */
-export const namespaceSubstitution = (c:Context) : Promise<Context> => 
-  Promise.resolve(set('schema', normalize(c.ns)(c.schema), c));
-      
+export const namespaceSubstitution = (c: Context): Promise<Context> =>
+    Promise.resolve(set('schema', normalize(c.ns)(c.schema), c));
+
 /**
  * compile a JSON document into a valid document schema.
  */
