@@ -2,22 +2,73 @@ import * as must from 'must/register';
 import * as Promise from 'bluebird';
 import { Object } from '@quenk/noni/lib/data/json';
 import { match } from '@quenk/noni/lib/control/match';
-import { load } from '../../../src/schema/loader';
+import { Load, Create, load } from '../../../src/schema/loader';
 
-const loader = {
+class ALoader {
 
-    load: (s: string): Promise<Object> => Promise.resolve(<Object>match(s)
+    load: Load = (s: string): Promise<Object> => Promise.resolve(<Object>match(s)
         .caseOf('audit', () => ({ created: '2009-01-3', creator: 375 }))
         .caseOf('person', () => ({ name: 'Someone', age: 24, tags: { enabled: [1, 2, 3] } }))
         .caseOf('provider', () => ({ company: 'Lawrence', code: 7778, name: 'auguma' }))
         .caseOf('version', () => ({ version: 1021 }))
         .caseOf('recursive', () => ({ $ref: 'audit', properties: { $ref: 'version' } }))
         .orElse(() => ({}))
-        .end()),
+        .end());
 
-    create: () => this
+    create: Create = () => this;
 
 }
+
+class RLoader {
+
+    public constructor(public cwd: string) { }
+
+    dir = {
+
+        'base': {
+
+            type: 'number',
+            level: { base: true },
+            $ref: 'one'
+
+        },
+        'base.one': {
+
+            level: { one: 1 },
+            $ref: ['two', 'three']
+
+        },
+        'base.one.two': {
+
+            level: { two: 2 }
+
+        },
+        'base.one.three': {
+
+            level: { three: 3 },
+            end: true
+
+        }
+
+    };
+
+    load: Load = (path: string) => {
+
+        let p = [this.cwd, path].filter(x => x).join('.');
+
+        return this.dir.hasOwnProperty(p) ?
+            Promise.resolve(this.dir[p]) :
+            Promise.reject(new Error(`Unknown path '${p}'!`));
+
+    }
+
+    create: Create = (cwp: string) =>
+        new RLoader([this.cwd, cwp].filter(x => x).join('.'));
+
+}
+
+const loader = new ALoader();
+const rloader = new RLoader('');
 
 describe('loader', () => {
 
@@ -102,6 +153,57 @@ describe('loader', () => {
         };
 
         return load(loader)(o).then(o => must(o).eql(r));
+
+    });
+
+    it('should adjust the Loader CWD for at each step', () => {
+
+
+        let o = {
+
+            type: 'sum',
+            variants: {
+
+                random: { type: 'string' },
+                base: { $ref: 'base' }
+
+            }
+
+        };
+
+        let r = {
+
+            type: 'sum',
+
+            variants: {
+
+                random: {
+
+                    type: 'string'
+
+                },
+
+                base: {
+
+                    type: 'number',
+
+                    level: {
+
+                        base: true,
+                        one: 1,
+                        two: 2,
+                        three: 3
+
+                    },
+                    end: true
+
+                }
+
+            }
+
+        }
+
+        return load(rloader)(o).then(o => must(o).eql(r));
 
     });
 })

@@ -12,7 +12,7 @@ import {
     rmerge
 } from '@quenk/noni/lib/data/record';
 import { match } from '@quenk/noni/lib/control/match';
-import { PATH_SEPARATOR } from '../path';
+import { PATH_SEPARATOR } from './path';
 
 export const REF_SYMBOL = '$ref';
 
@@ -44,25 +44,6 @@ export interface Loader {
      * path for the new Loader to use as its CWD.
      */
     create: Create;
-
-}
-
-/**
- * Loader is the type of function used to load a JSON object fragment
- * into memory.
- */
-export interface Loader {
-
-    /**
-     * load an object fragment into memory using the specified path.
-     */
-    load: (path: string) => Promise<Object>
-
-    /**
-     * create a new Loader instance that will operate relative to the
-     * cwd specified.
-     */
-    create: (cwd: string) => Loader
 
 }
 
