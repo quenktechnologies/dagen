@@ -4,6 +4,10 @@ lib: $(shell find src -name \*.ts)
 	cp -R src/* $@;
 	./node_modules/.bin/tsc -p src
 
+.PHONY: clean
+clean:
+	@rm -R ./lib 2> /dev/null || true
+
 .PHONY: test
 test: 
 	rm -R ./node_modules/sql; ./node_modules/.bin/tsc --project \
