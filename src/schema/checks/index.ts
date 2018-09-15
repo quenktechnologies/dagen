@@ -16,7 +16,8 @@ import {
     or,
     every,
     fail,
-    identity
+    identity,
+    optional
 } from '@quenk/preconditions';
 import { failure } from '@quenk/preconditions/lib/result';
 import {
@@ -153,7 +154,7 @@ export const fromSchemas = <B>(s: Schemas): Checks<B> => {
  * that can't be resolved the precondition will always fail.
  */
 export const fromSchema =
-    <B>(i: Checks<B>) => (s: Schema): Check<B> => <Check<B>>match(s)
+    <B>(i: Checks<B>) => (s: Schema): Check<B> => wrapOptional(s, <Check<B>>match(s)
         .caseOf(objectShapeWithBothProps, fromMapObject(i))
         .caseOf(objectShapeWithProps, fromObject(i))
         .caseOf(objectShapeWithAdditionalProps, fromMap(i))
@@ -164,7 +165,10 @@ export const fromSchema =
         .caseOf(numberShape, () => numbers.isNumber)
         .caseOf(booleanShape, () => booleans.isBoolean)
         .caseOf(externalShape, () => identity)
-        .end();
+        .end());
+
+const wrapOptional = <B>(s: Schema, ch: Check<B>): Check<B> =>
+  (s.optional === true) ? <Check<B>>optional(ch) : ch;
 
 const fromObject = <B>(i: Checks<B>) => ({ properties }: ObjectType) =>
     and(records.isObject, records.disjoint(map(properties, fromSchema(i))));
@@ -187,4 +191,3 @@ const fromRef = <B>(i: Checks<B>) => ({ ref }: RefType) => refPrec(i)(ref);
 
 const refPrec = <B>(i: Checks<B>) => (p: string): Check<B> => (v: json.Value) =>
     i.hasOwnProperty(p) ? i[p](v) : failure(`unknown ref "${p}"`, v);
-

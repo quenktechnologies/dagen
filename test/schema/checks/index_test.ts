@@ -30,7 +30,7 @@ const schemas: Schemas = {
 
             name: { type: 'string' },
 
-            age: { type: 'number' },
+            age: { type: 'number', optional: true },
 
             profile: {
 
@@ -330,8 +330,15 @@ describe('checks', () => {
                     set('contact.home', 12,
                         set('flags.active', 'active', samples.object)));
 
+          let optionaled: any = (<any>Object).assign({}, samples.object);
+
+            delete optionaled.age;
+
             must((fromSchema({})(schemas.object)(samples.object)).takeRight())
                 .eql(samples.object);
+
+            must((fromSchema({})(schemas.object)(optionaled)).takeRight())
+                .eql(optionaled);
 
             must((fromSchema({})(schemas.object)(wrong)).takeLeft().explain())
                 .eql({
