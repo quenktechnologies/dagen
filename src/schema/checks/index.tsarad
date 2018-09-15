@@ -10,6 +10,7 @@ import * as numbers from '@quenk/preconditions/lib/number';
 import * as booleans from '@quenk/preconditions/lib/boolean';
 import { match } from '@quenk/noni/lib/control/match';
 import { map, reduce } from '@quenk/noni/lib/data/record';
+import { cons } from '@quenk/noni/lib/data/function';
 import {
     Precondition,
     and,
@@ -18,7 +19,7 @@ import {
     fail,
     identity
 } from '@quenk/preconditions';
-import { failure } from '@quenk/preconditions/lib/result';
+import { Result, success } from '@quenk/preconditions/lib/result';
 import {
     TYPE_OBJECT,
     TYPE_ARRAY,
@@ -103,7 +104,7 @@ const refShape = {
 
     type: 'ref',
 
-    ref: String
+    path: String
 
 }
 
@@ -124,49 +125,30 @@ export type Checks<B> = records.Preconditions<json.Value, B>;
  */
 export interface RefType extends Schema {
 
-    ref: string
+    path: string
 
 }
 
 /**
- * fromSchemas turns a Schemas map into a Checks map.
- */
-export const fromSchemas = <B>(s: Schemas): Checks<B> => {
-
-    let checks: Checks<B> = {};
-
-    return reduce(s, checks, (p: Checks<B>, c: Schema, k) => {
-
-        p[k] = fromSchema(p)(c);
-
-        return p;
-
-    });
-
-};
-
-/**
  * fromSchema rewrites a Schema to a chain of Checks.
- *
- * The first argument is a Checks map that will be used
- * for resolving ref types. If a ref type uses a path
- * that can't be resolved the precondition will always fail.
  */
 export const fromSchema =
-    <B>(i: Checks<B>) => (s: Schema): Check<B> => <Check<B>>match(s)
-        .caseOf(objectShapeWithBothProps, fromMapObject(i))
-        .caseOf(objectShapeWithProps, fromObject(i))
-        .caseOf(objectShapeWithAdditionalProps, fromMap(i))
-        .caseOf(arrayShape, fromArray(i))
-        .caseOf(sumShape, fromSum(i))
-        .caseOf(refShape, fromRef(i))
-        .caseOf(stringShape, () => strings.isString)
-        .caseOf(numberShape, () => numbers.isNumber)
-        .caseOf(booleanShape, () => booleans.isBoolean)
-        .caseOf(externalShape, () => identity)
-        .end();
+    <B>(i: Checks<B>) => (s: Schema): Result<Schema, Check<B>> =>
+        <Result<Schema, Check<B>>>match(s)
+            .caseOf(objectShapeWithBothProps, fromMapObject(i))
+            .caseOf(objectShapeWithProps, fromObject(i))
+            .caseOf(objectShapeWithAdditionalProps, fromMap(i))
+            .caseOf(arrayShape, fromArray(i))
+            .caseOf(sumShape, fromSum(i))
+            .caseOf(refShape, fromRef(i))
+            .caseOf(stringShape, cons(success(strings.isString)))
+            .caseOf(numberShape, cons(success(numbers.isNumber)))
+            .caseOf(booleanShape, cons(success(booleans.isBoolean)))
+            .caseOf(externalShape, cons(success(identity)))
+            .end();
 
 const fromObject = <B>(i: Checks<B>) => ({ properties }: ObjectType) =>
+  fromSchema(i)
     and(records.isObject, records.disjoint(map(properties, fromSchema(i))));
 
 const fromMap = <B>(i: Checks<B>) => ({ additionalProperties }: ObjectType) =>
@@ -181,10 +163,6 @@ const fromArray = <B>(i: Checks<B>) => ({ items }: ArrayType) =>
     and(arrays.isArray, arrays.map(fromSchema(i)(items)));
 
 const fromSum = <B>(i: Checks<B>) => ({ variants }: SumType) =>
-    reduce(map(variants, fromSchema(i)), fail(''), or);
+    reduce(map(variants, fromSchema(i)), fail(''), or)
 
-const fromRef = <B>(i: Checks<B>) => ({ ref }: RefType) => refPrec(i)(ref);
-
-const refPrec = <B>(i: Checks<B>) => (p: string): Check<B> => (v: json.Value) =>
-    i.hasOwnProperty(p) ? i[p](v) : failure(`unknown ref "${p}"`, v);
-
+const fromRef = <B>(i: Checks<B>) => ({ path }: RefType) => i[path]
