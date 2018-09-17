@@ -9,7 +9,7 @@ import * as strings from '@quenk/preconditions/lib/string';
 import * as numbers from '@quenk/preconditions/lib/number';
 import * as booleans from '@quenk/preconditions/lib/boolean';
 import { match } from '@quenk/noni/lib/control/match';
-import { map, reduce } from '@quenk/noni/lib/data/record';
+import { map, reduce, keys } from '@quenk/noni/lib/data/record';
 import {
     Precondition,
     and,
@@ -33,6 +33,7 @@ import {
     ArrayType,
     SumType
 } from '../';
+import { Providers, specs2Checks } from './spec';
 
 const objectShapeWithBothProps = {
 
@@ -130,9 +131,40 @@ export interface RefType extends Schema {
 }
 
 /**
- * fromSchemas turns a Schemas map into a Checks map.
+ * Context Checks are applied in.
+ *
+ * Holds useful data used during the transformation process.
  */
-export const fromSchemas = <B>(s: Schemas): Checks<B> => {
+export class Context<B> {
+
+    constructor(
+        public checks: Checks<B> = {},
+        public providers: Providers<B> = {}) { }
+
+    /**
+     * addChecks to the Context from a Schemas map.
+     *
+     * Note: This mutates this context.
+     */
+    addChecks(s: Schemas): Context<B> {
+
+        this.checks = reduce(s, this.checks, (p: Checks<B>, c: Schema, k) => {
+
+            p[k] = fromSchema(this)(c);
+
+            return p;
+
+        });
+
+        return this;
+
+    }
+
+}
+
+/**
+ * fromSchemas turns a Schemas map into a Checks map.
+export const fromSchemas = <B>(ctx:Context) => (s: Schemas): Checks<B> => {
 
     let checks: Checks<B> = {};
 
@@ -145,6 +177,7 @@ export const fromSchemas = <B>(s: Schemas): Checks<B> => {
     });
 
 };
+ */
 
 /**
  * fromSchema rewrites a Schema to a chain of Checks.
@@ -154,40 +187,54 @@ export const fromSchemas = <B>(s: Schemas): Checks<B> => {
  * that can't be resolved the precondition will always fail.
  */
 export const fromSchema =
-    <B>(i: Checks<B>) => (s: Schema): Check<B> => wrapOptional(s, <Check<B>>match(s)
-        .caseOf(objectShapeWithBothProps, fromMapObject(i))
-        .caseOf(objectShapeWithProps, fromObject(i))
-        .caseOf(objectShapeWithAdditionalProps, fromMap(i))
-        .caseOf(arrayShape, fromArray(i))
-        .caseOf(sumShape, fromSum(i))
-        .caseOf(refShape, fromRef(i))
-        .caseOf(stringShape, () => strings.isString)
-        .caseOf(numberShape, () => numbers.isNumber)
-        .caseOf(booleanShape, () => booleans.isBoolean)
-        .caseOf(externalShape, () => identity)
-        .end());
+    <B>(c: Context<B>) => (s: Schema): Check<B> => wrapOptional(s,
+        addCustom(c, s, <Check<B>>match(s)
+            .caseOf(objectShapeWithBothProps, fromMapObject(c))
+            .caseOf(objectShapeWithProps, fromObject(c))
+            .caseOf(objectShapeWithAdditionalProps, fromMap(c))
+            .caseOf(arrayShape, fromArray(c))
+            .caseOf(sumShape, fromSum(c))
+            .caseOf(refShape, fromRef(c))
+            .caseOf(stringShape, () => strings.isString)
+            .caseOf(numberShape, () => numbers.isNumber)
+            .caseOf(booleanShape, () => booleans.isBoolean)
+            .caseOf(externalShape, () => identity)
+            .end()));
 
 const wrapOptional = <B>(s: Schema, ch: Check<B>): Check<B> =>
-  (s.optional === true) ? <Check<B>>optional(ch) : ch;
+    (s.optional === true) ? <Check<B>>optional(ch) : ch;
 
-const fromObject = <B>(i: Checks<B>) => ({ properties }: ObjectType) =>
-    and(records.isObject, records.disjoint(map(properties, fromSchema(i))));
+const addCustom = <B>(c: Context<B>, s: Schema, ch: Check<B>): Check<B> =>
+    and<any, any>(ch, specs2Checks(c.providers)(s.$checks || []))
 
-const fromMap = <B>(i: Checks<B>) => ({ additionalProperties }: ObjectType) =>
-    and(records.isObject, records.map(fromSchema(i)(additionalProperties)));
+const fromObject = <B>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
+    every(records.isObject,
+        records.disjoint(map(properties, fromSchema(c))),
+        specs2Checks(c.providers)($checks || []));
+
+const fromMap = <B>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
+    every(records.isObject,
+        records.map(fromSchema(c)(additionalProperties)),
+        specs2Checks(c.providers)($checks || []));
 
 const fromMapObject =
-    <B>(i: Checks<B>) => ({ properties, additionalProperties }: ObjectType) =>
-        every(records.isObject, records.disjoint(map(properties, fromSchema(i))),
-            records.map(fromSchema(i)(additionalProperties)));
+    <B>(c: Context<B>) => ({ properties, additionalProperties, $checks }: ObjectType) =>
+        every(records.isObject,
+            records.disjoint(map(properties, fromSchema(c))),
+            records.map(fromSchema(c)(additionalProperties)),
+            specs2Checks(c.providers)($checks || []));
 
-const fromArray = <B>(i: Checks<B>) => ({ items }: ArrayType) =>
-    and(arrays.isArray, arrays.map(fromSchema(i)(items)));
+const fromArray = <B>(c: Context<B>) => ({ items }: ArrayType) =>
+    every(arrays.isArray,
+        arrays.map(fromSchema(c)(items)),
+        arrays.map(specs2Checks(c.providers)(items.$checks || [])));
 
-const fromSum = <B>(i: Checks<B>) => ({ variants }: SumType) =>
-    reduce(map(variants, fromSchema(i)), fail(''), or);
+const fromSum = <B>(c: Context<B>) => ({ variants }: SumType) =>
+    reduce(map(variants, fromSchema(c)), fail(''), or);
 
-const fromRef = <B>(i: Checks<B>) => ({ ref }: RefType) => refPrec(i)(ref);
+const fromRef = <B>(c: Context<B>) => ({ ref }: RefType) => refPrec(c)(ref);
 
-const refPrec = <B>(i: Checks<B>) => (p: string): Check<B> => (v: json.Value) =>
-    i.hasOwnProperty(p) ? i[p](v) : failure(`unknown ref "${p}"`, v);
+const refPrec = <B>(c: Context<B>) => (p: string): Check<B> => (v: json.Value) =>
+    c.checks.hasOwnProperty(p) ?
+        c.checks[p](v) :
+        failure(`unknown ref "${p}" known: ${keys(c.checks)}`, v);
