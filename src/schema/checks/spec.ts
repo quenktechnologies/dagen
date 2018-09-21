@@ -1,6 +1,7 @@
 import { Value } from '@quenk/noni/lib/data/json';
 import { identity, every } from '@quenk/preconditions';
 import { Check } from './';
+import { Providers} from './provider';
 
 /**
  * Spec describes a desired Check in JSON.
@@ -18,16 +19,6 @@ export interface Spec {
      * parameters for the Check.
      */
     parameters?: Value[]
-
-}
-
-/**
- * Providers is a map of functions that provide checks given one
- * or more arguments.
- */
-export interface Providers<B> {
-
-    [key: string]: (...value: Value[]) => Check<B>
 
 }
 

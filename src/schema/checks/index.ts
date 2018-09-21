@@ -33,7 +33,8 @@ import {
     ArrayType,
     SumType
 } from '../';
-import { Providers, specs2Checks } from './spec';
+import { Providers } from './provider';
+import { specs2Checks } from './spec';
 
 const objectShapeWithBothProps = {
 
@@ -139,7 +140,7 @@ export class Context<B> {
 
     constructor(
         public checks: Checks<B> = {},
-        public providers: Providers<B> = {}) { }
+        public providers: Providers<json.Value> = {}) { }
 
     /**
      * addChecks to the Context from a Schemas map.
@@ -163,23 +164,6 @@ export class Context<B> {
 }
 
 /**
- * fromSchemas turns a Schemas map into a Checks map.
-export const fromSchemas = <B>(ctx:Context) => (s: Schemas): Checks<B> => {
-
-    let checks: Checks<B> = {};
-
-    return reduce(s, checks, (p: Checks<B>, c: Schema, k) => {
-
-        p[k] = fromSchema(p)(c);
-
-        return p;
-
-    });
-
-};
- */
-
-/**
  * fromSchema rewrites a Schema to a chain of Checks.
  *
  * The first argument is a Checks map that will be used
@@ -195,7 +179,7 @@ export const fromSchema =
             .caseOf(arrayShape, fromArray(c))
             .caseOf(sumShape, fromSum(c))
             .caseOf(refShape, fromRef(c))
-            .caseOf(stringShape, () => strings.isString)
+            .caseOf(stringShape, () => strings.isString) // @todo checks on prims/externals
             .caseOf(numberShape, () => numbers.isNumber)
             .caseOf(booleanShape, () => booleans.isBoolean)
             .caseOf(externalShape, () => identity)
@@ -205,11 +189,11 @@ const wrapOptional = <B>(s: Schema, ch: Check<B>): Check<B> =>
     (s.optional === true) ? <Check<B>>optional(ch) : ch;
 
 const addCustom = <B>(c: Context<B>, s: Schema, ch: Check<B>): Check<B> =>
-    and<any, any>(ch, specs2Checks(c.providers)(s.$checks || []))
+    and<any, any, any>(ch, specs2Checks(c.providers)(s.$checks || []))
 
 const fromObject = <B>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
     every(records.isObject,
-        records.disjoint(map(properties, fromSchema(c))),
+        records.union(map(properties, fromSchema(c))),
         specs2Checks(c.providers)($checks || []));
 
 const fromMap = <B>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
@@ -220,12 +204,12 @@ const fromMap = <B>(c: Context<B>) => ({ additionalProperties, $checks }: Object
 const fromMapObject =
     <B>(c: Context<B>) => ({ properties, additionalProperties, $checks }: ObjectType) =>
         every(records.isObject,
-            records.disjoint(map(properties, fromSchema(c))),
+            records.union(map(properties, fromSchema(c))),
             records.map(fromSchema(c)(additionalProperties)),
             specs2Checks(c.providers)($checks || []));
 
 const fromArray = <B>(c: Context<B>) => ({ items }: ArrayType) =>
-    every(arrays.isArray,
+    every(arrays.isArray, console.error(items) ||
         arrays.map(fromSchema(c)(items)),
         arrays.map(specs2Checks(c.providers)(items.$checks || [])));
 
