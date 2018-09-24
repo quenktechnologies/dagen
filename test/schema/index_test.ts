@@ -1,5 +1,5 @@
 import * as must from 'must/register';
-import { normalize } from '../../src/schema';
+import { expand } from '../../src/schema';
 
 const sample = {
 
@@ -125,11 +125,11 @@ const expanded = {
 
 describe('schema', () => {
 
-    describe('normalize', () => {
+    describe('expand', () => {
 
         it('should expand all supported places', () => {
 
-            must(normalize(sample)).eql(expanded);
+            must(expand(sample)).eql(expanded);
 
         });
 

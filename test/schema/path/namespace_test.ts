@@ -9,6 +9,7 @@ const schema = {
 
         'sql:name': 'VARCHAR(200)',
         'js:name': { 'type': 'string' },
+        'ts:name': { 'type': 'String' },
         'name': 'string'
 
     },

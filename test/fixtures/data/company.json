@@ -1,0 +1,28 @@
+{
+
+    "title": "Company",
+    "type": "object",
+    "sql:table": "company",
+    "ts:module": "entities",
+    "properties": {
+
+        "name": "#name",
+
+        "sql:slogan": "#text",
+
+        "ts:slogan": "string",
+
+        "reg": {
+
+            "type": "string"
+
+        },
+        "mailing_address": {
+
+            "$ref": "./address.json"
+
+        }
+
+    }
+
+}

@@ -1,5 +1,5 @@
 import * as must from 'must/register';
-import { isRef, pull } from '../../../src/schema/definitions/ref';
+import { isRef, pull } from '../../../src/schema/definitions/usage';
 
 const schema = {
 

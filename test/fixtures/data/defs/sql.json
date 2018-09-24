@@ -1,0 +1,14 @@
+{
+
+    "text": {
+
+        "type": "TEXT"
+
+    },
+    "name": {
+
+        "type": "VARCHAR"
+
+    }
+
+}

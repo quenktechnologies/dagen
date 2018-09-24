@@ -1,5 +1,5 @@
 import * as must from 'must/register';
-import { expand } from '../../src/schema/path';
+import { expand } from '../../../src/schema/path';
 
 describe('path', () => {
 

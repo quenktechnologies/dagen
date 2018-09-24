@@ -1,0 +1,10 @@
+{
+
+    "name": {
+
+        "type": "#name",
+        "sql:table": "names"
+
+    }
+
+}
