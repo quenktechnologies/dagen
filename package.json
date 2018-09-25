@@ -1,23 +1,28 @@
 {
   "name": "@quenk/dagen",
   "version": "0.9.4",
-  "description": "Generate code from data models.",
+  "description": "Generate boilerplate output from a schema.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "bin": {
-    "dagen": "./lib/cli.js"
+  "scripts": {
+
+    "test": "make test"
+
   },
-    "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
+  "bin": {
+    "dagen": "./lib/main.js"
+  },
+  "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
+    "@quenk/noni": "^1.0.4",
     "@quenk/polate": "^1.3.0",
-    "@quenk/preconditions": "^3.5.3",
-    "afpl": "^0.11.0",
+    "@quenk/preconditions": "^4.1.1",
     "bluebird": "^3.5.1",
     "docopt": "^0.6.2",
     "nunjucks": "^3.1.2",
-    "property-seek": "^3.1.1",
-    "sql": "file:test-plugins"
+    "property-seek": "^3.1.1"
+
   },
   "devDependencies": {
     "@types/bluebird": "^3.5.20",
@@ -27,6 +32,6 @@
     "mocha": "^4.1.0",
     "must": "^0.13.4",
     "ts-node": "^3.3.0",
-    "typescript": "^2.8.1"
+    "typescript": "^3.0.3"
   }
 }
