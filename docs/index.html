@@ -913,203 +913,39 @@ img { max-width: 100%; }
 	<div class="content-wrap">
 		<div class="tsd-panel tsd-typography">
 			<h1 id="dagen">Dagen</h1>
-			<p>Dagen (DATA GENerator) is a tool for generating code for data models using templates.</p>
-			<p>It works by pre-processing a JSON document in a <a href="http://json-schema.org">JSON Schema</a>
-			like format and executing the specified templating using the document as its context.</p>
-			<p><strong>Note</strong>: Dagen loosely uses JSON schema, mostly just for the structure of the document. </p>
+			<p>Generate boilerplate output from a schema.</p>
+			<p>Dagen (DATA GENerator) is a tool for generating code for an application&#39;s
+			data models using templates.</p>
+			<p>It works by pre-processing a JSON document in a
+				<a href="http://json-schema.org">JSON Schema</a> simillar syntax then executing a user
+			supplied template against the processed document.</p>
 			<p>Templates are generated using <a href="https://github.com/mozilla/nunjucks">Nunjucks</a>.</p>
+			<p>See the <code>spec.md</code> file for the specifics of the schema syntax.</p>
 			<h2 id="installation">Installation</h2>
 			<pre><code class="language-sh">
   npm install -g @quenk/dagen
 </code></pre>
 			<h2 id="usage">Usage</h2>
-			<pre><code class="language-sh">
-  dagen --<span class="hljs-built_in">help</span> 
+			<pre><code class="language-sh">Usage:
+   main.js [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
+          [--<span class="hljs-built_in">set</span>=KVP...] [--template=TEMPLATE] [--templates=PATH]              
+          [--check=PATH...] [--install-check=PATH] &lt;file&gt;                      
+
+Options:           
+  -h --<span class="hljs-built_in">help</span>                  Show this screen.                                 
+  --template TEMPLATE        Specify the template to use when generating code. 
+  --templates PATH           Path to resolve templates from. Defaults to process.cwd().
+  --namespace EXT            Sets a namespace to be <span class="hljs-keyword">in</span> effect.                 
+  --plugin PATH              Path to a plugin that will be loaded at runtime.  
+  --definitions PATH         Path to an exported definition object to include. 
+  --<span class="hljs-built_in">set</span> PATH=VALUE           Set a value on the schema document.                      
+  --check PATH               Loads and applies a check to the final document. 
+  --install-check PATH       Make a precondition available to be used as a <span class="hljs-variable">$check</span>.
+  --version                  Show version. 
+
 </code></pre>
-			<h2 id="stages">Stages</h2>
-			<p>The following steps are taken to produce code from JSON documents:</p>
-			<p><code>Reference Resolution</code> -&gt; <code>Expansion</code> -&gt; Substitution -&gt; <code>Pre-Processing</code> -&gt; <code>Code Generation</code>.</p>
-			<h3 id="reference-resolution">Reference Resolution</h3>
-			<p>After the target JSON file is read into memory , any keys of the document
-			that contain a <code>$ref</code> property are recognized as imports.</p>
-			<p>Imports are expected to be paths to files on the local file system and are evaluated
-			recursively.</p>
-			<p>Import evaluation is handled as follows:</p>
-			<ol>
-				<li>The file located at the path the import points to is loaded into memory.</li>
-				<li>The loaded document is recursively scanned for it&#39;s own <code>$ref</code> properties and resolved.
-				Resolution takes place relative to the path of the document being processed.</li>
-				<li>The imported document is merged with any other keys on the object with the <code>$ref</code>.</li>
-				<li>The <code>$ref</code> property is then removed and the final data added to the parent document.</li>
-			</ol>
-			<p>If the <code>$ref</code> property&#39;s values is an array of strings, the process is repeated for
-			each member.</p>
-			<p>Example:</p>
-			<pre><code class="language-json">{
-
-  &quot;title&quot; : &quot;Something&quot;,
-  &quot;properties&quot;: {
-
-    &quot;name&quot; : {
-
-      &quot;type&quot; :&quot;string&quot;,
-      &quot;$ref&quot;: &quot;../mixin.json&quot;
-
-    },
-    &quot;age&quot;: {
-
-      &quot;$ref&quot;: &quot;../age.json&quot;
-
-    },
-    &quot;email&quot;: {
-
-        &quot;$ref&quot;: [&quot;../email.json&quot;, &quot;../mixin.json&quot;]
-
-    }
-
-  }
-
-}
-
-//resolved
-{
-
-  &quot;title&quot; : &quot;Something&quot;,
-  &quot;properties&quot;: {
-
-    &quot;name&quot; : {
-
-      &quot;type&quot; :&quot;string&quot;,
-      &quot;optional&quot;: true
-
-    },
-    &quot;age&quot;: {
-
-      &quot;type&quot;: &quot;number&quot;
-
-    },
-    &quot;email&quot;: {
-
-        &quot;type&quot;: &quot;string&quot;,
-        &quot;optional&quot;: true
-
-    }
-
-  }
-
-}
-</code></pre>
-			<h3 id="expansion">Expansion</h3>
-			<p>Dagen has a shorthand for specifiying properties of nested objects to reduce clutter of documents.
-			Specify the parent path, followed by a &#39;:&#39; and the child property like so:</p>
-			<pre><code class="language-json">{
-
- &quot;parent&quot; : { &quot;prop1&quot;: 1},
- &quot;parent:prop2&quot;: 2,
- &quot;parent:prop3&quot;: 3
-
-}
-
-//expanded
-
-{
-
- &quot;parent&quot;: {
-
-    &quot;prop1&quot;: 1,
-    &quot;prop2&quot;: 2,
-    &quot;prop3&quot;: 3
-
- }
-
-}</code></pre>
-			<p>Expansion occurs recursively.</p>
-			<h3 id="substitution">Substitution</h3>
-			<p>Sometimes the value of a property should be different depending on the intended output.
-				For example the <code>type</code> specified may be <code>string</code> for application code but <code>VARCHAR</code> for SQL.
-				To support this, aliases can be specified for a particular concern by specifying a property with
-			the concern name prefixed by a <code>@</code>.</p>
-			<p>Example:</p>
-			<pre><code class="language-json">{
-
-  <span class="hljs-attr">"properties"</span>: {
-
-    <span class="hljs-attr">"name"</span>: {
-
-      <span class="hljs-attr">"type"</span>: <span class="hljs-string">"string"</span>,
-      <span class="hljs-attr">"@sql"</span>: {
-
-        <span class="hljs-attr">"type"</span>: <span class="hljs-string">"VARCHAR(32)"</span>
-
-      }
-
-    }
-
-  }
-
-}</code></pre>
-			<p>The value of these aliases are merged into the parent object and the property discarded. If the current
-			concern is not that of the property key without the <code>@</code> it is removed without action.</p>
-			<p>Concerns are determined by the file extension of the template given.</p>
-			<p>In addition to the above, sequences such as <code>${VARIABLE}</code> are substituted using the <code>VARIABLE</code> name as
-			a path into the provided <code>vars</code> object.</p>
-			<p>Example:</p>
-			<pre><code class="language-json">
-{
-
-  &quot;title&quot; : &quot;${title.user}&quot;
-
-}
-
-//after
-{
-
-  &quot;title&quot;: &quot;user title&quot;
-
-}
-</code></pre>
-			<h3 id="pre-processing">Pre-Processing</h3>
-			<p>This is the stage where plugins are run each plugin can modify the <code>Program</code>
-			before templates are used to render output.</p>
-			<h3 id="code-generation">Code Generation</h3>
-			<p>Dagen uses nunjucks templating framework to generate code. The template specified
-				on the command line is rendered with the processed document set to the <code>document</code>
-			property.</p>
-			<p>If no template is specified, the document is printed to <code>STDOUT</code> instead.</p>
-			<h2 id="working-with-dagen">Working with Dagen</h2>
-			<p>Dagen expects all documents to be structured as a minimal version of JSON Schema with some
-			elements from the JSON Schema Validation spec.</p>
-			<h3 id="plugins">Plugins</h3>
-			<p>Plugins provide the real power to dagen. It ships with none out of the box
-				but are easily installed via the <code>--plugin PATH</code> flag.Plugins are expected
-			to be regular node modules and the usual rules apply for look up.</p>
-			<p>A plugin is essentially a function that takes the <code>Program</code> and returns a
-				new version of it wrapped in a bluebird <code>Promise</code>. See the index file
-			for the type definition of <code>Program</code>.</p>
-			<h4 id="after-hook-pre-processing-">After Hook (Pre-Processing)</h4>
-			<p>Once a plugin is applied, it can add to or change the <code>Program.after</code> property.
-				This is an array of plugins that will be called just before the output is
-			generated.</p>
-			<p>Here you can modify the <code>context</code> property (see source code for type info)
-			which will make values available to the template under the <code>context.&lt;whatever&gt;</code> path.</p>
-			<p>The document itself is available at <code>context.document</code>.</p>
-			<h3 id="things-to-be-aware-of">Things To Be Aware Of</h3>
-			<h4 id="concern">Concern</h4>
-			<p>The concern is computed from the file extension of the template. If there is none
-			or you want to force it, use the <code>--concern EXT</code> option.</p>
-			<h4 id="types">Types</h4>
-			<p>The type property is not limited to the values defined in the spec but instead can
-				be whatever value the author desires. It is left up to plugins to decide how
-			to treat with these values when they encounter them.</p>
-			<h4 id="meaning">Meaning</h4>
-			<p>In fact, once dagen restructures a document, it is really up to the plugins
-			and/or templates to give it meaning.</p>
-			<h4 id="refs">Refs</h4>
-			<p>The treatment of <code>$ref</code> is different to JSON Schema, they are just used as paths
-			to parse as JSON and pointers or remote sources are not supported (yet).</p>
-			<h4 id="compliance">Compliance</h4>
-			<p>Even though JSON Schema was chosen as the basis for structuring documents, this
-			tool does not strive to conform to the spec.</p>
+			<h2 id="license">License</h2>
+			<p>Apache-2.0 (C) Quenk Technologies Limited.</p>
 		</div>
 		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
 		<section class="tsd-panel-group tsd-index-group">
