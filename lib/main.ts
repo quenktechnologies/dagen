@@ -7,7 +7,6 @@ import { Compile } from './cli/command/compile';
 
 const BIN = path.basename(__filename);
 
-
 export const defaultOptions = () => ({
 
     templates: process.cwd()
@@ -28,9 +27,9 @@ Options:
   --namespace EXT            Sets a namespace to be in effect.
   --plugin PATH              Path to a plugin that will be loaded at runtime.
   --definitions PATH         Path to an exported definition object to include.
-  --set PATH=VALUE           Sets a value in the context.
-  --check PATH               Compile and apply a schema to the final document.
-  --install-check PATH       Make a precondition available to be used as a check.
+  --set PATH=VALUE           Set a value on the schema document.                      
+  --check PATH               Loads and applies a check to the final document. 
+  --install-check PATH       Make a precondition available to be used as a $check.
   --context PATH             Path to a ES object to merge into the context.
   --version                  Show version.
 `, {
