@@ -13,3 +13,15 @@ test:
 	./node_modules/.bin/mocha --opts mocha.opts test/unit && \
 	./node_modules/.bin/mocha --opts mocha.opts test/feat
 
+.PHONY: docs
+docs: 
+	./node_modules/.bin/typedoc \
+	--mode modules \
+	--out $@ \
+	--excludeExternals \
+	--excludeNotExported \
+	--excludePrivate \
+	--tsconfig lib/tsconfig.json \
+	--theme minimal && \
+	echo 'DO NOT DELETE!' > docs/.nojekyll 
+
