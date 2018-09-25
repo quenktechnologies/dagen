@@ -1,6 +1,6 @@
 {
   "name": "@quenk/dagen",
-  "version": "0.9.4",
+  "version": "1.0.0",
   "description": "Generate boilerplate output from a schema.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
