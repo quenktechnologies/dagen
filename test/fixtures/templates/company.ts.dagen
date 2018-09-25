@@ -1,0 +1,9 @@
+{ 
+
+  {% for k,p in document.properties %}
+
+    "{{k}}": true {% if not loop.last %},{% endif %}
+
+  {% endfor %}
+
+}

@@ -1,0 +1,43 @@
+{
+    "type": "object",
+    "title": "Company",
+    "table": "company",
+    "properties": {
+        "name": {
+            "type": "VARCHAR"
+        },
+        "slogan": {
+
+          "type": "TEXT"
+
+        },
+        "reg": {
+            "type": "string"
+        },
+        "mailing_address": {
+            "type": "object",
+            "title": "Address",
+            "properties": {
+                "line1": {
+                    "type": "TEXT"
+                },
+                "line2": {
+                    "type": "TEXT"
+                },
+                "town": {
+                    "type": "TEXT"
+                },
+                "state": {
+                    "type": "TEXT"
+                },
+                "country": {
+                    "type": "TEXT"
+                },
+                "name": {
+                    "type": "VARCHAR",
+                    "sql:table": "names"
+                }
+            }
+        }
+    }
+}
