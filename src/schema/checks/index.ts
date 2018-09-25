@@ -8,6 +8,8 @@ import * as records from '@quenk/preconditions/lib/record';
 import * as strings from '@quenk/preconditions/lib/string';
 import * as numbers from '@quenk/preconditions/lib/number';
 import * as booleans from '@quenk/preconditions/lib/boolean';
+import * as schema from '../';
+
 import { match } from '@quenk/noni/lib/control/match';
 import { map, reduce, keys } from '@quenk/noni/lib/data/record';
 import {
@@ -21,12 +23,6 @@ import {
 } from '@quenk/preconditions';
 import { failure } from '@quenk/preconditions/lib/result';
 import {
-    TYPE_OBJECT,
-    TYPE_ARRAY,
-    TYPE_SUM,
-    TYPE_STRING,
-    TYPE_NUMBER,
-    TYPE_BOOLEAN,
     Schema,
     Schemas,
     ObjectType,
@@ -35,80 +31,6 @@ import {
 } from '../';
 import { Providers } from './provider';
 import { specs2Checks } from './spec';
-
-const objectShapeWithBothProps = {
-
-    type: TYPE_OBJECT,
-
-    properties: Object,
-
-    additionalProperties: Object
-
-};
-
-const objectShapeWithProps = {
-
-    type: TYPE_OBJECT,
-
-    properties: Object
-
-}
-
-const objectShapeWithAdditionalProps = {
-
-    type: TYPE_OBJECT,
-
-    additionalProperties: Object
-
-}
-
-const arrayShape = {
-
-    type: TYPE_ARRAY,
-
-    items: Object
-
-}
-
-const sumShape = {
-
-    type: TYPE_SUM,
-
-    variants: Object
-
-}
-
-const stringShape = {
-
-    type: TYPE_STRING
-
-}
-
-const numberShape = {
-
-    type: TYPE_NUMBER
-
-}
-
-const booleanShape = {
-
-    type: TYPE_BOOLEAN
-
-}
-
-const externalShape = {
-
-    type: String
-
-}
-
-const refShape = {
-
-    type: 'ref',
-
-    ref: String
-
-}
 
 export const TYPE_REF = 'ref';
 
@@ -173,16 +95,16 @@ export class Context<B> {
 export const fromSchema =
     <B>(c: Context<B>) => (s: Schema): Check<B> => wrapOptional(s,
         addCustom(c, s, <Check<B>>match(s)
-            .caseOf(objectShapeWithBothProps, fromMapObject(c))
-            .caseOf(objectShapeWithProps, fromObject(c))
-            .caseOf(objectShapeWithAdditionalProps, fromMap(c))
-            .caseOf(arrayShape, fromArray(c))
-            .caseOf(sumShape, fromSum(c))
-            .caseOf(refShape, fromRef(c))
-            .caseOf(stringShape, () => strings.isString) // @todo checks on prims/externals
-            .caseOf(numberShape, () => numbers.isNumber)
-            .caseOf(booleanShape, () => booleans.isBoolean)
-            .caseOf(externalShape, () => identity)
+            .caseOf(schema.objectShapeWithAllProperties, fromMapObject(c))
+            .caseOf(schema.objectShapeWithProperties, fromObject(c))
+            .caseOf(schema.objectShapeWithAdditionalProperties, fromMap(c))
+            .caseOf(schema.arrayShape, fromArray(c))
+            .caseOf(schema.sumShape, fromSum(c))
+            .caseOf(schema.refShape, fromRef(c))
+            .caseOf(schema.stringShape, () => strings.isString) // @todo checks on prims/externals
+            .caseOf(schema.numberShape, () => numbers.isNumber)
+            .caseOf(schema.booleanShape, () => booleans.isBoolean)
+            .caseOf(schema.externalShape, () => identity)
             .end()));
 
 const wrapOptional = <B>(s: Schema, ch: Check<B>): Check<B> =>

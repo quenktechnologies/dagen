@@ -67,7 +67,7 @@ export interface Loader {
 }
 
 /**
- * load a schema into memory recursively.
+ * load references in a schema recursively.
  */
 export const load = (f: Loader) => (o: Object)
     : Promise<Object> => {

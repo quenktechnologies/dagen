@@ -5,7 +5,8 @@ import * as prec from '@quenk/preconditions';
 import { Value } from '@quenk/noni/lib/data/json';
 import { cons } from '@quenk/noni/lib/data/function';
 import { Providers } from './provider';
-import { Root, Schema } from '../';
+import { Root, ObjectType, Schema } from '../';
+import {Definitions} from '../definitions';
 import { Check, Context, fromSchema } from './';
 
 /**
@@ -41,13 +42,7 @@ export const providers: Providers<Value> = {
 
 }
 
-/**
- * root is a Data Document Schema root schema 
- * described using a Data Document Schema.
- */
-export const root: Root = {
-
-    definitions: {
+export const defs: Definitions  = {
 
         object: {
 
@@ -291,7 +286,32 @@ export const root: Root = {
 
         }
 
-    },
+    }
+
+export const definitions: ObjectType = {
+
+  type: 'object',
+
+    definitions: defs,
+
+  additionalProperties: {
+
+    type: 'ref',
+
+    ref: 'schema'
+
+  }
+
+}
+
+/**
+ * root is a Data Document Schema root schema 
+ * described using a Data Document Schema.
+ */
+export const root: Root = {
+
+    definitions: defs,
+
     type: 'sum',
 
     variants: {

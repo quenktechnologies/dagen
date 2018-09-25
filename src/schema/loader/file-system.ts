@@ -14,9 +14,12 @@ export class FileSystemLoader implements Loader {
             readJSON(path);
 
     create: Create = (current: string) => new FileSystemLoader(
-        (current[0] === '.') ?
-            Path.resolve(this.cwd, current) :
-            current);
+      Path.isAbsolute(current) ?
+          Path.dirname(current) :
+          Path.resolve(this.cwd, Path.dirname(current)));
+      //       (current[0] === '.') ?
+      //    Path.resolve(this.cwd, current) :
+      //    current);
 
 }
 

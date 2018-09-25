@@ -5,6 +5,8 @@ import { flip, cons } from '@quenk/noni/lib/data/function';
 import { map } from '@quenk/noni/lib/data/array';
 import { reduce, flatten } from '@quenk/noni/lib/data/record';
 
+export const PATH_SEPARATOR = '.';
+
 /**
  * expand the paths of a JSON value authored in short-form recursively.
  */

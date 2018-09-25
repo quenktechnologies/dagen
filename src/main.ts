@@ -18,7 +18,8 @@ const args = docopt.docopt(`
 
 Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
-          [--set=KVP...] [--check=PATH...] [--install-check=PATH] <file>
+          [--set=KVP...] [--template=TEMPLATE] [--templates=PATH]
+          [--check=PATH...] [--install-check=PATH] <file>
 
 Options:
   -h --help                  Show this screen.
@@ -40,4 +41,4 @@ Compile
     .enqueue(<Object>args)
     .get()
     .run()
-    .catch(console.error);
+    .catch(e => { console.error(e); process.exit(-1); });

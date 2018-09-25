@@ -2,7 +2,9 @@ import { set, get } from 'property-seek';
 import { merge, reduce } from '@quenk/noni/lib/data/record';
 import { Result } from '@quenk/preconditions/lib/result';
 import { Schema, } from '../';
-import { evalUsages, pull } from './ref';
+import { evalUsages, pull } from './usage';
+
+export { Result }
 
 /**
  * Definition is a schema that can be re-used elsewhere in the document.
