@@ -1,27 +1,18 @@
+# Copy all the sources to the lib folder then run tsc.
+lib: $(shell find src -type f)
+	rm -R lib 2> /dev/null || true 
+	mkdir lib
+	cp -R -u src/* lib
+	./node_modules/.bin/tsc --project lib
 
-lib: $(shell find src -name \*.ts)
-	mkdir -p $@
-	cp -R src/* $@;
-	./node_modules/.bin/tsc -p src
-
-.PHONY: clean
-clean:
-	@rm -R ./lib 2> /dev/null || true
-
-.PHONY: test
-test: 
-	./node_modules/.bin/mocha --opts mocha.opts test/unit && \
-	./node_modules/.bin/mocha --opts mocha.opts test/feat
-
+# Generate typedoc documentation.
 .PHONY: docs
-docs: 
+docs: lib
 	./node_modules/.bin/typedoc \
 	--mode modules \
 	--out $@ \
-	--excludeExternals \
-	--excludeNotExported \
-	--excludePrivate \
 	--tsconfig lib/tsconfig.json \
-	--theme minimal && \
-	echo 'DO NOT DELETE!' > docs/.nojekyll 
-
+	--theme minimal lib  \
+	--excludeNotExported \
+	--excludePrivate && \
+	echo "" > docs/.nojekyll
