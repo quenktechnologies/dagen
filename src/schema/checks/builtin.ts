@@ -6,7 +6,7 @@ import { Value } from '@quenk/noni/lib/data/json';
 import { cons } from '@quenk/noni/lib/data/function';
 import { Providers } from './provider';
 import { Root, ObjectType, Schema } from '../';
-import {Definitions} from '../definitions';
+import { Definitions } from '../definitions';
 import { Check, Context, fromSchema } from './';
 
 /**
@@ -18,7 +18,7 @@ export const providers: Providers<Value> = {
 
     neq: prec.neq,
 
-    nn: cons(prec.nn),
+    nn: cons(prec.notNull),
 
     gt: numbers.gt,
 
@@ -36,109 +36,158 @@ export const providers: Providers<Value> = {
 
     pattern: (s: string) => strings.matches(new RegExp(s)),
 
-    maxItems: arrays.maxItems,
+    maxItems: arrays.max,
 
-    minItems: arrays.minItems
+    minItems: arrays.min
 
 }
 
-export const defs: Definitions  = {
+export const defs: Definitions = {
 
-        object: {
+    object: {
 
-            type: 'object',
+        type: 'object',
 
+        properties: {
+
+            definitions: {
+
+                type: 'object',
+
+                optional: true,
+
+                additonalProperties: {
+
+                    type: 'ref',
+
+                    ref: 'schema'
+
+                }
+
+            },
+            type: {
+
+                type: 'string'
+
+            },
+            title: {
+
+                type: 'string',
+
+                optional: true
+
+            },
             properties: {
 
-                definitions: {
+                type: 'object',
 
-                    type: 'object',
+                optional: true,
 
-                    optional: true,
-
-                    additonalProperties: {
-
-                        type: 'ref',
-
-                        ref: 'schema'
-
-                    }
-
-                },
-                type: {
-
-                    type: 'string'
-
-                },
-                title: {
-
-                    type: 'string',
-
-                    optional: true
-
-                },
-                properties: {
-
-                    type: 'object',
-
-                    optional: true,
-
-                    additionalProperties: {
-
-                        type: 'ref',
-
-                        ref: 'schema'
-
-                    }
-                },
                 additionalProperties: {
 
                     type: 'ref',
 
-                  ref: 'schema', 
-
-                  optional: true
+                    ref: 'schema'
 
                 }
+            },
+            additionalProperties: {
+
+                type: 'ref',
+
+                ref: 'schema',
+
+                optional: true
 
             }
 
-        },
-        array: {
+        }
 
-            type: 'object',
+    },
+    array: {
 
-            properties: {
+        type: 'object',
 
-                definitions: {
+        properties: {
 
-                    type: 'object',
+            definitions: {
 
-                    optional: true,
+                type: 'object',
 
-                    additonalProperties: {
+                optional: true,
 
-                        type: 'ref',
+                additonalProperties: {
 
-                        ref: 'schema'
+                    type: 'ref',
 
-                    }
+                    ref: 'schema'
 
-                },
+                }
 
-                type: {
+            },
 
-                    type: 'string'
+            type: {
 
-                },
-                title: {
+                type: 'string'
 
-                    type: 'string',
+            },
+            title: {
 
-                    optional: true
+                type: 'string',
 
-                },
-                items: {
+                optional: true
+
+            },
+            items: {
+
+                type: 'ref',
+
+                ref: 'schema'
+
+            }
+
+        }
+
+    },
+    sum: {
+
+        type: 'object',
+
+        properties: {
+
+            definitions: {
+
+                type: 'object',
+
+                optional: true,
+
+                additonalProperties: {
+
+                    type: 'ref',
+
+                    ref: 'schema'
+
+                }
+
+            },
+            type: {
+
+                type: 'string'
+
+            },
+
+            title: {
+
+                type: 'string',
+
+                optional: true
+
+            },
+            variants: {
+
+                type: 'object',
+
+                additionalProperties: {
 
                     type: 'ref',
 
@@ -148,139 +197,88 @@ export const defs: Definitions  = {
 
             }
 
-        },
-        sum: {
+        }
 
-            type: 'object',
+    },
+    external: {
 
-            properties: {
+        type: 'object',
 
-                definitions: {
+        properties: {
 
-                    type: 'object',
+            definitions: {
 
-                    optional: true,
+                type: 'object',
 
-                    additonalProperties: {
+                optional: true,
 
-                        type: 'ref',
+                additonalProperties: {
 
-                        ref: 'schema'
+                    type: 'ref',
 
-                    }
-
-                },
-                type: {
-
-                    type: 'string'
-
-                },
-
-                title: {
-
-                    type: 'string',
-
-                    optional: true
-
-                },
-                variants: {
-
-                    type: 'object',
-
-                    additionalProperties: {
-
-                        type: 'ref',
-
-                        ref: 'schema'
-
-                    }
-
-                }
-
-            }
-
-        },
-        external: {
-
-            type: 'object',
-
-            properties: {
-
-                definitions: {
-
-                    type: 'object',
-
-                    optional: true,
-
-                    additonalProperties: {
-
-                        type: 'ref',
-
-                        ref: 'schema'
-
-                    }
-
-                },
-                type: {
-
-                    type: 'string',
-
-                    $checks: [
-
-                        { name: 'neq', parameters: ['object'] },
-
-                        { name: 'neq', parameters: ['array'] },
-
-                        { name: 'neq', parameters: ['sum'] }
-
-                    ]
+                    ref: 'schema'
 
                 }
 
             },
-            title: {
+            type: {
 
                 type: 'string',
 
-                optional: true
+                $checks: [
+
+                    { name: 'neq', parameters: ['object'] },
+
+                    { name: 'neq', parameters: ['array'] },
+
+                    { name: 'neq', parameters: ['sum'] }
+
+                ]
 
             }
 
         },
-        schema: {
+        title: {
 
-            type: 'sum',
+            type: 'string',
 
-            variants: {
+            optional: true
 
-                object: {
+        }
 
-                    type: 'ref',
+    },
+    schema: {
 
-                    ref: 'object'
+        type: 'sum',
 
-                },
-                array: {
+        variants: {
 
-                    type: 'ref',
+            object: {
 
-                    ref: 'array'
+                type: 'ref',
 
-                },
-                sum: {
+                ref: 'object'
 
-                    type: 'ref',
+            },
+            array: {
 
-                    ref: 'sum'
+                type: 'ref',
 
-                },
-                external: {
+                ref: 'array'
 
-                    type: 'ref',
+            },
+            sum: {
 
-                    ref: 'external'
+                type: 'ref',
 
-                }
+                ref: 'sum'
+
+            },
+            external: {
+
+                type: 'ref',
+
+                ref: 'external'
 
             }
 
@@ -288,19 +286,21 @@ export const defs: Definitions  = {
 
     }
 
+}
+
 export const definitions: ObjectType = {
 
-  type: 'object',
+    type: 'object',
 
     definitions: defs,
 
-  additionalProperties: {
+    additionalProperties: {
 
-    type: 'ref',
+        type: 'ref',
 
-    ref: 'schema'
+        ref: 'schema'
 
-  }
+    }
 
 }
 

@@ -1,7 +1,7 @@
-import * as Promise from 'bluebird';
 import * as Path from 'path';
 import * as F from 'fs';
 import { Object } from '@quenk/noni/lib/data/json';
+import {Future, fromCallback, attempt} from '@quenk/noni/lib/control/monad/future';
 import { Load, Create, Loader } from './';
 
 export class FileSystemLoader implements Loader {
@@ -17,16 +17,12 @@ export class FileSystemLoader implements Loader {
       Path.isAbsolute(current) ?
           Path.dirname(current) :
           Path.resolve(this.cwd, Path.dirname(current)));
-      //       (current[0] === '.') ?
-      //    Path.resolve(this.cwd, current) :
-      //    current);
 
 }
 
-const readJSON = (path: string): Promise<Object> =>
+const readJSON = (path: string): Future<Object> =>
     readFile(path)
-        .then(d => Promise.try(() => JSON.parse(d)));
+        .chain(d => attempt(() => JSON.parse(d)));
 
-const readFile = (path: string): Promise<string> =>
-    Promise
-        .fromCallback(done => F.readFile(path, { encoding: 'utf8' }, done));
+const readFile = (path: string): Future<string> =>
+        fromCallback(done => F.readFile(path, { encoding: 'utf8' }, done));

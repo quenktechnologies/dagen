@@ -1,6 +1,6 @@
-import * as Promise from 'bluebird';
 import * as nunjucks from 'nunjucks';
 import { Object } from '@quenk/noni/lib/data/json';
+import {Future, pure} from '@quenk/noni/lib/control/monad/future';
 import { reduce } from '@quenk/noni/lib/data/record';
 import { functions, filters } from './builtin';
 import { Generator } from '../';
@@ -28,9 +28,9 @@ export class Nunjucks implements Generator<string> {
 
     }
 
-    render(document: Object): Promise<string> {
+    render(document: Object): Future<string> {
 
-        return Promise.resolve(this.env.render(this.template, { document }));
+        return pure(this.env.render(this.template, { document }));
 
     }
 

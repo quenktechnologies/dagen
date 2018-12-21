@@ -1,8 +1,8 @@
-import * as Promise from 'bluebird';
 import { Object } from '@quenk/noni/lib/data/json';
+import {Future} from '@quenk/noni/lib/control/monad/future';
 
 export interface Generator<R> {
 
-    render(root: Object): Promise<R>
+    render(root: Object): Future<R>
 
 }
