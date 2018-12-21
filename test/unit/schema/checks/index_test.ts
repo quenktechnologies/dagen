@@ -2,7 +2,6 @@ import { must } from '@quenk/must';
 import { set } from 'property-seek';
 import { Value, Object } from '@quenk/noni/lib/data/json';
 import { PrimFailure } from '@quenk/preconditions/lib/result/failure';
-import { ArrayFailure } from '@quenk/preconditions/lib/result/failure/array';
 import { map } from '@quenk/noni/lib/data/record';
 import { range } from '@quenk/preconditions/lib/number';
 import { lower, trim } from '@quenk/preconditions/lib/string';
