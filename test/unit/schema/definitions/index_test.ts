@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import { must} from '@quenk/must';
 import { resolve } from '../../../../src/schema/definitions';
 
 const defs = {
@@ -91,7 +91,7 @@ describe('definitions', () => {
 
                 additionalProperties: { type: '#int' }
 
-            }).takeRight()).eql({
+            }).takeRight()).equate({
                 'type': 'object',
                 'properties': {
                     'id': {
@@ -171,7 +171,7 @@ describe('definitions', () => {
                     }
                 }
 
-            }).takeRight()).eql({
+            }).takeRight()).equate({
                 'type': 'sum',
                 'variants': {
                     'person': {
@@ -204,4 +204,3 @@ describe('definitions', () => {
     });
 
 });
-

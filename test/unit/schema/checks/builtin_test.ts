@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import { must } from '@quenk/must';
 import { set } from 'property-seek';
 import { check } from '../../../../src/schema/checks/builtin';
 
@@ -106,7 +106,7 @@ describe('checks', () => {
 
         it('should validate correct object schemas', () => {
 
-            must(check(oSchema).takeRight()).eql(oSchema);
+            must(check(oSchema).takeRight()).equate(oSchema);
 
         });
 
@@ -120,13 +120,13 @@ describe('checks', () => {
             // the failure explanation we get will always be the same because
             // of how we convert sums.
             must(check(w).takeLeft().explain())
-                .eql({ type: 'eq', variants: 'isObject' });
+                .equate({ type: 'eq', variants: 'isRecord' });
 
         });
 
         it('should validate correct sum schemas', () => {
 
-            must(check(sSchema).takeRight()).eql(sSchema);
+            must(check(sSchema).takeRight()).equate(sSchema);
 
         });
 

@@ -1,12 +1,12 @@
-import * as must from 'must/register';
-import * as Promise from 'bluebird';
+import {must} from '@quenk/must';
 import { Object } from '@quenk/noni/lib/data/json';
+import {Future, pure, raise, toPromise} from '@quenk/noni/lib/control/monad/future';
 import { match } from '@quenk/noni/lib/control/match';
 import { Load, Create, load } from '../../../../src/schema/loader';
 
 class ALoader {
 
-    load: Load = (s: string): Promise<Object> => Promise.resolve(<Object>match(s)
+    load: Load = (s: string): Future<Object> => pure(<Object>match(s)
         .caseOf('audit', () => ({ created: '2009-01-3', creator: 375 }))
         .caseOf('person', () => ({ name: 'Someone', age: 24, tags: { enabled: [1, 2, 3] } }))
         .caseOf('provider', () => ({ company: 'Lawrence', code: 7778, name: 'auguma' }))
@@ -57,8 +57,8 @@ class RLoader {
         let p = [this.cwd, path].filter(x => x).join('.');
 
         return this.dir.hasOwnProperty(p) ?
-            Promise.resolve(this.dir[p]) :
-            Promise.reject(new Error(`Unknown path '${p}'!`));
+            pure(this.dir[p]) :
+             raise(new Error(`Unknown path '${p}'!`));
 
     }
 
@@ -116,7 +116,7 @@ describe('loader', () => {
 
             };
 
-            return load(loader)(o).then(o => must(o).eql(r))
+            return toPromise(load(loader)(o)).then(o => must(o).equate(r))
 
         })
     })
@@ -152,7 +152,7 @@ describe('loader', () => {
 
         };
 
-        return load(loader)(o).then(o => must(o).eql(r));
+        return toPromise(load(loader)(o)).then(o => must(o).equate(r));
 
     });
 
@@ -203,7 +203,7 @@ describe('loader', () => {
 
         }
 
-        return load(rloader)(o).then(o => must(o).eql(r));
+        return toPromise(load(rloader)(o)).then(o => must(o).equate(r));
 
     });
 })

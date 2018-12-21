@@ -1,0 +1,54 @@
+{
+
+    "type": "object",
+
+    "properties": {
+
+        "procedures": {
+
+            "type": "object",
+
+            "optional": "true",
+
+            "additionalProperties": {
+
+                "type": "object",
+
+                "properties": {
+
+                    "imports": {
+
+                        "type": "object",
+
+                        "optional": "true",
+
+                        "additionalProperties": {
+
+                            "type": "string"
+
+                        }
+
+                    },
+                    "parameters": {
+
+                        "type": "object",
+
+                        "optional": true,
+
+                        "additionalProperties": {
+
+                            "type": "string"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+}

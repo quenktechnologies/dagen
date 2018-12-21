@@ -1,7 +1,8 @@
-import * as must from 'must/register';
+import { must } from '@quenk/must';
 import { set } from 'property-seek';
 import { Value, Object } from '@quenk/noni/lib/data/json';
-import { Failure } from '@quenk/preconditions/lib/result';
+import { PrimFailure } from '@quenk/preconditions/lib/result/failure';
+import { ArrayFailure } from '@quenk/preconditions/lib/result/failure/array';
 import { map } from '@quenk/noni/lib/data/record';
 import { range } from '@quenk/preconditions/lib/number';
 import { lower, trim } from '@quenk/preconditions/lib/string';
@@ -333,7 +334,7 @@ describe('checks', () => {
                     (c: Check<Value>, k: string) => c(samples[k]).takeRight());
 
                 must(r)
-                    .eql({
+                    .equate({
                         string: 'this is a string',
                         number: 12,
                         boolean: true,
@@ -385,7 +386,7 @@ describe('checks', () => {
                 let w = map(<any>ctx.addChecks(rSchema).checks,
                     (c: Check<Value>, k: string) => c(wrong[k]).takeLeft().explain());
 
-                must(r).eql({
+                must(r).equate({
 
                     string: 'the string',
 
@@ -395,13 +396,13 @@ describe('checks', () => {
 
                 });
 
-                must(w).eql({
+                must(w).equate({
 
                     string: 'isString',
 
                     object: {
 
-                        'prop': 'isObject'
+                        'prop': 'isRecord'
 
                     }
                 });
@@ -418,30 +419,30 @@ describe('checks', () => {
         it('should produce a check for string types', () => {
 
             must((fromSchema(ctx)(schemas.string)(samples.string)).takeRight())
-                .be(samples.string);
+                .equal(samples.string);
 
             must((fromSchema(ctx)(schemas.string)(samples.number)).takeLeft())
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a precondition for number types', () => {
 
             must((fromSchema(ctx)(schemas.number)(samples.number)).takeRight())
-                .be(samples.number);
+                .equal(samples.number);
 
             must((fromSchema(ctx)(schemas.number)(samples.string)).takeLeft())
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a check for boolean types', () => {
 
             must((fromSchema(ctx)(schemas.boolean)(samples.boolean)).takeRight())
-                .be(samples.boolean);
+                .equal(samples.boolean);
 
             must((fromSchema(ctx)(schemas.boolean)(samples.string)).takeLeft())
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
@@ -457,13 +458,13 @@ describe('checks', () => {
             delete optionaled.age;
 
             must((fromSchema(ctx)(schemas.object)(samples.object)).takeRight())
-                .eql(samples.object);
+                .equate(samples.object);
 
             must((fromSchema(ctx)(schemas.object)(optionaled)).takeRight())
-                .eql(optionaled);
+                .equate(optionaled);
 
             must((fromSchema(ctx)(schemas.object)(wrong)).takeLeft().explain())
-                .eql({
+                .equate({
                     profile: 'isNumber',
                     flags: {
 
@@ -478,26 +479,26 @@ describe('checks', () => {
         it('should produce a precondition for array types', () => {
 
             must((fromSchema(ctx)(schemas.array)(samples.array)).takeRight())
-                .eql(samples.array);
+                .equate(samples.array);
 
             must((fromSchema(ctx)(schemas.array)(samples.array[0])).takeLeft())
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a precondition for sum types', () => {
 
             must((fromSchema(ctx)(schemas.sum)(samples.string)).takeRight())
-                .eql(samples.string);
+                .equal(samples.string);
 
             must((fromSchema(ctx)(schemas.sum)(samples.number)).takeRight())
-                .eql(samples.number);
+                .equal(samples.number);
 
             must((fromSchema(ctx)(schemas.sum)(samples.boolean)).takeRight())
-                .eql(samples.boolean);
+                .equal(samples.boolean);
 
             must((fromSchema(ctx)(schemas.sum)(samples.object)).takeLeft())
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
@@ -506,20 +507,20 @@ describe('checks', () => {
             let ps = new Context({ object: fromSchema(ctx)(schemas.object) });
 
             must((fromSchema(ps)(schemas.object)(samples.object)).takeRight())
-                .eql(samples.object);
+                .equate(samples.object);
 
             must((fromSchema(ps)(schemas.object)(samples.string).takeLeft()))
-                .be.instanceOf(Failure);
+                .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a precondition for ref types ', () => {
 
             must((fromSchema(ctx)(withChecks)(withChecksSamples)).takeRight())
-                .eql(set('profile', 'uname', withChecksSamples));
+                .equate(set('profile', 'uname', withChecksSamples));
 
             must((fromSchema(ctx)(withChecks)(withChecksWrong)).takeLeft().explain())
-                .eql({
+                .equate({
                     'name': 'eq',
                     'clients': {
                         'bmobile': 'isNumber',

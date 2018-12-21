@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import {must} from '@quenk/must';
 import { normalize } from '../../../../src/schema/path/namespace';
 
 const schema = {
@@ -62,7 +62,7 @@ describe('namespace', () => {
 
             }
 
-            must((normalize(nss)(schema))).eql(r);
+            must((normalize(nss)(schema))).equate(r);
 
         });
 
