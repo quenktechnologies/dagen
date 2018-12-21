@@ -1,5 +1,6 @@
 --recursive
 --growl
 --reporter list
---compilers ts:./test/register
+--require ./test/register
+--exit
 --timeout 10000
