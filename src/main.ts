@@ -40,4 +40,4 @@ Compile
     .enqueue(<Object>args)
     .get()
     .run()
-    .catch(e => { console.error(e); process.exit(-1); });
+    .fork(e => { console.error(e); process.exit(-1); }, ()=>{});

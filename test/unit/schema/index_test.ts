@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import { must} from '@quenk/must';
 import { expand } from '../../../src/schema';
 
 const sample = {
@@ -129,7 +129,7 @@ describe('schema', () => {
 
         it('should expand all supported places', () => {
 
-            must(expand(sample)).eql(expanded);
+            must(expand(sample)).equate(expanded);
 
         });
 

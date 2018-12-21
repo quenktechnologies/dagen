@@ -1,6 +1,6 @@
 import { match } from '@quenk/noni/lib/control/match';
 import { isRecord, merge, reduce } from '@quenk/noni/lib/data/record';
-import { success, failure } from '@quenk/preconditions/lib/result';
+import { succeed, fail } from '@quenk/preconditions/lib/result';
 import { map as pmap } from '@quenk/preconditions/lib/record';
 import { Result } from '@quenk/preconditions/lib/result';
 import {
@@ -53,8 +53,8 @@ export const isRef =
 export const evalUsage =
     (definitions: Definitions) => (def: Usage): Result<Usage, Definition> =>
         definitions.hasOwnProperty(def) ?
-            success(definitions[def]) :
-            failure('unknown', def, { definitions });
+            succeed(definitions[def]) :
+            fail('unknown', def, { definitions });
 
 /**
  * evalUsages transforms a Usages into a Definitions.

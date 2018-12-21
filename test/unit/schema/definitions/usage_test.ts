@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import { must } from '@quenk/must';
 import { isRef, pull } from '../../../../src/schema/definitions/usage';
 
 const schema = {
@@ -35,9 +35,9 @@ describe('ref', () => {
 
         it('should work', () => {
 
-            must(isRef({ type: '#reference' })).be(true);
+            must(isRef({ type: '#reference' })).equal(true);
 
-            must(isRef({ type: 'reference' })).be(false);
+            must(isRef({ type: 'reference' })).equal(false);
 
         });
 
@@ -47,7 +47,7 @@ describe('ref', () => {
 
         it('should pull correct Usages', () => {
 
-            must(p(schema)).eql({
+            must(p(schema)).equate({
                 'properties.clan': 'string',
                 'properties.name': 'name',
                 'properties.age': 'age',

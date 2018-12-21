@@ -1,6 +1,11 @@
-import * as Promise from 'bluebird';
 import { set } from 'property-seek';
 import { Object, Value } from '@quenk/noni/lib/data/json';
+import {
+    Future,
+    pure,
+    raise,
+    parallel
+} from '@quenk/noni/lib/control/monad/future';
 import {
     Record,
     flatten,
@@ -19,7 +24,7 @@ export const REF_SYMBOL = '$ref';
 /**
  * Load function.
  */
-export type Load = (path: string) => Promise<Object>;
+export type Load = (path: string) => Future<Object>;
 
 /**
  * Create function.
@@ -56,7 +61,7 @@ export interface Loader {
     /**
      * load an object fragment into memory using the specified path.
      */
-    load: (path: string) => Promise<Object>
+    load: (path: string) => Future<Object>
 
     /**
      * create a new Loader instance that will operate relative to the
@@ -70,15 +75,14 @@ export interface Loader {
  * load references in a schema recursively.
  */
 export const load = (f: Loader) => (o: Object)
-    : Promise<Object> => {
+    : Future<Object> => {
 
     let [ref, reg] = divide(o);
     let resolved = eraseRefProperties(map(<Object>ref, fetch(f)));
 
-    return Promise
-        .resolve(inflate(reg))
-        .then((regs: Object) => constructFragment(resolved)
-            .then((refs: Object) => rmerge(regs, refs)));
+    return pure(inflate(reg))
+        .chain((regs: Object) => constructFragment(resolved)
+            .map((refs: Object) => rmerge(regs, refs)));
 
 }
 
@@ -98,32 +102,31 @@ const divide = (o: Object): [Object, Object] =>
  * Only accepts strings and arrays, nested objects are unintended side-effect.
  * @private
  */
-const fetch = (f: Loader) => (v: Value): Promise<Object> => <Promise<Object>>match(v)
+const fetch = (f: Loader) => (v: Value): Future<Object> => <Future<Object>>match(v)
     .caseOf(String, nestedFetch(f))
     .caseOf(Array, mergeRejectedList(f))
     .orElse(rejectFetchPath)
     .end();
 
 const nestedFetch = (f: Loader) => (path: string)
-    : Promise<Object> =>
+    : Future<Object> =>
     f
         .load(path)
-        .then((val: Value) => <Promise<Object>>match(val)
+        .chain((val: Value) => <Future<Object>>match(val)
             .caseOf({}.constructor, load(f.create(path)))
             .orElse(rejectNonObject)
             .end());
 
 const rejectNonObject = (value: Value) =>
-    Promise.reject(new Error(`References must only point to objects! ` +
+    raise(new Error(`References must only point to objects! ` +
         `Not : '${typeof value}'!`));
 
 const mergeRejectedList = (f: Loader) => (list: Value[]) =>
-    Promise
-        .all(list.map(fetch(f)))
-        .reduce(rmerge, {});
+    parallel(list.map(fetch(f)))
+        .map(l => l.reduce(rmerge, {}));
 
 const rejectFetchPath = (value: Value) =>
-    Promise.reject(new Error(`Cannot use type '${typeof value}' as a reference!`));
+    raise(new Error(`Cannot use type '${typeof value}' as a reference!`));
 
 const inflate = (o: Object) =>
     reduce(o, {}, (p: Object, c, k: string) => set(k, c, p));
@@ -132,7 +135,7 @@ const inflate = (o: Object) =>
  * eraseRefProperties from a flat map of fragments (symbol only).
  */
 const eraseRefProperties =
-    (resolved: Record<Promise<Object>>): Record<Promise<Object>> =>
+    (resolved: Record<Future<Object>>): Record<Future<Object>> =>
         reduce(resolved, {}, (p, c, k) => merge(p, { [unref(k)]: c }));
 
 const unref = (k: string) =>
@@ -147,14 +150,13 @@ const unref = (k: string) =>
  * references.
  * @private
  */
-const constructFragment = (o: Record<Promise<Object>>): Promise<Object> =>
-    Promise
-        .all(tagPromises(o))
-        .then(reconcile);
+const constructFragment = (o: Record<Future<Object>>): Future<Object> =>
+    parallel(tagFutures(o))
+        .map(reconcile);
 
-const tagPromises = (o: Record<Promise<Object>>) =>
-    values(map(o, (p: Promise<Object>, key) =>
-        p.then((value: Object) => ({ key, value }))));
+const tagFutures = (o: Record<Future<Object>>) =>
+    values(map(o, (p: Future<Object>, key) =>
+        p.map((value: Object) => ({ key, value }))));
 
 const reconcile = (vals: { key: string, value: Object }[]) =>
     vals.reduce((p, { key, value }) => (key === '') ?

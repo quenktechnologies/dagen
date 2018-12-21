@@ -1,0 +1,26 @@
+{
+
+    "title": "Company",
+    "type": "object",
+    "sql:table": "company",
+    "ts:module": "entities",
+    "procedures": {
+
+        "create": {
+
+            "imports": {
+
+                "Settings as SettingsType": "@anole/types/lib/Settings"
+
+            },
+            "parameters": {
+
+                "data": "SettingsType"
+
+            }
+
+        }
+
+    }
+
+}

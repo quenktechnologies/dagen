@@ -1,10 +1,10 @@
-import * as Promise from 'bluebird';
 import { Object } from '@quenk/noni/lib/data/json';
+import { Future } from '@quenk/noni/lib/control/monad/future';
 export declare const REF_SYMBOL = "$ref";
 /**
  * Load function.
  */
-export declare type Load = (path: string) => Promise<Object>;
+export declare type Load = (path: string) => Future<Object>;
 /**
  * Create function.
  */
@@ -34,7 +34,7 @@ export interface Loader {
     /**
      * load an object fragment into memory using the specified path.
      */
-    load: (path: string) => Promise<Object>;
+    load: (path: string) => Future<Object>;
     /**
      * create a new Loader instance that will operate relative to the
      * cwd specified.
@@ -44,4 +44,4 @@ export interface Loader {
 /**
  * load references in a schema recursively.
  */
-export declare const load: (f: Loader) => (o: Object) => Promise<Object>;
+export declare const load: (f: Loader) => (o: Object) => Future<Object>;

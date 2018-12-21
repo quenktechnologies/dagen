@@ -1,5 +1,5 @@
-import * as Promise from 'bluebird';
 import { Value, Object } from '@quenk/noni/lib/data/json';
+import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Loader } from '../schema/loader';
 import { Check } from '../schema/checks';
 import { Definitions } from '../schema/definitions';
@@ -28,46 +28,46 @@ export declare class Context {
  *
  * Nested property short-hand is expanded to full JSON object representation.
  */
-export declare const pathExpansion: (o: Object) => Promise<Object>;
+export declare const pathExpansion: (o: Object) => Future<Object>;
 /**
  * nameSubstitution stage.
  *
  * During this tage the processing program calculates the effective namespace.
  */
-export declare const namespaceSubstitution: (c: Context) => (o: Object) => Promise<Object>;
+export declare const namespaceSubstitution: (c: Context) => (o: Object) => Future<Object>;
 /**
  * fragmentResolution stage.
  *
  * During this stage, ref properties are recursively resolved and merged into
  * their owners.
  */
-export declare const fragmentResolution: (c: Context) => (o: Object) => Promise<Object>;
+export declare const fragmentResolution: (c: Context) => (o: Object) => Future<Object>;
 /**
  * schemaExpansion stage.
  *
  * During this stage, short-hand such as `"type": "string"` are expanded
  * to full JSON objects in supported places.
  */
-export declare const schemaExpansion: (o: Object) => Promise<Object>;
+export declare const schemaExpansion: (o: Object) => Future<Object>;
 /**
  * definitionRegistration stage.
  *
  * During this stage, the processing program registers each definition
  * under their respective names.
  */
-export declare const definitionRegistration: (c: Context) => (o: Object) => Promise<Context>;
+export declare const definitionRegistration: (c: Context) => (o: Object) => Future<Context>;
 /**
  * definitionMerging
  * At this stage all usage of defined types are resolved.
  */
-export declare const definitionMerging: (o: Object) => (c: Context) => Promise<Object>;
+export declare const definitionMerging: (o: Object) => (c: Context) => Future<Object>;
 /**
  * checksStage applies schema and custom checks.
  *
  * This stage determines whether the object is fit for use.
  */
-export declare const checkStage: (c: Context) => (o: Object) => Promise<Object>;
+export declare const checkStage: (c: Context) => (o: Object) => Future<Object>;
 /**
  * compile a JSON document into a valid document schema.
  */
-export declare const compile: (c: Context) => (j: Object) => Promise<Object>;
+export declare const compile: (c: Context) => (j: Object) => Future<Object>;

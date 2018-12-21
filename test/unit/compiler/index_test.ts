@@ -1,4 +1,5 @@
-import * as must from 'must/register';
+import { must } from '@quenk/must';
+import { toPromise } from '@quenk/noni/lib/control/monad/future';
 import { Context, compile } from '../../../src/compiler';
 import { MemoryLoader } from '../../../src/schema/loader/memory';
 
@@ -82,12 +83,12 @@ const oSchema = {
 
 }
 
-const ctx = new Context({}, ['ts'], [], new MemoryLoader('', {} ),[]);
+const ctx = new Context({}, ['ts'], [], new MemoryLoader('', {}), []);
 
 describe('compiler', () =>
     describe('compile', () =>
-        (compile(ctx)(oSchema))
-            .then(s => must(s).eql({
+        toPromise(compile(ctx)(oSchema)
+            .map(s => must(s).equate({
 
                 'definitions': {
                     'address': {
@@ -134,4 +135,4 @@ describe('compiler', () =>
                         }
                     }
                 }
-            }))));
+            })))));

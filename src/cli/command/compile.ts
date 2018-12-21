@@ -1,6 +1,6 @@
-import * as Promise from 'bluebird';
 import * as args from '../args';
 import * as nunjucks from 'nunjucks';
+import {Future} from '@quenk/noni/lib/control/monad/future';
 import { dirname } from 'path';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
@@ -55,34 +55,34 @@ export class Compile {
 
     }
 
-    run(): Promise<void> {
+    run(): Future<void> {
 
         let argv = this.argv;
         let file = argv.schema;
 
         return loadSchema(file)
-            .then(schema =>
+            .chain(schema =>
                 loadDefinitions(argv.definition)
-                    .then(defs =>
+                    .chain(defs =>
                         loadChecks(argv.check)
-                            .then(checks =>
+                            .chain(checks =>
                                 loadPlugins(argv.plugin)
-                                    .then(plugins => new Context(
+                                    .map(plugins => new Context(
                                         defs,
                                         argv.namespace,
                                         checks,
                                         new FileSystemLoader(dirname(file)),
                                         plugins))))
-                    .then(ctx =>
+                    .chain(ctx =>
                         (setValues(schema)(argv.set))
-                            .then(schema => compile(ctx)(schema))
-                            .then((s: Object) => argv.template ?
+                            .chain(schema => compile(ctx)(schema))
+                            .map((s: Object) => argv.template ?
                                 Nunjucks
                                     .create(argv.template,
                                         new nunjucks.FileSystemLoader(argv.templates))
                                     .render(s) :
                                 JSON.stringify(s)))
-                    .then(console.log));
+                    .map(console.log));
 
     }
 

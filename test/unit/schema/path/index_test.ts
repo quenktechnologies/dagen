@@ -1,4 +1,4 @@
-import * as must from 'must/register';
+import {must} from '@quenk/must';
 import { expand } from '../../../../src/schema/path';
 
 describe('path', () => {
@@ -13,7 +13,7 @@ describe('path', () => {
                 'options.flags.enabled': [0, 1, 0, 1, 0, 1, 0, 1],
                 'options.flags': { version: 3 }
             }
-        })).eql({
+        })).equate({
 
             root: {
 
