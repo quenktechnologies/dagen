@@ -1,8 +1,9 @@
-import * as Promise from 'bluebird';
 import { Value, Object } from '@quenk/noni/lib/data/json';
 import { merge, isRecord } from '@quenk/noni/lib/data/record';
+import { Future, pure, raise } from '@quenk/noni/lib/control/monad/future';
 import { either } from '@quenk/noni/lib/data/either';
-import { Failure, Result } from '@quenk/preconditions/lib/result';
+import { Failure  } from '@quenk/preconditions/lib/result/failure';
+import {  Result } from '@quenk/preconditions/lib/result';
 import { expand as pathExpand } from '../schema/path';
 import { normalize } from '../schema/path/namespace';
 import { Loader, load } from '../schema/loader';
@@ -26,8 +27,8 @@ export class Context {
         public definitions: Definitions,
         public namespaces: string[],
         public checks: Check<Value>[],
-      public loader: Loader,
-    public plugins: Plugin[]) { }
+        public loader: Loader,
+        public plugins: Plugin[]) { }
 
     /**
      * addDefinitions to the Context.
@@ -38,8 +39,8 @@ export class Context {
             merge(this.definitions, defs),
             this.namespaces,
             this.checks,
-          this.loader,
-        this.plugins);
+            this.loader,
+            this.plugins);
 
     }
 
@@ -50,16 +51,16 @@ export class Context {
  * 
  * Nested property short-hand is expanded to full JSON object representation.
  */
-export const pathExpansion = (o: Object): Promise<Object> =>
-    Promise.resolve(<Object>pathExpand(o));
+export const pathExpansion = (o: Object): Future<Object> =>
+    pure(<Object>pathExpand(o));
 
 /**
  * nameSubstitution stage.
  *
  * During this tage the processing program calculates the effective namespace.
  */
-export const namespaceSubstitution = (c: Context) => (o: Object): Promise<Object> =>
-    Promise.resolve(normalize(c.namespaces)(o));
+export const namespaceSubstitution = (c: Context) => (o: Object): Future<Object> =>
+    pure(normalize(c.namespaces)(o));
 
 /**
  * fragmentResolution stage.
@@ -67,7 +68,7 @@ export const namespaceSubstitution = (c: Context) => (o: Object): Promise<Object
  * During this stage, ref properties are recursively resolved and merged into
  * their owners.
  */
-export const fragmentResolution = (c: Context) => (o: Object): Promise<Object> =>
+export const fragmentResolution = (c: Context) => (o: Object): Future<Object> =>
     (load(c.loader)(o))
 
 /**
@@ -76,8 +77,8 @@ export const fragmentResolution = (c: Context) => (o: Object): Promise<Object> =
  * During this stage, short-hand such as `"type": "string"` are expanded
  * to full JSON objects in supported places.
  */
-export const schemaExpansion = (o: Object): Promise<Object> =>
-    Promise.resolve(schemaExpand(o));
+export const schemaExpansion = (o: Object): Future<Object> =>
+    pure(schemaExpand(o));
 
 /**
  * definitionRegistration stage.
@@ -85,24 +86,23 @@ export const schemaExpansion = (o: Object): Promise<Object> =>
  * During this stage, the processing program registers each definition
  * under their respective names.
  */
-export const definitionRegistration = (c: Context) => (o: Object): Promise<Context> =>
-    Promise
-        .resolve(isRecord(o.definitions) ?
-            c.addDefinitions(<Definitions>o.definitions) : c);
+export const definitionRegistration = (c: Context) => (o: Object): Future<Context> =>
+    pure(isRecord(o.definitions) ?
+        c.addDefinitions(<Definitions>o.definitions) : c);
 
 /**
  * definitionMerging
  * At this stage all usage of defined types are resolved.
  */
-export const definitionMerging = (o: Object) => (c: Context): Promise<Object> =>
-    either<Failure<Object>, Object, Promise<Object>>
+export const definitionMerging = (o: Object) => (c: Context): Future<Object> =>
+    either<Failure<Object>, Object, Future<Object>>
         (mergingFailed(c))(mergingComplete)(resolve(c.definitions)(<Schema>o))
 
-const mergingFailed = (c: Context) => (f: Failure<Object>): Promise<Object> =>
-    Promise.reject(f.toError({}, c));
+const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
+    raise(f.toError({}, c));
 
-const mergingComplete = (o: Object): Promise<Object> =>
-    Promise.resolve(o);
+const mergingComplete = (o: Object): Future<Object> =>
+    pure(o);
 
 /**
  * checksStage applies schema and custom checks.
@@ -110,11 +110,11 @@ const mergingComplete = (o: Object): Promise<Object> =>
  * This stage determines whether the object is fit for use.
  */
 export const checkStage = (c: Context) => (o: Object) =>
-    either<Failure<Value>, Value, Promise<Object>>
-        (checksFailed(c))(Promise.resolve)(c.checks.reduce(chainCheck, check(o)));
+    either<Failure<Value>, Value, Future<Object>>
+        (checksFailed(c))((o: Object) => pure(o))(c.checks.reduce(chainCheck, check(o)));
 
-const checksFailed = (c: Context) => (f: Failure<Object>): Promise<Object> =>
-    Promise.reject(f.toError({}, c));
+const checksFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
+    raise(f.toError({}, c));
 
 const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
     <Result<Object, Value>>pre.chain(curr);
@@ -124,11 +124,11 @@ const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
  */
 export const compile = (c: Context) => (j: Object) =>
     pathExpansion(j)
-        .then(namespaceSubstitution(c))
-        .then(fragmentResolution(c))
-        .then(schemaExpansion)
-        .then((j: Object) =>
+        .chain(namespaceSubstitution(c))
+        .chain(fragmentResolution(c))
+        .chain(schemaExpansion)
+        .chain((j: Object) =>
             (definitionRegistration(c)(j))
-                .then((c: Context) =>
+                .chain((c: Context) =>
                     (definitionMerging(j)(c))
-                        .then(checkStage(c))));
+                        .chain(checkStage(c))));

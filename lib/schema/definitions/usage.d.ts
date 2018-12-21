@@ -24,14 +24,14 @@ export declare const isRef: (s: Schema) => boolean;
  *
  * If the string cannot be resolved to a defintion it results in a Failure.
  */
-export declare const evalUsage: (definitions: Definitions) => (def: string) => import("@quenk/noni/lib/data/either").Either<import("@quenk/preconditions/lib/result").Failure<string>, Schema>;
+export declare const evalUsage: (definitions: Definitions) => (def: string) => import("@quenk/noni/lib/data/either").Either<import("@quenk/preconditions/lib/result/failure").Failure<string>, Schema>;
 /**
  * evalUsages transforms a Usages into a Definitions.
  *
  * If any of the members of the Usages map refer to an
  * unknown definition the whole evaluation fails.
  */
-export declare const evalUsages: (defs: Definitions) => (work: Usages) => import("@quenk/noni/lib/data/either").Either<import("@quenk/preconditions/lib/result").Failure<Usages>, Definitions>;
+export declare const evalUsages: (defs: Definitions) => (work: Usages) => import("@quenk/noni/lib/data/either").Either<import("@quenk/preconditions/lib/result/failure").Failure<Usages>, Definitions>;
 /**
  * pull extracts all the supported usages of definition references in
  * a Schema into a map.

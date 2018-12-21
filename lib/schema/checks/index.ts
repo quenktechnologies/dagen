@@ -9,19 +9,19 @@ import * as strings from '@quenk/preconditions/lib/string';
 import * as numbers from '@quenk/preconditions/lib/number';
 import * as booleans from '@quenk/preconditions/lib/boolean';
 import * as schema from '../';
-
 import { match } from '@quenk/noni/lib/control/match';
 import { map, reduce, keys } from '@quenk/noni/lib/data/record';
 import {
     Precondition,
+  Preconditions,
     and,
     or,
     every,
-    fail,
+    reject,
     identity,
     optional
 } from '@quenk/preconditions';
-import { failure } from '@quenk/preconditions/lib/result';
+import { fail } from '@quenk/preconditions/lib/result';
 import {
     Schema,
     Schemas,
@@ -42,7 +42,7 @@ export type Check<B> = Precondition<json.Value, B>;
 /**
  * Checks map.
  */
-export type Checks<B> = records.Preconditions<json.Value, B>;
+export type Checks<B> = Preconditions<json.Value, B>;
 
 /**
  * RefType schema.
@@ -91,6 +91,8 @@ export class Context<B> {
  * The first argument is a Checks map that will be used
  * for resolving ref types. If a ref type uses a path
  * that can't be resolved the precondition will always fail.
+ *
+ * XXX: checks on prims/externals
  */
 export const fromSchema =
     <B>(c: Context<B>) => (s: Schema): Check<B> => wrapOptional(s,
@@ -101,7 +103,7 @@ export const fromSchema =
             .caseOf(schema.arrayShape, fromArray(c))
             .caseOf(schema.sumShape, fromSum(c))
             .caseOf(schema.refShape, fromRef(c))
-            .caseOf(schema.stringShape, () => strings.isString) // @todo checks on prims/externals
+            .caseOf(schema.stringShape, () => strings.isString)
             .caseOf(schema.numberShape, () => numbers.isNumber)
             .caseOf(schema.booleanShape, () => booleans.isBoolean)
             .caseOf(schema.externalShape, () => identity)
@@ -114,33 +116,33 @@ const addCustom = <B>(c: Context<B>, s: Schema, ch: Check<B>): Check<B> =>
     and<any, any, any>(ch, specs2Checks(c.providers)(s.$checks || []))
 
 const fromObject = <B>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
-    every(records.isObject,
+    every(records.isRecord,
         records.union(map(properties, fromSchema(c))),
         specs2Checks(c.providers)($checks || []));
 
 const fromMap = <B>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
-    every(records.isObject,
+    every(records.isRecord,
         records.map(fromSchema(c)(additionalProperties)),
         specs2Checks(c.providers)($checks || []));
 
 const fromMapObject =
     <B>(c: Context<B>) => ({ properties, additionalProperties, $checks }: ObjectType) =>
-        every(records.isObject,
+        every(records.isRecord,
             records.union(map(properties, fromSchema(c))),
             records.map(fromSchema(c)(additionalProperties)),
             specs2Checks(c.providers)($checks || []));
 
 const fromArray = <B>(c: Context<B>) => ({ items }: ArrayType) =>
-    every(arrays.isArray, console.error(items) ||
+    every(arrays.isArray,
         arrays.map(fromSchema(c)(items)),
         arrays.map(specs2Checks(c.providers)(items.$checks || [])));
 
-const fromSum = <B>(c: Context<B>) => ({ variants }: SumType) =>
-    reduce(map(variants, fromSchema(c)), fail(''), or);
+const fromSum = <B>(c: Context<B>) => ({ variants }: SumType): Check<B> =>
+    reduce(map(variants, fromSchema(c)), reject(''), or);
 
 const fromRef = <B>(c: Context<B>) => ({ ref }: RefType) => refPrec(c)(ref);
 
 const refPrec = <B>(c: Context<B>) => (p: string): Check<B> => (v: json.Value) =>
     c.checks.hasOwnProperty(p) ?
         c.checks[p](v) :
-        failure(`unknown ref "${p}" known: ${keys(c.checks)}`, v);
+        fail(`unknown ref "${p}" known: ${keys(c.checks)}`, v);

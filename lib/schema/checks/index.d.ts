@@ -3,9 +3,8 @@
  * against a Data Document Schema using the Checks Extension features.
  */
 import * as json from '@quenk/noni/lib/data/json';
-import * as records from '@quenk/preconditions/lib/record';
 import * as schema from '../';
-import { Precondition } from '@quenk/preconditions';
+import { Precondition, Preconditions } from '@quenk/preconditions';
 import { Schema, Schemas } from '../';
 import { Providers } from './provider';
 export declare const TYPE_REF = "ref";
@@ -16,7 +15,7 @@ export declare type Check<B> = Precondition<json.Value, B>;
 /**
  * Checks map.
  */
-export declare type Checks<B> = records.Preconditions<json.Value, B>;
+export declare type Checks<B> = Preconditions<json.Value, B>;
 /**
  * RefType schema.
  */
@@ -45,5 +44,7 @@ export declare class Context<B> {
  * The first argument is a Checks map that will be used
  * for resolving ref types. If a ref type uses a path
  * that can't be resolved the precondition will always fail.
+ *
+ * XXX: checks on prims/externals
  */
 export declare const fromSchema: <B>(c: Context<B>) => (s: schema.Schema) => Precondition<json.Value, B>;

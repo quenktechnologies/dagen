@@ -1,4 +1,4 @@
-import * as Promise from 'bluebird';
+import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Command } from './';
@@ -25,7 +25,7 @@ export declare class Compile {
     argv: Args;
     constructor(argv: Args);
     static enqueue(argv: Object): Maybe<Command<void>>;
-    run(): Promise<void>;
+    run(): Future<void>;
 }
 /**
  * extract an Args record using a docopt argument map.

@@ -1,10 +1,10 @@
-import * as Promise from 'bluebird';
+import {Future} from '@quenk/noni/lib/control/monad/future';
 
 /**
  * Command 
  */
 export interface Command<R> {
 
-  run(): Promise<R>;
+  run(): Future<R>;
 
 }
