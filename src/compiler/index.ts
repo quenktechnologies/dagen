@@ -2,8 +2,8 @@ import { Value, Object } from '@quenk/noni/lib/data/json';
 import { merge, isRecord } from '@quenk/noni/lib/data/record';
 import { Future, pure, raise } from '@quenk/noni/lib/control/monad/future';
 import { either } from '@quenk/noni/lib/data/either';
-import { Failure  } from '@quenk/preconditions/lib/result/failure';
-import {  Result } from '@quenk/preconditions/lib/result';
+import { Failure } from '@quenk/preconditions/lib/result/failure';
+import { Result } from '@quenk/preconditions/lib/result';
 import { expand as pathExpand } from '../schema/path';
 import { normalize } from '../schema/path/namespace';
 import { Loader, load } from '../schema/loader';
@@ -110,8 +110,10 @@ const mergingComplete = (o: Object): Future<Object> =>
  * This stage determines whether the object is fit for use.
  */
 export const checkStage = (c: Context) => (o: Object) =>
-    either<Failure<Value>, Value, Future<Object>>
-        (checksFailed(c))((o: Object) => pure(o))(c.checks.reduce(chainCheck, check(o)));
+    c
+        .checks
+        .reduce(chainCheck, check(o))
+        .fold(checksFailed(c), (o: Object) => pure(o));
 
 const checksFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
     raise(f.toError({}, c));
