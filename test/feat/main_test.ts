@@ -1,11 +1,17 @@
 import { must } from '@quenk/must';
-import { Future, toPromise, fromCallback } from '@quenk/noni/lib/control/monad/future';
+import {
+    Future,
+    pure,
+    toPromise,
+    fromCallback
+} from '@quenk/noni/lib/control/monad/future';
 import { readTextFile } from '@quenk/noni/lib/io/file';
 import { exec } from 'child_process';
 
 const SQL_DEFINITIONS = `${__dirname}/../fixtures/data/definitions/sql.json`;
 const TEMPLATES = `${__dirname}/../fixtures/templates`;
 const TS_TEMPLATE = `company.ts.dagen`;
+const FAIL_TEMPLATE = 'error.ts.dagen';
 const ORG = `${__dirname}/../fixtures/data/input/org.json`;
 const ORG_CHECK = `${__dirname}/../fixtures/data/checks/org.json`;
 const ORG_TS = `${__dirname}/../fixtures/data/output/org_ts.json`;
@@ -81,6 +87,16 @@ describe('dagen', () => {
 
                     }))))
 
+    it('should catch errors in templates', () =>
+        toPromise(chmod()
+            .chain(() => run(
+                `--templates ${TEMPLATES} ` +
+                `--template ${FAIL_TEMPLATE} ` +
+                `--definitions ${SQL_DEFINITIONS} ` +
+                `--namespace ts ${COMPANY} `))
+            .catch(e => { console.error(e); return pure('true') })
+            .map((r: string) => must(r).equal('true'))))
+
     it('should apply checks', () =>
         toPromise(chmod()
             .chain(() => run(
@@ -92,5 +108,6 @@ describe('dagen', () => {
                         must(JSON.parse(text)).equate(expected);
 
                     }))))
+
 
 });
