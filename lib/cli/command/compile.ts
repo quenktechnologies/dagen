@@ -1,6 +1,6 @@
 import * as args from '../args';
 import * as nunjucks from 'nunjucks';
-import {Future} from '@quenk/noni/lib/control/monad/future';
+import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { dirname } from 'path';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
@@ -76,12 +76,12 @@ export class Compile {
                     .chain(ctx =>
                         (setValues(schema)(argv.set))
                             .chain(schema => compile(ctx)(schema))
-                            .map((s: Object) => argv.template ?
+                            .chain((s: Object) => argv.template ?
                                 Nunjucks
                                     .create(argv.template,
                                         new nunjucks.FileSystemLoader(argv.templates))
                                     .render(s) :
-                                JSON.stringify(s)))
+                                pure(JSON.stringify(s))))
                     .map(console.log));
 
     }

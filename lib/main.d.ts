@@ -1,5 +1,5 @@
 #! /usr/bin/env node
-/// <reference path="../src/docopt.d.ts" />
+/// <reference path="docopt.d.ts" />
 export declare const defaultOptions: () => {
     templates: string;
 };
