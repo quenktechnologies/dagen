@@ -18,7 +18,7 @@
     "@quenk/preconditions": "^5.1.0",
     "docopt": "^0.6.2",
     "nunjucks": "^3.1.6",
-    "property-seek": "^3.1.1"
+    "property-seek": "^3.2.1"
   },
   "devDependencies": {
     "@quenk/must": "^1.0.4",
