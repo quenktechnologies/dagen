@@ -24,18 +24,6 @@ export declare class Context {
     addDefinitions(defs: Definitions): Context;
 }
 /**
- * pathExpansion stage.
- *
- * Nested property short-hand is expanded to full JSON object representation.
- */
-export declare const pathExpansion: (o: Object) => Future<Object>;
-/**
- * nameSubstitution stage.
- *
- * During this tage the processing program calculates the effective namespace.
- */
-export declare const namespaceSubstitution: (c: Context) => (o: Object) => Future<Object>;
-/**
  * fragmentResolution stage.
  *
  * During this stage, ref properties are recursively resolved and merged into

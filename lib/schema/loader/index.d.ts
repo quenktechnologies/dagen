@@ -42,6 +42,11 @@ export interface Loader {
     create: (cwd: string) => Loader;
 }
 /**
- * load references in a schema recursively.
+ * resolve references in a schema recursively.
+ *
+ * This function does the job of the following compilation stages recursively:
+ * 1. Path expansion.
+ * 2. Namespace resolution.
+ * 3. Fragment resolution.
  */
-export declare const load: (f: Loader) => (o: Object) => Future<Object>;
+export declare const resolve: (f: Loader, nss: string[]) => (o: Object) => Future<Object>;
