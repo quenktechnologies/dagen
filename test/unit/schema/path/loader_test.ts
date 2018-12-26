@@ -1,8 +1,8 @@
-import {must} from '@quenk/must';
+import { must } from '@quenk/must';
 import { Object } from '@quenk/noni/lib/data/json';
-import {Future, pure, raise, toPromise} from '@quenk/noni/lib/control/monad/future';
+import { Future, pure, raise, toPromise } from '@quenk/noni/lib/control/monad/future';
 import { match } from '@quenk/noni/lib/control/match';
-import { Load, Create, load } from '../../../../src/schema/loader';
+import { Load, Create, resolve } from '../../../../src/schema/loader';
 
 class ALoader {
 
@@ -58,7 +58,7 @@ class RLoader {
 
         return this.dir.hasOwnProperty(p) ?
             pure(this.dir[p]) :
-             raise(new Error(`Unknown path '${p}'!`));
+            raise(new Error(`Unknown path '${p}'!`));
 
     }
 
@@ -72,7 +72,7 @@ const rloader = new RLoader('');
 
 describe('loader', () => {
 
-    describe('load', () => {
+    describe('resolve', () => {
 
         it('should load all $ref properties', () => {
 
@@ -116,7 +116,7 @@ describe('loader', () => {
 
             };
 
-            return toPromise(load(loader)(o)).then(o => must(o).equate(r))
+            return toPromise(resolve(loader, [])(o)).then(o => must(o).equate(r))
 
         })
     })
@@ -152,7 +152,7 @@ describe('loader', () => {
 
         };
 
-        return toPromise(load(loader)(o)).then(o => must(o).equate(r));
+        return toPromise(resolve(loader, [])(o)).then(o => must(o).equate(r));
 
     });
 
@@ -203,7 +203,7 @@ describe('loader', () => {
 
         }
 
-        return toPromise(load(rloader)(o)).then(o => must(o).equate(r));
+        return toPromise(resolve(rloader, [])(o)).then(o => must(o).equate(r));
 
     });
 })

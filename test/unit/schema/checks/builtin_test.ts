@@ -117,10 +117,36 @@ describe('checks', () => {
             w = set('properties.object.type', 'array', w);
             w = set('properties.any', 'foo', w);
 
-            // the failure explanation we get will always be the same because
-            // of how we convert sums.
             must(check(w).takeLeft().explain())
-                .equate({ type: 'eq', variants: 'isRecord' });
+            .equate(
+              {
+                  'left': {
+                        'left': '',
+                        'right': {
+                                'properties': {
+                                          'any': {
+                                                      'left': {
+                                                                    'left': {
+                                                                                    'left': {
+                                                                                                      'left': '',
+                                                                                                      'right': 'isRecord'
+                                                                                                    },
+                                                                                    'right': 'isRecord'
+                                                                                  },
+                                                                    'right': 'isRecord'
+                                                                  },
+                                                      'right': 'isRecord'
+                                                    }
+                                        }
+                              }
+                      },
+                  'right': {
+                        'type': 'eq',
+                        'variants': 'isRecord'
+                      }
+              }
+            
+            );
 
         });
 

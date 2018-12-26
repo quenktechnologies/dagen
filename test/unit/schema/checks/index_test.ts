@@ -181,9 +181,9 @@ describe('checks', () => {
                         'left': {
                             'left': '',
                             'right': 'isString'
-                        }
+                        },
+                      'right': 'isNumber',
                     },
-                    'right': 'isNumber',
                     flags: {
 
                         active: 'isBoolean'
@@ -280,8 +280,8 @@ describe('checks', () => {
 
         it('should not mangle schema has nested arrays', () => {
 
-          must((fromSchema(ctx)(schema.mangledNestedArraySchema)
-            (samples.mangledNestedArraySample))  .takeRight())
+            must((fromSchema(ctx)(schema.mangledNestedArraySchema)
+                (samples.mangledNestedArraySample)).takeRight())
                 .equate(samples.mangledNestedArraySample);
 
             // must((fromSchema(ctx)(schema.array)(samples.array[0])).takeLeft())
