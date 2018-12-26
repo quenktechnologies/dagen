@@ -14,7 +14,7 @@ const TS_TEMPLATE = `company.ts.dagen`;
 const FAIL_TEMPLATE = 'error.ts.dagen';
 const ORG = `${__dirname}/../fixtures/data/input/org.json`;
 const ORG_CHECK = `${__dirname}/../fixtures/data/checks/org.json`;
-const ORG_TS = `${__dirname}/../fixtures/data/output/org_ts.json`;
+const COMPANY_TS = `${__dirname}/../fixtures/data/output/company_ts.json`;
 const ORG_JSON = `${__dirname}/../fixtures/data/output/org.json`;
 const COMPANY = `${__dirname}/../fixtures/data/input/company.json`;
 const COMPANY_SQL = `${__dirname}/../fixtures/data/output/company_sql.json`;
@@ -80,7 +80,7 @@ describe('dagen', () => {
                 `--definitions ${SQL_DEFINITIONS} ` +
                 `--namespace ts ${COMPANY} `))
             .chain((text: string) =>
-                readJSON(ORG_TS)
+                readJSON(COMPANY_TS)
                     .map((expected: string) => {
 
                         must(JSON.parse(text)).equate(expected);

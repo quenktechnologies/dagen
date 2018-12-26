@@ -8,7 +8,6 @@ import {
 } from '@quenk/noni/lib/control/monad/future';
 import {
     Record,
-    flatten,
     partition,
     map,
     reduce,
@@ -16,8 +15,10 @@ import {
     values,
     rmerge
 } from '@quenk/noni/lib/data/record';
+import { flatten } from '@quenk/noni/lib/data/record/path';
 import { match } from '@quenk/noni/lib/control/match';
-import { PATH_SEPARATOR } from '../path';
+import { Namespace, normalize } from '../path/namespace';
+import { PATH_SEPARATOR, expandObject } from '../path';
 
 export const REF_SYMBOL = '$ref';
 
@@ -72,13 +73,18 @@ export interface Loader {
 }
 
 /**
- * load references in a schema recursively.
+ * resolve references in a schema recursively.
+ *
+ * This function does the job of the following compilation stages recursively:
+ * 1. Path expansion.
+ * 2. Namespace resolution.
+ * 3. Fragment resolution.
  */
-export const load = (f: Loader) => (o: Object)
+export const resolve = (f: Loader, nss: Namespace[]) => (o: Object)
     : Future<Object> => {
 
-    let [ref, reg] = divide(o);
-    let resolved = eraseRefProperties(map(<Object>ref, fetch(f)));
+    let [ref, reg] = divide((normalize(nss)(expandObject(o))));
+    let resolved = eraseRefProperties(map(<Object>ref, fetch(f, nss)));
 
     return pure(inflate(reg))
         .chain((regs: Object) => constructFragment(resolved)
@@ -99,21 +105,22 @@ const divide = (o: Object): [Object, Object] =>
  * fetch a schema using a Loader function and the value
  * of the ref property. 
  *
- * Only accepts strings and arrays, nested objects are unintended side-effect.
+ * Only accepts strings and arrays, anything else is an unwanted error.
  * @private
  */
-const fetch = (f: Loader) => (v: Value): Future<Object> => <Future<Object>>match(v)
-    .caseOf(String, nestedFetch(f))
-    .caseOf(Array, mergeRejectedList(f))
-    .orElse(rejectFetchPath)
-    .end();
+const fetch = (f: Loader, nss: Namespace[]) => (v: Value)
+    : Future<Object> => <Future<Object>>match(v)
+        .caseOf(String, fetchObject(f, nss))
+        .caseOf(Array, fetchObjects(f, nss))
+        .orElse(fetchWrongReferenceType)
+        .end();
 
-const nestedFetch = (f: Loader) => (path: string)
+const fetchObject = (f: Loader, nss: Namespace[]) => (path: string)
     : Future<Object> =>
     f
         .load(path)
         .chain((val: Value) => <Future<Object>>match(val)
-            .caseOf({}.constructor, load(f.create(path)))
+            .caseOf({}.constructor, resolve(f.create(path), nss))
             .orElse(rejectNonObject)
             .end());
 
@@ -121,11 +128,11 @@ const rejectNonObject = (value: Value) =>
     raise(new Error(`References must only point to objects! ` +
         `Not : '${typeof value}'!`));
 
-const mergeRejectedList = (f: Loader) => (list: Value[]) =>
-    parallel(list.map(fetch(f)))
+const fetchObjects = (f: Loader, nss: Namespace[]) => (list: Value[]) =>
+    parallel(list.map(fetch(f, nss)))
         .map(l => l.reduce(rmerge, {}));
 
-const rejectFetchPath = (value: Value) =>
+const fetchWrongReferenceType = (value: Value) =>
     raise(new Error(`Cannot use type '${typeof value}' as a reference!`));
 
 const inflate = (o: Object) =>

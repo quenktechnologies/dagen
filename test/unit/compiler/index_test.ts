@@ -54,7 +54,8 @@ const oSchema = {
 
             }
 
-        }
+        },
+        'ts:available': { '$ref': 'available' }
 
     },
     procedures: {
@@ -83,11 +84,33 @@ const oSchema = {
 
 }
 
-const ctx = new Context({}, ['ts'], [], new MemoryLoader('', {}), []);
+const ctx = new Context({}, ['ts'], [], new MemoryLoader('', {
+
+    address: {
+        type: 'string'
+    },
+    date: {
+        type: 'Date'
+    },
+    available: {
+
+        type: 'object',
+        properties: {
+
+            'from.type': '#date',
+            'to.type': '#date',
+          'sql:recorded':  '#date'
+
+        }
+
+    }
+
+
+}), []);
 
 describe('compiler', () =>
     describe('compile', () =>
-        toPromise(compile(ctx)(oSchema)
+        it('should work', () => toPromise(compile(ctx)(oSchema)
             .map(s => must(s).equate({
 
                 'definitions': {
@@ -120,6 +143,17 @@ describe('compiler', () =>
                         'items': {
                             'type': 'string'
                         }
+                    },
+                    'available': {
+                        'type': 'object',
+                        'properties': {
+                            'from': {
+                                'type': 'Date'
+                            },
+                            'to': {
+                                'type': 'Date'
+                            }
+                        }
                     }
                 },
                 'procedures': {
@@ -135,4 +169,4 @@ describe('compiler', () =>
                         }
                     }
                 }
-            })))));
+            }))))));

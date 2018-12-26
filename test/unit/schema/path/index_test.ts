@@ -1,4 +1,4 @@
-import {must} from '@quenk/must';
+import { must } from '@quenk/must';
 import { expand } from '../../../../src/schema/path';
 
 describe('path', () => {
@@ -33,6 +33,29 @@ describe('path', () => {
 
                     }
 
+                }
+
+            }
+
+        })
+
+    });
+
+    it('should observe escaped dots', () => {
+
+        must(expand({
+            root: {
+                'name..first': 'Lasana',
+                name: { last: 'Murray' },
+            }
+        })).equate({
+
+            root: {
+
+                'name.first': 'Lasana',
+                name: {
+
+                    last: 'Murray',
                 }
 
             }

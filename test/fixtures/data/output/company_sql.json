@@ -8,7 +8,12 @@
         },
         "slogan": {
 
-          "type": "TEXT"
+            "type": "TEXT"
+
+        },
+        "dot.com": {
+
+            "type": "string"
 
         },
         "reg": {
@@ -35,7 +40,7 @@
                 },
                 "name": {
                     "type": "VARCHAR",
-                    "sql:table": "names"
+                    "table": "names"
                 }
             }
         }

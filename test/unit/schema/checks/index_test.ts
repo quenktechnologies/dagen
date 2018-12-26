@@ -1,12 +1,13 @@
+import * as schema from './fixtures/schema';
+import * as samples from './fixtures/samples';
 import { must } from '@quenk/must';
 import { set } from 'property-seek';
-import { Value, Object } from '@quenk/noni/lib/data/json';
-import { PrimFailure } from '@quenk/preconditions/lib/result/failure';
+import { Value } from '@quenk/noni/lib/data/json';
+import { PrimFailure, DualFailure } from '@quenk/preconditions/lib/result/failure';
 import { map } from '@quenk/noni/lib/data/record';
 import { range } from '@quenk/preconditions/lib/number';
 import { lower, trim } from '@quenk/preconditions/lib/string';
 import { eq } from '@quenk/preconditions';
-import { Schemas } from '../../../../src/schema';
 import { Providers } from '../../../../src/schema/checks/provider';
 import { Check, Context, fromSchema } from '../../../../src/schema/checks';
 
@@ -21,305 +22,6 @@ const providers: Providers<Value> = {
 
 const ctx = new Context({}, providers);
 
-const schemas: Schemas = {
-
-    string: {
-
-        type: 'string',
-
-    },
-    number: {
-
-        type: 'number'
-
-    },
-    boolean: {
-
-        type: 'boolean'
-
-    },
-    object: {
-
-        type: 'object',
-        properties: {
-
-            name: { type: 'string' },
-
-            age: { type: 'number', optional: true },
-
-            profile: {
-
-                type: 'sum',
-
-                variants: {
-
-                    main: {
-
-                        type: 'string'
-
-                    },
-
-                    avatar: {
-
-                        type: 'number'
-                    }
-                }
-
-            },
-            flags: {
-
-                type: 'object',
-                properties: {
-
-                    active: {
-
-                        type: 'boolean'
-
-                    }
-                },
-
-                additionalProperties: { type: 'boolean' }
-
-            },
-
-            tags: {
-
-                type: 'array',
-
-                items: { type: 'string' }
-
-            },
-
-            contact: {
-
-                type: 'object',
-
-                additionalProperties: {
-
-                    type: 'string'
-                }
-            }
-
-        }
-
-    },
-
-    array: {
-
-        type: 'array',
-
-        items: { type: 'object', properties: { id: { type: 'number' } } }
-
-    },
-
-    sum: {
-
-        type: 'sum',
-
-        variants: {
-
-            string: { type: 'string' },
-
-            boolean: { type: 'boolean' },
-
-            number: { type: 'number' }
-
-        }
-
-    },
-    ref: {
-
-        type: 'ref',
-        path: 'object'
-
-    }
-
-};
-
-const rSchema = {
-
-    string: {
-
-        type: 'string'
-
-    },
-    object: {
-
-        type: 'object',
-        additionalProperties: {
-
-            type: 'sum',
-            variants: {
-
-                string: {
-
-                    type: 'ref',
-                    ref: 'string'
-
-                },
-                object: {
-
-                    type: 'ref',
-                    ref: 'object'
-
-                }
-
-            }
-
-        }
-
-    }
-
-};
-
-const samples: Object = {
-
-    string: 'this is a string',
-
-    number: 12,
-
-    boolean: true,
-
-    object: {
-
-        name: 'Otis Juma',
-
-        age: 24,
-
-        profile: 1256,
-
-        flags: {
-
-            active: true,
-
-            locked: false,
-
-            outstanding: true
-
-        },
-
-        tags: ['user', 'active', 'unlocked'],
-
-        contact: {
-
-            home: '6995534',
-
-            email: 'me@meme.com',
-
-            fax: 'N/A'
-
-        }
-
-    },
-
-    array: [{ id: 1 }, { id: 12 }, { id: 24 }],
-
-    sum: true,
-
-    ref: { yes: true }
-
-}
-
-const withChecks = {
-
-    type: 'object',
-
-    properties: {
-
-        name: {
-
-            type: 'string',
-
-            $checks: [{ name: 'eq', parameters: ['Larry'] }]
-
-        },
-        clients: {
-
-            type: 'object',
-
-            additionalProperties: {
-
-                type: 'number',
-
-                $checks: [{ name: 'range', parameters: [6, 12] }]
-
-            }
-
-        },
-        flags: {
-
-            type: 'array',
-
-            items: {
-
-                type: 'number',
-
-                $checks: [{ name: 'range', parameters: [24, 48] }]
-
-            }
-
-        },
-        profile: {
-
-            type: 'sum',
-
-            variants: {
-
-                uname: {
-
-                    type: 'string',
-                    $checks: [{ name: 'trim' }, { name: 'lower' }, { name: 'eq', parameters: ['uname'] }]
-
-                },
-                id: {
-
-                    type: 'number'
-
-                }
-
-            }
-
-
-        }
-
-    }
-
-};
-
-const withChecksSamples = {
-
-    name: 'Larry',
-
-    clients: {
-
-        bmobile: 6,
-        ttec: 10,
-        cal: 7
-
-    },
-    flags: [25, 48, 32],
-
-    profile: '     UnAME    '
-
-};
-
-const withChecksWrong = {
-
-    name: 'larry',
-
-    clients: {
-
-        bmobile: '6',
-        ttec: 210,
-        cal: [7]
-
-    },
-    flags: [25, 100, 48, 9],
-
-    profile: 'parolor'
-
-};
-
 describe('checks', () => {
 
     describe('Context', () => {
@@ -329,8 +31,8 @@ describe('checks', () => {
             it('should source checks from a map', () => {
 
                 let ctx = new Context();
-                let r = map(<any>ctx.addChecks(schemas).checks,
-                    (c: Check<Value>, k: string) => c(samples[k]).takeRight());
+                let r = map(<any>ctx.addChecks(schema.all).checks,
+                    (c: Check<Value>, k: string) => c(samples.all[k]).takeRight());
 
                 must(r)
                     .equate({
@@ -344,7 +46,11 @@ describe('checks', () => {
                             profile: 1256,
                             flags: { active: true, locked: false, outstanding: true },
                             tags: ['user', 'active', 'unlocked'],
-                            contact: { home: '6995534', email: 'me@meme.com', fax: 'N/A' }
+                            contact: {
+                                home: '6995534',
+                                email: 'me@meme.com',
+                                fax: 'N/A'
+                            }
                         },
                         array: [{ id: 1 }, { id: 12 }, { id: 24 }],
                         sum: true,
@@ -379,10 +85,10 @@ describe('checks', () => {
 
                 let ctx = new Context();
 
-                let r = map(<any>ctx.addChecks(rSchema).checks,
+                let r = map(<any>ctx.addChecks(schema.rSchema).checks,
                     (c: Check<Value>, k: string) => c(samples[k]).takeRight());
 
-                let w = map(<any>ctx.addChecks(rSchema).checks,
+                let w = map(<any>ctx.addChecks(schema.rSchema).checks,
                     (c: Check<Value>, k: string) => c(wrong[k]).takeLeft().explain());
 
                 must(r).equate({
@@ -401,7 +107,13 @@ describe('checks', () => {
 
                     object: {
 
-                        'prop': 'isRecord'
+                        'prop': {
+                            'left': {
+                                'left': '',
+                                'right': 'isString'
+                            },
+                            'right': 'isRecord'
+                        }
 
                     }
                 });
@@ -417,30 +129,30 @@ describe('checks', () => {
 
         it('should produce a check for string types', () => {
 
-            must((fromSchema(ctx)(schemas.string)(samples.string)).takeRight())
+            must((fromSchema(ctx)(schema.string)(samples.string)).takeRight())
                 .equal(samples.string);
 
-            must((fromSchema(ctx)(schemas.string)(samples.number)).takeLeft())
+            must((fromSchema(ctx)(schema.string)(samples.number)).takeLeft())
                 .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a precondition for number types', () => {
 
-            must((fromSchema(ctx)(schemas.number)(samples.number)).takeRight())
+            must((fromSchema(ctx)(schema.number)(samples.number)).takeRight())
                 .equal(samples.number);
 
-            must((fromSchema(ctx)(schemas.number)(samples.string)).takeLeft())
+            must((fromSchema(ctx)(schema.number)(samples.string)).takeLeft())
                 .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a check for boolean types', () => {
 
-            must((fromSchema(ctx)(schemas.boolean)(samples.boolean)).takeRight())
+            must((fromSchema(ctx)(schema.boolean)(samples.boolean)).takeRight())
                 .equal(samples.boolean);
 
-            must((fromSchema(ctx)(schemas.boolean)(samples.string)).takeLeft())
+            must((fromSchema(ctx)(schema.boolean)(samples.string)).takeLeft())
                 .be.instance.of(PrimFailure);
 
         })
@@ -456,15 +168,22 @@ describe('checks', () => {
 
             delete optionaled.age;
 
-            must((fromSchema(ctx)(schemas.object)(samples.object)).takeRight())
+            must((fromSchema(ctx)(schema.object)(samples.object)).takeRight())
                 .equate(samples.object);
 
-            must((fromSchema(ctx)(schemas.object)(optionaled)).takeRight())
+            must((fromSchema(ctx)(schema.object)(optionaled)).takeRight())
                 .equate(optionaled);
 
-            must((fromSchema(ctx)(schemas.object)(wrong)).takeLeft().explain())
+            must((fromSchema(ctx)(schema.object)(wrong)).takeLeft().explain())
                 .equate({
-                    profile: 'isNumber',
+
+                    profile: {
+                        'left': {
+                            'left': '',
+                            'right': 'isString'
+                        }
+                    },
+                    'right': 'isNumber',
                     flags: {
 
                         active: 'isBoolean'
@@ -477,48 +196,65 @@ describe('checks', () => {
 
         it('should produce a precondition for array types', () => {
 
-            must((fromSchema(ctx)(schemas.array)(samples.array)).takeRight())
+            must((fromSchema(ctx)(schema.array)(samples.array)).takeRight())
                 .equate(samples.array);
 
-            must((fromSchema(ctx)(schemas.array)(samples.array[0])).takeLeft())
+            must((fromSchema(ctx)(schema.array)(samples.array[0])).takeLeft())
                 .be.instance.of(PrimFailure);
+
+        });
+
+        it('should produce a precondition for an array of numbers', () => {
+
+            must((fromSchema(ctx)(schema.arrayOfNumbers)([0, 1, 2])).takeRight())
+                .equate([0, 1, 2]);
+
+            must((fromSchema(ctx)(schema.arrayOfNumbers)(['0', '1', '2']))
+                .takeLeft().explain()).equate({
+
+                    '0': 'isNumber',
+                    '1': 'isNumber',
+                    '2': 'isNumber'
+
+                });
 
         })
 
         it('should produce a precondition for sum types', () => {
 
-            must((fromSchema(ctx)(schemas.sum)(samples.string)).takeRight())
+            must((fromSchema(ctx)(schema.sum)(samples.string)).takeRight())
                 .equal(samples.string);
 
-            must((fromSchema(ctx)(schemas.sum)(samples.number)).takeRight())
+            must((fromSchema(ctx)(schema.sum)(samples.number)).takeRight())
                 .equal(samples.number);
 
-            must((fromSchema(ctx)(schemas.sum)(samples.boolean)).takeRight())
+            must((fromSchema(ctx)(schema.sum)(samples.boolean)).takeRight())
                 .equal(samples.boolean);
 
-            must((fromSchema(ctx)(schemas.sum)(samples.object)).takeLeft())
-                .be.instance.of(PrimFailure);
+            must((fromSchema(ctx)(schema.sum)(samples.object)).takeLeft())
+                .be.instance.of(DualFailure);
 
         })
 
         it('should produce a precondition for ref types ', () => {
 
-            let ps = new Context({ object: fromSchema(ctx)(schemas.object) });
+            let ps = new Context({ object: fromSchema(ctx)(schema.object) });
 
-            must((fromSchema(ps)(schemas.object)(samples.object)).takeRight())
+            must((fromSchema(ps)(schema.object)(samples.object)).takeRight())
                 .equate(samples.object);
 
-            must((fromSchema(ps)(schemas.object)(samples.string).takeLeft()))
+            must((fromSchema(ps)(schema.object)(samples.string).takeLeft()))
                 .be.instance.of(PrimFailure);
 
         })
 
         it('should produce a precondition for ref types ', () => {
 
-            must((fromSchema(ctx)(withChecks)(withChecksSamples)).takeRight())
-                .equate(set('profile', 'uname', withChecksSamples));
+            must((fromSchema(ctx)(schema.withChecks)(samples.withChecks)).takeRight())
+                .equate(set('profile', 'uname', samples.withChecks));
 
-            must((fromSchema(ctx)(withChecks)(withChecksWrong)).takeLeft().explain())
+            must((fromSchema(ctx)(schema.withChecks)(samples.withChecksWrong))
+                .takeLeft().explain())
                 .equate({
                     'name': 'eq',
                     'clients': {
@@ -531,10 +267,29 @@ describe('checks', () => {
                         '1': 'range.max',
                         '3': 'range.min'
                     },
-                    'profile': 'isNumber'
+                    'profile': {
+                        'left': {
+                            'left': '',
+                            'right': 'eq'
+                        },
+                        'right': 'isNumber'
+                    }
                 });
 
         })
+
+        it('should not mangle schema has nested arrays', () => {
+
+          must((fromSchema(ctx)(schema.mangledNestedArraySchema)
+            (samples.mangledNestedArraySample))  .takeRight())
+                .equate(samples.mangledNestedArraySample);
+
+            // must((fromSchema(ctx)(schema.array)(samples.array[0])).takeLeft())
+            //    .be.instance.of(PrimFailure);
+
+        });
+
+
 
     })
 })

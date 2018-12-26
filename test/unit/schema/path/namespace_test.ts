@@ -36,7 +36,7 @@ describe('namespace', () => {
 
         it('should normalize a schema based on the list', () => {
 
-            let nss = ['sql', 'js', 'validation'];
+            let ns = ['sql', 'js', 'validation'];
 
             let r = {
 
@@ -62,7 +62,48 @@ describe('namespace', () => {
 
             }
 
-            must((normalize(nss)(schema))).equate(r);
+            must((normalize(ns)(schema))).equate(r);
+
+        });
+
+        it('should preserve dots in property names', () => {
+
+          let ns = ['sql', 'js'];
+
+          let schema = {
+
+            'type': 'object',
+            'sql:config.schema': 'user',
+            'properties': {
+
+              'name.first' : {
+
+                'type': 'string'
+
+              }
+
+            }
+
+          };
+
+
+          let r = {
+
+            'type': 'object',
+            'config.schema': 'user',
+            'properties': {
+
+              'name.first' : {
+
+                'type': 'string'
+
+              }
+
+            }
+
+          };
+
+            must((normalize(ns)(schema))).equate(r);
 
         });
 

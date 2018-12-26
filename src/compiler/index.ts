@@ -4,10 +4,8 @@ import { Future, pure, raise } from '@quenk/noni/lib/control/monad/future';
 import { either } from '@quenk/noni/lib/data/either';
 import { Failure } from '@quenk/preconditions/lib/result/failure';
 import { Result } from '@quenk/preconditions/lib/result';
-import { expand as pathExpand } from '../schema/path';
-import { normalize } from '../schema/path/namespace';
-import { Loader, load } from '../schema/loader';
-import { resolve } from '../schema/definitions';
+import { Loader, resolve } from '../schema/loader';
+import { resolve as defResolve } from '../schema/definitions';
 import { Check } from '../schema/checks';
 import { check } from '../schema/checks/builtin';
 import { Schema, expand as schemaExpand } from '../schema';
@@ -47,29 +45,13 @@ export class Context {
 }
 
 /**
- * pathExpansion stage.
- * 
- * Nested property short-hand is expanded to full JSON object representation.
- */
-export const pathExpansion = (o: Object): Future<Object> =>
-    pure(<Object>pathExpand(o));
-
-/**
- * nameSubstitution stage.
- *
- * During this tage the processing program calculates the effective namespace.
- */
-export const namespaceSubstitution = (c: Context) => (o: Object): Future<Object> =>
-    pure(normalize(c.namespaces)(o));
-
-/**
  * fragmentResolution stage.
  *
  * During this stage, ref properties are recursively resolved and merged into
  * their owners.
  */
 export const fragmentResolution = (c: Context) => (o: Object): Future<Object> =>
-    (load(c.loader)(o))
+    (resolve(c.loader, c.namespaces)(o))
 
 /**
  * schemaExpansion stage.
@@ -96,7 +78,7 @@ export const definitionRegistration = (c: Context) => (o: Object): Future<Contex
  */
 export const definitionMerging = (o: Object) => (c: Context): Future<Object> =>
     either<Failure<Object>, Object, Future<Object>>
-        (mergingFailed(c))(mergingComplete)(resolve(c.definitions)(<Schema>o))
+        (mergingFailed(c))(mergingComplete)(defResolve(c.definitions)(<Schema>o))
 
 const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
     raise(f.toError({}, c));
@@ -125,8 +107,7 @@ const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
  * compile a JSON document into a valid document schema.
  */
 export const compile = (c: Context) => (j: Object) =>
-    pathExpansion(j)
-        .chain(namespaceSubstitution(c))
+    pure(j)
         .chain(fragmentResolution(c))
         .chain(schemaExpansion)
         .chain((j: Object) =>
@@ -134,3 +115,4 @@ export const compile = (c: Context) => (j: Object) =>
                 .chain((c: Context) =>
                     (definitionMerging(j)(c))
                         .chain(checkStage(c))));
+
