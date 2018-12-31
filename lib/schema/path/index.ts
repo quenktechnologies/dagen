@@ -1,10 +1,8 @@
 import * as json from '@quenk/noni/lib/data/json';
-import { set } from 'property-seek';
 import { match } from '@quenk/noni/lib/control/match';
 import { flip, cons } from '@quenk/noni/lib/data/function';
 import { map } from '@quenk/noni/lib/data/array';
-import { flatten, unescapeRecord } from '@quenk/noni/lib/data/record/path';
-import { reduce } from '@quenk/noni/lib/data/record';
+import { unflatten, flatten, unescapeRecord } from '@quenk/noni/lib/data/record/path';
 
 export const PATH_SEPARATOR = '.';
 
@@ -20,4 +18,4 @@ export const expand = (val: json.Value): json.Value => <json.Value>match(val)
 export const expandArray = (flip(map)(expand));
 
 export const expandObject = (o: json.Object): json.Object =>
-    reduce(unescapeRecord(flatten(o)), {}, (p, c, k) => set(k, c, p));
+    unflatten(unescapeRecord(flatten(o)));
