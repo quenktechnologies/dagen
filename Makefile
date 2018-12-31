@@ -4,6 +4,7 @@ lib: $(shell find src -type f)
 	mkdir lib
 	cp -R -u src/* lib
 	./node_modules/.bin/tsc --project lib
+	chmod +x $@/main.js
 
 # Generate typedoc documentation.
 .PHONY: docs
