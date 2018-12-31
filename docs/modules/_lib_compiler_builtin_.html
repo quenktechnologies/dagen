@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>@quenk/dagen | @quenk/dagen</title>
+	<title>&quot;lib/compiler/builtin&quot; | @quenk/dagen</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<style type="text/css">/*! normalize.css v1.1.3 | MIT License | git.io/normalize */
@@ -879,7 +879,7 @@ img { max-width: 100%; }
 		<div class="container">
 			<div class="table-wrap">
 				<div class="table-cell">
-					<strong><a href="index.html">@quenk/dagen</a></strong>
+					<strong><a href="../index.html">@quenk/dagen</a></strong>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -909,111 +909,446 @@ img { max-width: 100%; }
 </header>
 <nav class="tsd-navigation secondary">
 	<ul>
+		<li class=" tsd-kind-function tsd-parent-kind-external-module">
+			<a href="_lib_compiler_builtin_.html#takearrays" class="tsd-kind-icon">take<wbr>Arrays</a>
+		</li>
+		<li class=" tsd-kind-function tsd-parent-kind-external-module">
+			<a href="_lib_compiler_builtin_.html#takeobjects" class="tsd-kind-icon">take<wbr>Objects</a>
+		</li>
+		<li class=" tsd-kind-function tsd-parent-kind-external-module">
+			<a href="_lib_compiler_builtin_.html#takesums" class="tsd-kind-icon">take<wbr>Sums</a>
+		</li>
+		<li class=" tsd-kind-object-literal tsd-parent-kind-external-module">
+			<a href="_lib_compiler_builtin_.html#filters" class="tsd-kind-icon">filters</a>
+		</li>
+		<li class=" tsd-kind-object-literal tsd-parent-kind-external-module">
+			<a href="_lib_compiler_builtin_.html#functions" class="tsd-kind-icon">functions</a>
+		</li>
 	</ul>
 </nav>
 <div class="container container-main">
 	<div class="content-wrap">
-		<div class="tsd-panel tsd-typography">
-			<h1 id="dagen">Dagen</h1>
-			<p>Generate boilerplate output from a schema.</p>
-			<p>Dagen (DATA GENerator) is a tool for generating code for an application&#39;s
-			data models using templates.</p>
-			<p>It works by pre-processing a JSON document in a
-				<a href="http://json-schema.org">JSON Schema</a> simillar syntax then executing a user
-			supplied template against the processed document.</p>
-			<p>Templates are generated using <a href="https://github.com/mozilla/nunjucks">Nunjucks</a>.</p>
-			<p>See the <code>spec.md</code> file for the specifics of the schema syntax.</p>
-			<h2 id="installation">Installation</h2>
-			<pre><code class="language-sh">  npm install -g @quenk/dagen</code></pre>
-			<h2 id="usage">Usage</h2>
-			<pre><code class="language-sh">Usage:
-   main.js [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
-          [--<span class="hljs-built_in">set</span>=KVP...] [--template=TEMPLATE] [--templates=PATH]              
-          [--check=PATH...] [--install-check=PATH] &lt;file&gt;                      
-
-Options:           
-  -h --<span class="hljs-built_in">help</span>                  Show this screen.                                 
-  --template TEMPLATE        Specify the template to use when generating code. 
-  --templates PATH           Path to resolve templates from. Defaults to process.cwd().
-  --namespace EXT            Sets a namespace to be <span class="hljs-keyword">in</span> effect.                 
-  --plugin PATH              Path to a plugin that will be loaded at runtime.  
-  --definitions PATH         Path to an exported definition object to include. 
-  --<span class="hljs-built_in">set</span> PATH=VALUE           Set a value on the schema document.                      
-  --check PATH               Loads and applies a check to the final document. 
-  --install-check PATH       Make a precondition available to be used as a <span class="hljs-variable">$check</span>.
-  --version                  Show version. </code></pre>
-			<h2 id="license">License</h2>
-			<p>Apache-2.0 (C) Quenk Technologies Limited.</p>
-		</div>
-		<div style="position:relative;"><a name="typedoc-main-index" class="tsd-anchor"></a></div>
 		<section class="tsd-panel-group tsd-index-group">
 			<h2>Index</h2>
 			<section class="tsd-panel tsd-index-panel">
 				<div class="tsd-index-content">
 					<section class="tsd-index-section ">
-						<h3>External modules</h3>
+						<h3>Functions</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_args_.html" class="tsd-kind-icon">"lib/cli/args"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_command_compile_.html" class="tsd-kind-icon">"lib/cli/command/compile"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_command_index_.html" class="tsd-kind-icon">"lib/cli/command/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_index_.html" class="tsd-kind-icon">"lib/cli/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_builtin_.html" class="tsd-kind-icon">"lib/compiler/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_index_.html" class="tsd-kind-icon">"lib/compiler/generator/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_nunjucks_builtin_.html" class="tsd-kind-icon">"lib/compiler/generator/nunjucks/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_nunjucks_index_.html" class="tsd-kind-icon">"lib/compiler/generator/nunjucks/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_index_.html" class="tsd-kind-icon">"lib/compiler/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_plugin_.html" class="tsd-kind-icon">"lib/compiler/plugin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_main_.html" class="tsd-kind-icon">"lib/main"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_builtin_.html" class="tsd-kind-icon">"lib/schema/checks/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_index_.html" class="tsd-kind-icon">"lib/schema/checks/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_provider_.html" class="tsd-kind-icon">"lib/schema/checks/provider"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_spec_.html" class="tsd-kind-icon">"lib/schema/checks/spec"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_definitions_index_.html" class="tsd-kind-icon">"lib/schema/definitions/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_definitions_usage_.html" class="tsd-kind-icon">"lib/schema/definitions/usage"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_index_.html" class="tsd-kind-icon">"lib/schema/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_file_system_.html" class="tsd-kind-icon">"lib/schema/loader/file-<wbr>system"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_index_.html" class="tsd-kind-icon">"lib/schema/loader/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_memory_.html" class="tsd-kind-icon">"lib/schema/loader/memory"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_path_index_.html" class="tsd-kind-icon">"lib/schema/path/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_path_namespace_.html" class="tsd-kind-icon">"lib/schema/path/namespace"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_alt_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/alt"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_alternative_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/alternative"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_applicative_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/applicative"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_apply_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/apply"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_chain_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/chain"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_error_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/error"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_extend_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/extend"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_match_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/match"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_monad_future_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/monad/future"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_monad_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/monad/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_plus_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/plus"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_timer_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/timer"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/array"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_either_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/either"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_eq_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/eq"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_function_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/function"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_functor_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/functor"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_json_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/json/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_json_types_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/json/types"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_maybe_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/maybe"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_record_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/record/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_record_path_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/record/path"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_string_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/string"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_type_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/type"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_math_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/math"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/array"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_boolean_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/boolean"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_number_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/number"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_record_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/record"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/array"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_record_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/record"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/index"</a></li>
-							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_string_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/string"</a></li>
+							<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lib_compiler_builtin_.html#takearrays" class="tsd-kind-icon">take<wbr>Arrays</a></li>
+							<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lib_compiler_builtin_.html#takeobjects" class="tsd-kind-icon">take<wbr>Objects</a></li>
+							<li class="tsd-kind-function tsd-parent-kind-external-module"><a href="_lib_compiler_builtin_.html#takesums" class="tsd-kind-icon">take<wbr>Sums</a></li>
+						</ul>
+					</section>
+					<section class="tsd-index-section ">
+						<h3>Object literals</h3>
+						<ul class="tsd-index-list">
+							<li class="tsd-kind-object-literal tsd-parent-kind-external-module"><a href="_lib_compiler_builtin_.html#filters" class="tsd-kind-icon">filters</a></li>
+							<li class="tsd-kind-object-literal tsd-parent-kind-external-module"><a href="_lib_compiler_builtin_.html#functions" class="tsd-kind-icon">functions</a></li>
 						</ul>
 					</section>
 				</div>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Functions</h2>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+				<a name="takearrays" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> take<wbr>Arrays</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+					<li class="tsd-signature tsd-kind-icon">take<wbr>Arrays<span class="tsd-signature-symbol">(</span>doc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">json.Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L11">lib/compiler/builtin.ts:11</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>takeArrays extracts the columns from a list that are array types.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>doc: <span class="tsd-signature-type">json.Object</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+						<ul class="tsd-parameters">
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+				<a name="takeobjects" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> take<wbr>Objects</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+					<li class="tsd-signature tsd-kind-icon">take<wbr>Objects<span class="tsd-signature-symbol">(</span>doc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">json.Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L18">lib/compiler/builtin.ts:18</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<ul>
+									<li>takeObjects extracts type=&#39;object&#39; columns.</li>
+								</ul>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>doc: <span class="tsd-signature-type">json.Object</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+						<ul class="tsd-parameters">
+						</ul>
+					</li>
+				</ul>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-external-module">
+				<a name="takesums" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> take<wbr>Sums</h3>
+				<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module">
+					<li class="tsd-signature tsd-kind-icon">take<wbr>Sums<span class="tsd-signature-symbol">(</span>doc<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">json.Object</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">object</span></li>
+				</ul>
+				<ul class="tsd-descriptions">
+					<li class="tsd-description">
+						<aside class="tsd-sources">
+							<ul>
+								<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L25">lib/compiler/builtin.ts:25</a></li>
+							</ul>
+						</aside>
+						<div class="tsd-comment tsd-typography">
+							<div class="lead">
+								<p>takeSums extracts type=&#39;sum&#39; columns.</p>
+							</div>
+						</div>
+						<h4 class="tsd-parameters-title">Parameters</h4>
+						<ul class="tsd-parameters">
+							<li>
+								<h5>doc: <span class="tsd-signature-type">json.Object</span></h5>
+							</li>
+						</ul>
+						<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">object</span></h4>
+						<ul class="tsd-parameters">
+						</ul>
+					</li>
+				</ul>
+			</section>
+		</section>
+		<section class="tsd-panel-group tsd-member-group ">
+			<h2>Object literals</h2>
+			<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-external-module">
+				<a name="filters" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> filters</h3>
+				<div class="tsd-signature tsd-kind-icon">filters<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L62">lib/compiler/builtin.ts:62</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>filters made available for templates.</p>
+					</div>
+				</div>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="filters.error" class="tsd-anchor"></a>
+					<h3>error</h3>
+					<div class="tsd-signature tsd-kind-icon">error<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">error</span><span class="tsd-signature-symbol"> =&nbsp;console.error</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L65">lib/compiler/builtin.ts:65</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="filters.info" class="tsd-anchor"></a>
+					<h3>info</h3>
+					<div class="tsd-signature tsd-kind-icon">info<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">info</span><span class="tsd-signature-symbol"> =&nbsp;console.info</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L67">lib/compiler/builtin.ts:67</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="filters.log" class="tsd-anchor"></a>
+					<h3>log</h3>
+					<div class="tsd-signature tsd-kind-icon">log<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">log</span><span class="tsd-signature-symbol"> =&nbsp;console.log</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L66">lib/compiler/builtin.ts:66</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-function tsd-parent-kind-object-literal">
+					<a name="filters.throw" class="tsd-anchor"></a>
+					<h3>throw</h3>
+					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-object-literal">
+						<li class="tsd-signature tsd-kind-icon">throw<span class="tsd-signature-symbol">(</span>msg<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">never</span></li>
+					</ul>
+					<ul class="tsd-descriptions">
+						<li class="tsd-description">
+							<aside class="tsd-sources">
+								<ul>
+									<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L64">lib/compiler/builtin.ts:64</a></li>
+								</ul>
+							</aside>
+							<h4 class="tsd-parameters-title">Parameters</h4>
+							<ul class="tsd-parameters">
+								<li>
+									<h5>msg: <span class="tsd-signature-type">string</span></h5>
+								</li>
+							</ul>
+							<h4 class="tsd-returns-title">Returns <span class="tsd-signature-type">never</span></h4>
+						</li>
+					</ul>
+				</section>
+			</section>
+			<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-external-module">
+				<a name="functions" class="tsd-anchor"></a>
+				<h3><span class="tsd-flag ts-flagConst">Const</span> functions</h3>
+				<div class="tsd-signature tsd-kind-icon">functions<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
+				<aside class="tsd-sources">
+					<ul>
+						<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L32">lib/compiler/builtin.ts:32</a></li>
+					</ul>
+				</aside>
+				<div class="tsd-comment tsd-typography">
+					<div class="lead">
+						<p>functions made available for templates.</p>
+					</div>
+				</div>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.contains" class="tsd-anchor"></a>
+					<h3>contains</h3>
+					<div class="tsd-signature tsd-kind-icon">contains<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">contains</a><span class="tsd-signature-symbol"> =&nbsp;arrays.contains</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L55">lib/compiler/builtin.ts:55</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.get" class="tsd-anchor"></a>
+					<h3>get</h3>
+					<div class="tsd-signature tsd-kind-icon">get<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">get</span><span class="tsd-signature-symbol"> =&nbsp;get</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L49">lib/compiler/builtin.ts:49</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isarray" class="tsd-anchor"></a>
+					<h3>is<wbr>Array</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Array<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">isArray</span><span class="tsd-signature-symbol"> =&nbsp;typ.isArray</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L34">lib/compiler/builtin.ts:34</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isarraytype" class="tsd-anchor"></a>
+					<h3>is<wbr>Array<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Array<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isArrayType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isArrayType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L41">lib/compiler/builtin.ts:41</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isboolean" class="tsd-anchor"></a>
+					<h3>is<wbr>Boolean</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Boolean<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isBoolean</a><span class="tsd-signature-symbol"> =&nbsp;typ.isBoolean</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L39">lib/compiler/builtin.ts:39</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isbooleantype" class="tsd-anchor"></a>
+					<h3>is<wbr>Boolean<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Boolean<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isBooleanType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isBooleanType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L45">lib/compiler/builtin.ts:45</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isfunction" class="tsd-anchor"></a>
+					<h3>is<wbr>Function</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Function<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isFunction</a><span class="tsd-signature-symbol"> =&nbsp;typ.isFunction</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L36">lib/compiler/builtin.ts:36</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isnumber" class="tsd-anchor"></a>
+					<h3>is<wbr>Number</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Number<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isNumber</a><span class="tsd-signature-symbol"> =&nbsp;typ.isNumber</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L37">lib/compiler/builtin.ts:37</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isnumbertype" class="tsd-anchor"></a>
+					<h3>is<wbr>Number<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Number<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isNumberType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isNumberType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L44">lib/compiler/builtin.ts:44</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isobject" class="tsd-anchor"></a>
+					<h3>is<wbr>Object</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Object<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isObject</a><span class="tsd-signature-symbol"> =&nbsp;typ.isObject</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L35">lib/compiler/builtin.ts:35</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isobjecttype" class="tsd-anchor"></a>
+					<h3>is<wbr>Object<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Object<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isObjectType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isObjectType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L42">lib/compiler/builtin.ts:42</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isprim" class="tsd-anchor"></a>
+					<h3>is<wbr>Prim</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Prim<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isPrim</a><span class="tsd-signature-symbol"> =&nbsp;typ.isPrim</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L40">lib/compiler/builtin.ts:40</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isstring" class="tsd-anchor"></a>
+					<h3>is<wbr>String</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>String<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isString</a><span class="tsd-signature-symbol"> =&nbsp;typ.isString</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L38">lib/compiler/builtin.ts:38</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.isstringtype" class="tsd-anchor"></a>
+					<h3>is<wbr>String<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>String<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isStringType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isStringType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L43">lib/compiler/builtin.ts:43</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.issumtype" class="tsd-anchor"></a>
+					<h3>is<wbr>Sum<wbr>Type</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Sum<wbr>Type<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">isSumType</a><span class="tsd-signature-symbol"> =&nbsp;schema.isSumType</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L46">lib/compiler/builtin.ts:46</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.merge" class="tsd-anchor"></a>
+					<h3>merge</h3>
+					<div class="tsd-signature tsd-kind-icon">merge<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">merge</a><span class="tsd-signature-symbol"> =&nbsp;merge</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L47">lib/compiler/builtin.ts:47</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.require" class="tsd-anchor"></a>
+					<h3>require</h3>
+					<div class="tsd-signature tsd-kind-icon">require<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">NodeRequire</span><span class="tsd-signature-symbol"> =&nbsp;require</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L51">lib/compiler/builtin.ts:51</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.rmerge" class="tsd-anchor"></a>
+					<h3>rmerge</h3>
+					<div class="tsd-signature tsd-kind-icon">rmerge<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">rmerge</a><span class="tsd-signature-symbol"> =&nbsp;rmerge</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L48">lib/compiler/builtin.ts:48</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.set" class="tsd-anchor"></a>
+					<h3>set</h3>
+					<div class="tsd-signature tsd-kind-icon">set<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">set</span><span class="tsd-signature-symbol"> =&nbsp;set</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L50">lib/compiler/builtin.ts:50</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.takearrays-1" class="tsd-anchor"></a>
+					<h3>take<wbr>Arrays</h3>
+					<div class="tsd-signature tsd-kind-icon">take<wbr>Arrays<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">takeArrays</a><span class="tsd-signature-symbol"> =&nbsp;takeArrays</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L52">lib/compiler/builtin.ts:52</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.takeobjects-1" class="tsd-anchor"></a>
+					<h3>take<wbr>Objects</h3>
+					<div class="tsd-signature tsd-kind-icon">take<wbr>Objects<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">takeObjects</a><span class="tsd-signature-symbol"> =&nbsp;takeObjects</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L53">lib/compiler/builtin.ts:53</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal">
+					<a name="functions.takesums-1" class="tsd-anchor"></a>
+					<h3>take<wbr>Sums</h3>
+					<div class="tsd-signature tsd-kind-icon">take<wbr>Sums<span class="tsd-signature-symbol">:</span> <a href="" class="tsd-signature-type">takeSums</a><span class="tsd-signature-symbol"> =&nbsp;takeSums</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/dagen/blob/6b2344a/lib/compiler/builtin.ts#L54">lib/compiler/builtin.ts:54</a></li>
+						</ul>
+					</aside>
+				</section>
 			</section>
 		</section>
 		<footer class="with-border-bottom">

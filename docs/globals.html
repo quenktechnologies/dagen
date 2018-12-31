@@ -895,6 +895,8 @@ img { max-width: 100%; }
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
+							<input type="checkbox" id="tsd-filter-externals" checked />
+							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
 							<input type="checkbox" id="tsd-filter-only-exported" />
 							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
@@ -950,29 +952,64 @@ Options:
 					<section class="tsd-index-section ">
 						<h3>External modules</h3>
 						<ul class="tsd-index-list">
-							<li class="tsd-kind-external-module"><a href="modules/_cli_args_.html" class="tsd-kind-icon">"cli/args"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_cli_command_compile_.html" class="tsd-kind-icon">"cli/command/compile"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_cli_command_index_.html" class="tsd-kind-icon">"cli/command/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_cli_index_.html" class="tsd-kind-icon">"cli/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_builtin_.html" class="tsd-kind-icon">"compiler/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_generator_index_.html" class="tsd-kind-icon">"compiler/generator/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_generator_nunjucks_builtin_.html" class="tsd-kind-icon">"compiler/generator/nunjucks/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_generator_nunjucks_index_.html" class="tsd-kind-icon">"compiler/generator/nunjucks/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_index_.html" class="tsd-kind-icon">"compiler/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_compiler_plugin_.html" class="tsd-kind-icon">"compiler/plugin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_main_.html" class="tsd-kind-icon">"main"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_checks_builtin_.html" class="tsd-kind-icon">"schema/checks/builtin"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_checks_index_.html" class="tsd-kind-icon">"schema/checks/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_checks_provider_.html" class="tsd-kind-icon">"schema/checks/provider"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_checks_spec_.html" class="tsd-kind-icon">"schema/checks/spec"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_definitions_index_.html" class="tsd-kind-icon">"schema/definitions/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_definitions_usage_.html" class="tsd-kind-icon">"schema/definitions/usage"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_index_.html" class="tsd-kind-icon">"schema/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_loader_file_system_.html" class="tsd-kind-icon">"schema/loader/file-<wbr>system"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_loader_index_.html" class="tsd-kind-icon">"schema/loader/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_loader_memory_.html" class="tsd-kind-icon">"schema/loader/memory"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_path_index_.html" class="tsd-kind-icon">"schema/path/index"</a></li>
-							<li class="tsd-kind-external-module"><a href="modules/_schema_path_namespace_.html" class="tsd-kind-icon">"schema/path/namespace"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_args_.html" class="tsd-kind-icon">"lib/cli/args"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_command_compile_.html" class="tsd-kind-icon">"lib/cli/command/compile"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_command_index_.html" class="tsd-kind-icon">"lib/cli/command/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_cli_index_.html" class="tsd-kind-icon">"lib/cli/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_builtin_.html" class="tsd-kind-icon">"lib/compiler/builtin"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_index_.html" class="tsd-kind-icon">"lib/compiler/generator/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_nunjucks_builtin_.html" class="tsd-kind-icon">"lib/compiler/generator/nunjucks/builtin"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_generator_nunjucks_index_.html" class="tsd-kind-icon">"lib/compiler/generator/nunjucks/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_index_.html" class="tsd-kind-icon">"lib/compiler/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_compiler_plugin_.html" class="tsd-kind-icon">"lib/compiler/plugin"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_main_.html" class="tsd-kind-icon">"lib/main"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_builtin_.html" class="tsd-kind-icon">"lib/schema/checks/builtin"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_index_.html" class="tsd-kind-icon">"lib/schema/checks/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_provider_.html" class="tsd-kind-icon">"lib/schema/checks/provider"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_checks_spec_.html" class="tsd-kind-icon">"lib/schema/checks/spec"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_definitions_index_.html" class="tsd-kind-icon">"lib/schema/definitions/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_definitions_usage_.html" class="tsd-kind-icon">"lib/schema/definitions/usage"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_index_.html" class="tsd-kind-icon">"lib/schema/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_file_system_.html" class="tsd-kind-icon">"lib/schema/loader/file-<wbr>system"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_index_.html" class="tsd-kind-icon">"lib/schema/loader/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_loader_memory_.html" class="tsd-kind-icon">"lib/schema/loader/memory"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_path_index_.html" class="tsd-kind-icon">"lib/schema/path/index"</a></li>
+							<li class="tsd-kind-external-module"><a href="modules/_lib_schema_path_namespace_.html" class="tsd-kind-icon">"lib/schema/path/namespace"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_alt_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/alt"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_alternative_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/alternative"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_applicative_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/applicative"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_apply_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/apply"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_chain_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/chain"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_error_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/error"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_extend_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/extend"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_match_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/match"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_monad_future_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/monad/future"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_monad_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/monad/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_plus_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/plus"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_control_timer_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/control/timer"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/array"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_either_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/either"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_eq_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/eq"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_function_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/function"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_functor_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/functor"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_json_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/json/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_json_types_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/json/types"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_maybe_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/maybe"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_record_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/record/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_record_path_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/record/path"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_string_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/string"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_data_type_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/data/type"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_noni_lib_math_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/noni/lib/math"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/array"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_boolean_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/boolean"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_number_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/number"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_record_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/record"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_array_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/array"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_failure_record_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/failure/record"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_result_index_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/result/index"</a></li>
+							<li class="tsd-kind-external-module tsd-is-external"><a href="modules/_node_modules__quenk_preconditions_lib_string_.html" class="tsd-kind-icon">"node_<wbr>modules/@quenk/preconditions/lib/string"</a></li>
 						</ul>
 					</section>
 				</div>
