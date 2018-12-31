@@ -22,7 +22,7 @@
             "$ref": "./address.json"
 
         },
-        "dot..com": {
+        "dot\\.com": {
 
             "type": "string"
 

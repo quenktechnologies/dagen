@@ -1,14 +1,14 @@
 import { Object, Value } from '@quenk/noni/lib/data/json';
-import { set } from 'property-seek';
 import {
     Record,
     partition,
     reduce,
     group,
     map,
+  rmerge,
     merge
 } from '@quenk/noni/lib/data/record';
-import { flatten  } from '@quenk/noni/lib/data/record/path';
+import { flatten, unflatten  } from '@quenk/noni/lib/data/record/path';
 import { tail } from '@quenk/noni/lib/data/array';
 import { PATH_SEPARATOR } from './';
 
@@ -45,7 +45,7 @@ const divideByNamespaced = (o: Object) =>
     (partition(flatten(o))((_, k: string) => isNamespaced(k)))
 
 const inflate = (init: Object) => (o: Object) =>
-    reduce(o, init, (p: Object, c, k: string) => set(k, c, p));
+  rmerge(init, unflatten(o));
 
 const groupByNamespace = (o: Object) =>
     group(o)((_: Value, key: string) =>

@@ -8,7 +8,7 @@ describe('path', () => {
         must(expand({
             root: {
                 'name.first': 'Lasana',
-                name: { last: 'Murray' },
+                name: { last: 'Murray', 'middle.name': 'K' },
                 level: 'master',
                 'options.flags.enabled': [0, 1, 0, 1, 0, 1, 0, 1],
                 'options.flags': { version: 3 }
@@ -22,6 +22,11 @@ describe('path', () => {
 
                     first: 'Lasana',
                     last: 'Murray',
+                    middle: {
+
+                        name: 'K'
+
+                    }
                 },
                 options: {
 
@@ -45,7 +50,7 @@ describe('path', () => {
 
         must(expand({
             root: {
-                'name..first': 'Lasana',
+                'name\\.first': 'Lasana',
                 name: { last: 'Murray' },
             }
         })).equate({

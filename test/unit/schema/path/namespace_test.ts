@@ -86,7 +86,6 @@ describe('namespace', () => {
 
           };
 
-
           let r = {
 
             'type': 'object',

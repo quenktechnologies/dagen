@@ -15,7 +15,7 @@ import {
     values,
     rmerge
 } from '@quenk/noni/lib/data/record';
-import { flatten } from '@quenk/noni/lib/data/record/path';
+import { flatten, unflatten  } from '@quenk/noni/lib/data/record/path';
 import { match } from '@quenk/noni/lib/control/match';
 import { Namespace, normalize } from '../path/namespace';
 import { PATH_SEPARATOR, expandObject } from '../path';
@@ -86,7 +86,7 @@ export const resolve = (f: Loader, nss: Namespace[]) => (o: Object)
     let [ref, reg] = divide((normalize(nss)(expandObject(o))));
     let resolved = eraseRefProperties(map(<Object>ref, fetch(f, nss)));
 
-    return pure(inflate(reg))
+    return pure(unflatten(reg))
         .chain((regs: Object) => constructFragment(resolved)
             .map((refs: Object) => rmerge(regs, refs)));
 
@@ -134,9 +134,6 @@ const fetchObjects = (f: Loader, nss: Namespace[]) => (list: Value[]) =>
 
 const fetchWrongReferenceType = (value: Value) =>
     raise(new Error(`Cannot use type '${typeof value}' as a reference!`));
-
-const inflate = (o: Object) =>
-    reduce(o, {}, (p: Object, c, k: string) => set(k, c, p));
 
 /**
  * eraseRefProperties from a flat map of fragments (symbol only).

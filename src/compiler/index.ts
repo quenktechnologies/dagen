@@ -97,8 +97,8 @@ export const checkStage = (c: Context) => (o: Object) =>
         .reduce(chainCheck, check(o))
         .fold(checksFailed(c), (o: Object) => pure(o));
 
-const checksFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
-    raise(f.toError({}, c));
+const checksFailed = (_: Context) => (f: Failure<Object>): Future<Object> =>
+    raise(new Error(`${JSON.stringify(f.value)}`)); //   raise(f.toError({}, c));
 
 const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
     <Result<Object, Value>>pre.chain(curr);
