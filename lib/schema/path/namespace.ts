@@ -5,10 +5,10 @@ import {
     reduce,
     group,
     map,
-  rmerge,
+    rmerge,
     merge
 } from '@quenk/noni/lib/data/record';
-import { flatten, unflatten  } from '@quenk/noni/lib/data/record/path';
+import { flatten, unflatten } from '@quenk/noni/lib/data/record/path';
 import { tail } from '@quenk/noni/lib/data/array';
 import { PATH_SEPARATOR } from './';
 
@@ -42,13 +42,13 @@ export const normalize = (namespaces: Namespace[]) => (o: Object): Object => {
 }
 
 const divideByNamespaced = (o: Object) =>
-    (partition(flatten(o))((_, k: string) => isNamespaced(k)))
+    partition(flatten(o), (_, k: string) => isNamespaced(k));
 
 const inflate = (init: Object) => (o: Object) =>
-  rmerge(init, unflatten(o));
+    rmerge(init, unflatten(o));
 
 const groupByNamespace = (o: Object) =>
-    group(o)((_: Value, key: string) =>
+    group(o, (_: Value, key: string) =>
         tail(key.split(NAMESPACE_SEPARATOR)[0].split(PATH_SEPARATOR)));
 
 const erase = (nsGrouped: Record<Object>): Object =>

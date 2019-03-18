@@ -15,7 +15,7 @@ import {
     values,
     rmerge
 } from '@quenk/noni/lib/data/record';
-import { flatten, unflatten  } from '@quenk/noni/lib/data/record/path';
+import { flatten, unflatten } from '@quenk/noni/lib/data/record/path';
 import { match } from '@quenk/noni/lib/control/match';
 import { Namespace, normalize } from '../path/namespace';
 import { PATH_SEPARATOR, expandObject } from '../path';
@@ -98,8 +98,8 @@ export const resolve = (f: Loader, nss: Namespace[]) => (o: Object)
  * @private
  */
 const divide = (o: Object): [Object, Object] =>
-    <[Object, Object]>(partition(flatten(o))((_, k: string) =>
-        k.indexOf(REF_SYMBOL) > -1));
+    <[Object, Object]>partition(flatten(o), (_, k: string) =>
+        k.indexOf(REF_SYMBOL) > -1);
 
 /**
  * fetch a schema using a Loader function and the value
