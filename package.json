@@ -10,6 +10,7 @@
   "bin": {
     "dagen": "./lib/main.js"
   },
+  "files": [ "lib"],
   "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
