@@ -11,6 +11,7 @@
             "type": "TEXT"
 
         },
+        "comment":{"type":"TEXT"},
         "dot.com": {
 
             "type": "string"

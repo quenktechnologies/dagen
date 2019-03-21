@@ -12,6 +12,12 @@
 
         "ts:slogan": "string",
 
+        "sql:comment": {
+
+          "type": "#text"
+
+        },
+
         "reg": {
 
             "type": "string"
