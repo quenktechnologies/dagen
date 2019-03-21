@@ -1,6 +1,6 @@
 {
   "name": "@quenk/dagen",
-  "version": "1.4.2",
+  "version": "1.4.3",
   "description": "Generate boilerplate output from a schema.",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -10,7 +10,9 @@
   "bin": {
     "dagen": "./lib/main.js"
   },
-  "files": [ "lib"],
+  "files": [
+    "lib"
+  ],
   "author": "Quenk Technologies Limited<info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
