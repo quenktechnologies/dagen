@@ -26,6 +26,12 @@ export const takeSums = (doc: json.Object) => reduce(doc, {},
     (p: json.Object, c, k) => schema.isSumType(c) ?
         rmerge(p, { [k]: c }) : p);
 
+//XXX: this will be removed once we plugins
+const pathJoin = (l: string, r: string) => [l, r].filter(v => v).join('.');
+
+const mergeVariants = (o: any) =>
+    reduce(o.variants, (p: any, c: any) => merge(p, c.properties), <any>{});
+
 /**
  * functions made available for templates.
  */
@@ -52,7 +58,8 @@ export const functions: Record<Function> = {
     'takeArrays': takeArrays,
     'takeObjects': takeObjects,
     'takeSums': takeSums,
-    'contains': arrays.contains
+    'contains': arrays.contains,
+    'pathjoin': pathJoin
 
 };
 
@@ -64,6 +71,7 @@ export const filters: Record<Function> = {
     'throw': (msg: string) => { throw new Error(msg); },
     'error': console.error,
     'log': console.log,
-    'info': console.info
-};
+    'info': console.info,
+  'mergevariants': mergeVariants
 
+};
