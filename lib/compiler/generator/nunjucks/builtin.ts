@@ -72,5 +72,6 @@ export const filters: Record<Function> = {
     'error': console.error,
     'log': console.log,
     'info': console.info,
-    'mergevariants': mergeVariants
+  'mergevariants': mergeVariants
+
 };
