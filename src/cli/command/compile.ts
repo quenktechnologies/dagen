@@ -15,6 +15,7 @@ import {
     setValues
 } from '../';
 import { Command } from './';
+import { doN, DoFn } from '@quenk/noni/lib/control/monad';
 
 /**
  * Args is the normalized form of the command line arguments.
@@ -57,32 +58,42 @@ export class Compile {
 
     run(): Future<void> {
 
-        let argv = this.argv;
-        let file = argv.schema;
+        return doN(<DoFn<void, Future<void>>>function*() {
 
-        return loadSchema(file)
-            .chain(schema =>
-                loadDefinitions(argv.definition)
-                    .chain(defs =>
-                        loadChecks(argv.check)
-                            .chain(checks =>
-                                loadPlugins(argv.plugin)
-                                    .map(plugins => new Context(
-                                        defs,
-                                        argv.namespace,
-                                        checks,
-                                        new FileSystemLoader(dirname(file)),
-                                        plugins))))
-                    .chain(ctx =>
-                        (setValues(schema)(argv.set))
-                            .chain(schema => compile(ctx)(schema))
-                            .chain((s: Object) => argv.template ?
-                                Nunjucks
-                                    .create(argv.template,
-                                        new nunjucks.FileSystemLoader(argv.templates))
-                                    .render(s) :
-                                pure(JSON.stringify(s))))
-                    .map(console.log));
+            let argv = this.argv;
+
+            let file = argv.schema;
+
+            let schema = yield loadSchema(file);
+
+            let defs = yield loadDefinitions(argv.definition);
+
+            let checks = yield loadChecks(argv.check);
+
+            let plugins = yield loadPlugins(argv.plugin)
+
+            let ctx = new Context(
+                defs,
+                argv.namespace,
+                checks,
+                new FileSystemLoader(dirname(file)), plugins);
+
+            schema = yield (setValues(schema)(argv.set));
+
+            let s: Object = yield (compile(ctx)(schema));
+
+            let out = yield argv.template ?
+                Nunjucks
+                    .create(argv.template,
+                        new nunjucks.FileSystemLoader(argv.templates))
+                    .render(s) :
+                pure(JSON.stringify(s));
+
+            console.log(out);
+
+            return pure(undefined);
+
+        });
 
     }
 
