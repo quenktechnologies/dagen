@@ -1,4 +1,4 @@
-import { must } from '@quenk/must';
+import { assert } from '@quenk/test/lib/assert';
 import {
     Future,
     pure,
@@ -18,6 +18,7 @@ const COMPANY_TS = `${__dirname}/../fixtures/data/output/company_ts.json`;
 const ORG_JSON = `${__dirname}/../fixtures/data/output/org.json`;
 const COMPANY = `${__dirname}/../fixtures/data/input/company.json`;
 const COMPANY_SQL = `${__dirname}/../fixtures/data/output/company_sql.json`;
+const GENERIC_PLUGIN = `${__dirname}/../fixtures/plugin/generic`;
 const BIN = `${__dirname}/../../lib/main.js`;
 
 const chmod = () =>
@@ -52,7 +53,7 @@ describe('dagen', () => {
                 readJSON(COMPANY_SQL)
                     .map((expected: string) => {
 
-                        must(JSON.parse(text)).equate(expected);
+                        assert(JSON.parse(text)).equate(expected);
 
                     }))))
 
@@ -68,7 +69,7 @@ describe('dagen', () => {
 
                         (<any>expected).title = 'The Company Schema';
 
-                        must(JSON.parse(text)).equate(expected);
+                        assert(JSON.parse(text)).equate(expected);
 
                     }))))
 
@@ -83,7 +84,7 @@ describe('dagen', () => {
                 readJSON(COMPANY_TS)
                     .map((expected: string) => {
 
-                        must(JSON.parse(text)).equate(expected);
+                        assert(JSON.parse(text)).equate(expected);
 
                     }))))
 
@@ -95,7 +96,7 @@ describe('dagen', () => {
                 `--definitions ${SQL_DEFINITIONS} ` +
                 `--namespace ts ${COMPANY} `))
             .catch(e => { console.error(e); return pure('true') })
-            .map((r: string) => must(r).equal('true'))))
+            .map((r: string) => assert(r).equal('true'))))
 
     it('should apply checks', () =>
         toPromise(chmod()
@@ -105,9 +106,20 @@ describe('dagen', () => {
                 readJSON(ORG_JSON)
                     .map((expected: string) => {
 
-                        must(JSON.parse(text)).equate(expected);
+                        assert(JSON.parse(text)).equate(expected);
 
                     }))))
 
+    it('should invoke the output hook', () => {
 
+        return toPromise(chmod()
+            .chain(() => run(`--plugin ${GENERIC_PLUGIN} ${ORG} `))
+            .map((text: string) => {
+
+                let o = JSON.parse(text);
+
+                assert(o.GENERIC_PLUGIN_BEFORE_OUTPUT).equal('yes');
+
+            }))
+    })
 });

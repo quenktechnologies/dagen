@@ -27,8 +27,8 @@ Options:
   --namespace EXT            Sets a namespace to be in effect.
   --plugin PATH              Path to a plugin that will be loaded at runtime.
   --definitions PATH         Path to an exported definition object to include.
-  --set PATH=VALUE           Set a value on the schema document.                      
-  --check PATH               Loads and applies a check to the final document. 
+  --set PATH=VALUE           Set a value on the schema document.
+  --check PATH               Loads and applies a check to the final document.
   --install-check PATH       Make a precondition available to be used as a $check.
   --context PATH             Path to a ES object to merge into the context.
   --version                  Show version.

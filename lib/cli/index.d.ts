@@ -1,8 +1,9 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Value } from '@quenk/noni/lib/data/json';
-import { Plugin } from '../compiler/plugin';
 import { Definitions } from '../schema/definitions';
+import { Plugin } from '../plugin';
+import { Context } from '../compiler';
 export declare const MODULE_SCHEME = "require";
 export declare const EVAL_SCHEME = "eval";
 /**
@@ -24,7 +25,7 @@ export declare const loadDefinitions: (paths: string[]) => Future<Definitions>;
 /**
  * loadPlugins from an array of plugin paths.
  */
-export declare const loadPlugins: (paths: string[]) => Future<Plugin[]>;
+export declare const loadPlugins: (ctx: Context, paths: string[]) => Future<Plugin[]>;
 /**
  * loadChecks from an array of paths.
  */

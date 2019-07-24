@@ -1,19 +1,22 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import {
-  Future, 
-  attempt,
-  parallel, 
-  raise,
-  pure} from '@quenk/noni/lib/control/monad/future';
+    Future,
+    attempt,
+    parallel,
+    raise,
+    pure
+} from '@quenk/noni/lib/control/monad/future';
 import { set } from 'property-seek';
 import { isAbsolute, join } from 'path';
+import { doN, DoFn } from '@quenk/noni/lib/control/monad';
 import { Value } from '@quenk/noni/lib/data/json';
 import { startsWith } from '@quenk/noni/lib/data/string';
 import { merge } from '@quenk/noni/lib/data/record';
-import { Plugin } from '../compiler/plugin';
 import { Check, Context as CheckContext, fromSchema } from '../schema/checks';
 import { Definitions } from '../schema/definitions';
+import { Plugin, PluginProvider } from '../plugin';
 import { Schema } from '../schema';
+import { Context } from '../compiler';
 
 export const MODULE_SCHEME = 'require';
 export const EVAL_SCHEME = 'eval';
@@ -42,7 +45,8 @@ export const loadN = <M>(paths: string[]): Future<M[]> =>
  */
 export const loadSchema = (path: string): Future<Object> =>
     <Future<Object>>load(path)
-        .catch(e => raise(new Error(`Error loading schema "${path}": "${e.message}"`)));
+        .catch(e => raise(new Error(
+            `Error loading schema "${path}": "${e.message}"`)));
 
 /**
  * loadDefinitions from an array of module paths.
@@ -53,26 +57,35 @@ export const loadDefinitions = (paths: string[]): Future<Definitions> =>
         .catch(defsErr);
 
 const defsErr = (e: Error) =>
-  raise(new Error(`Failed loading one or more definitions: "${e.message}"`));
+    raise(new Error(`Failed loading one or more definitions: "${e.message}"`));
 
 /**
  * loadPlugins from an array of plugin paths.
  */
-export const loadPlugins = (paths: string[]): Future<Plugin[]> =>
-    loadN(paths).catch(pluginErr);
+export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
+    doN(<DoFn<Plugin[], Future<Plugin[]>>>function*() {
 
-const pluginErr = <A>(e: Error) : Future<A> =>
+        let mods = yield loadN(paths);
+
+        let futs = mods.map((m: PluginProvider) => attempt(() => m(ctx)));
+
+        return parallel(futs);
+
+    })
+        .catch(pluginErr);
+
+const pluginErr = <A>(e: Error): Future<A> =>
     raise(new Error(`Failed loading one or more plugins: "${e.message}"`));
 
 /**
  * loadChecks from an array of paths.
  */
 export const loadChecks = (paths: string[]): Future<Check<Value>[]> =>
-    <Future<Check<Value>[]>> loadN(paths)
+    <Future<Check<Value>[]>>loadN(paths)
         .chain((s: Schema[]) => pure(s.map(fromSchema(new CheckContext()))))
         .catch(checkErr);
 
-const checkErr = <A>(e: Error) : Future<A>=>
+const checkErr = <A>(e: Error): Future<A> =>
     raise(new Error(`Failed loading one or more checks: "${e.message}"`));
 
 /**

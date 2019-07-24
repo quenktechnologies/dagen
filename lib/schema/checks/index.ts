@@ -13,7 +13,7 @@ import { match } from '@quenk/noni/lib/control/match';
 import { map, reduce, keys } from '@quenk/noni/lib/data/record';
 import {
     Precondition,
-  Preconditions,
+    Preconditions,
     and,
     or,
     every,

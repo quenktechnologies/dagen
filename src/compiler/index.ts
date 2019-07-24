@@ -10,7 +10,21 @@ import { Check } from '../schema/checks';
 import { check } from '../schema/checks/builtin';
 import { Schema, expand as schemaExpand } from '../schema';
 import { Definitions } from '../schema/definitions';
-import { Plugin } from './plugin';
+import { doN, DoFn } from '@quenk/noni/lib/control/monad';
+import { Maybe, nothing, just } from '@quenk/noni/lib/data/maybe';
+
+/**
+ * Plugin for the compiler.
+ */
+export interface Plugin {
+
+    /**
+     * beforeOutput is applied to the schema before output of te 
+     * generated code.
+     */
+    beforeOutput(s: Schema): Future<Schema>
+
+}
 
 /**
  * Context compilation takes place in.
@@ -25,60 +39,124 @@ export class Context {
         public definitions: Definitions,
         public namespaces: string[],
         public checks: Check<Value>[],
-        public loader: Loader,
-        public plugins: Plugin[]) { }
+        public loader: Loader) { }
+
+    plugins: Maybe<Plugin> = nothing();
 
     /**
      * addDefinitions to the Context.
      */
     addDefinitions(defs: Definitions): Context {
 
-        return new Context(
-            merge(this.definitions, defs),
-            this.namespaces,
-            this.checks,
-            this.loader,
-            this.plugins);
+        this.definitions = merge(this.definitions, defs);
+
+        return this;
+
+    }
+
+    /**
+     * setPlugin sets the plugin to be used during compilation.
+     */
+    setPlugin(plugin: Plugin): Context {
+
+        this.plugins = just(plugin);
+
+        return this;
+
+    }
+
+    /**
+     * fragmentResolution stage.
+     *
+     * During this stage, ref properties are recursively resolved and merged into
+     * their owners.
+     */
+    fragmentResolution(o: Object): Future<Object> {
+
+        return (resolve(this.loader, this.namespaces)(o))
+
+    }
+
+    /**
+     * schemaExpansion stage.
+     *
+     * During this stage, short-hand such as `"type": "string"` are expanded
+     * to full JSON objects in supported places.
+     */
+    schemaExpansion(o: Object): Future<Object> {
+
+        return pure(schemaExpand(o));
+
+    }
+
+    /**
+     * definitionRegistration stage.
+     *
+     * During this stage, the processing program registers each definition
+     * under their respective names.
+     */
+    definitionRegistration(o: Object): Future<Context> {
+
+        return pure(isRecord(o.definitions) ?
+            this.addDefinitions(<Definitions>o.definitions) : this);
+
+    }
+
+    /**
+     * definitionMerging
+     * At this stage all usage of defined types are resolved.
+     */
+    definitionMerging(o: Object): Future<Object> {
+
+        return either<Failure<Object>, Object, Future<Object>>
+            (mergingFailed(this))(mergingComplete)(
+                defResolve(this.definitions)(<Schema>o))
+
+    }
+
+    /**
+     * checksStage applies schema and custom checks.
+     *
+     * This stage determines whether the object is fit for use.
+     */
+    checkStage(o: Object) {
+
+        return this
+            .checks
+            .reduce(chainCheck, check(o))
+            .fold(checksFailed(this), (o: Object) => pure(o));
+
+    }
+
+    /**
+     * compile a JSON document into a valid document schema.
+     */
+    compile(doc: Object): Future<Object> {
+
+        let that = this;
+
+        return doN(<DoFn<Object, Future<Object>>>function*() {
+
+            doc = yield that.fragmentResolution(doc);
+
+            doc = yield that.schemaExpansion(doc);
+
+            yield that.definitionRegistration(doc);
+
+            doc = yield that.definitionMerging(doc);
+
+            doc = yield that.checkStage(doc);
+
+            if (that.plugins.isJust())
+                return that.plugins.get().beforeOutput(<Schema>doc);
+            else
+                return pure(doc);
+
+        });
 
     }
 
 }
-
-/**
- * fragmentResolution stage.
- *
- * During this stage, ref properties are recursively resolved and merged into
- * their owners.
- */
-export const fragmentResolution = (c: Context) => (o: Object): Future<Object> =>
-    (resolve(c.loader, c.namespaces)(o))
-
-/**
- * schemaExpansion stage.
- *
- * During this stage, short-hand such as `"type": "string"` are expanded
- * to full JSON objects in supported places.
- */
-export const schemaExpansion = (o: Object): Future<Object> =>
-    pure(schemaExpand(o));
-
-/**
- * definitionRegistration stage.
- *
- * During this stage, the processing program registers each definition
- * under their respective names.
- */
-export const definitionRegistration = (c: Context) => (o: Object): Future<Context> =>
-    pure(isRecord(o.definitions) ?
-        c.addDefinitions(<Definitions>o.definitions) : c);
-
-/**
- * definitionMerging
- * At this stage all usage of defined types are resolved.
- */
-export const definitionMerging = (o: Object) => (c: Context): Future<Object> =>
-    either<Failure<Object>, Object, Future<Object>>
-        (mergingFailed(c))(mergingComplete)(defResolve(c.definitions)(<Schema>o))
 
 const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
     raise(f.toError({}, c));
@@ -86,33 +164,9 @@ const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
 const mergingComplete = (o: Object): Future<Object> =>
     pure(o);
 
-/**
- * checksStage applies schema and custom checks.
- *
- * This stage determines whether the object is fit for use.
- */
-export const checkStage = (c: Context) => (o: Object) =>
-    c
-        .checks
-        .reduce(chainCheck, check(o))
-        .fold(checksFailed(c), (o: Object) => pure(o));
 
 const checksFailed = (_: Context) => (f: Failure<Object>): Future<Object> =>
-    raise(new Error(`${JSON.stringify(f.value)}`)); //   raise(f.toError({}, c));
+    raise(new Error(`${JSON.stringify(f.value)}`));
 
 const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
     <Result<Object, Value>>pre.chain(curr);
-
-/**
- * compile a JSON document into a valid document schema.
- */
-export const compile = (c: Context) => (j: Object) =>
-    pure(j)
-        .chain(fragmentResolution(c))
-        .chain(schemaExpansion)
-        .chain((j: Object) =>
-            (definitionRegistration(c)(j))
-                .chain((c: Context) =>
-                    (definitionMerging(j)(c))
-                        .chain(checkStage(c))));
-

@@ -4,18 +4,19 @@ import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { dirname } from 'path';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
-import { Context, compile } from '../../compiler';
+import { Context } from '../../compiler';
 import { FileSystemLoader } from '../../schema/loader/file-system';
 import { Nunjucks } from '../../compiler/generator/nunjucks';
 import {
     loadSchema,
     loadDefinitions,
     loadChecks,
-    loadPlugins,
-    setValues
+    setValues,
+    loadPlugins
 } from '../';
 import { Command } from './';
 import { doN, DoFn } from '@quenk/noni/lib/control/monad';
+import { CompositePlugin } from '../../plugin';
 
 /**
  * Args is the normalized form of the command line arguments.
@@ -58,9 +59,11 @@ export class Compile {
 
     run(): Future<void> {
 
+        let that = this;
+
         return doN(<DoFn<void, Future<void>>>function*() {
 
-            let argv = this.argv;
+            let argv = that.argv;
 
             let file = argv.schema;
 
@@ -70,23 +73,27 @@ export class Compile {
 
             let checks = yield loadChecks(argv.check);
 
-            let plugins = yield loadPlugins(argv.plugin)
-
             let ctx = new Context(
                 defs,
                 argv.namespace,
                 checks,
-                new FileSystemLoader(dirname(file)), plugins);
+                new FileSystemLoader(dirname(file)));
+
+            let plist = yield loadPlugins(ctx, argv.plugin);
+
+            let plugins = new CompositePlugin(plist);
+
+            ctx.setPlugin(plugins);
 
             schema = yield (setValues(schema)(argv.set));
 
-            let s: Object = yield (compile(ctx)(schema));
+            let s: Object = yield ctx.compile(schema);
 
-            let out = yield argv.template ?
-                Nunjucks
-                    .create(argv.template,
-                        new nunjucks.FileSystemLoader(argv.templates))
-                    .render(s) :
+            let gen = yield plugins.configureGenerator(Nunjucks
+                .create(argv.template,
+                    new nunjucks.FileSystemLoader(argv.templates)));
+
+            let out = yield argv.template ? gen.render(s) :
                 pure(JSON.stringify(s));
 
             console.log(out);
