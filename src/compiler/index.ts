@@ -164,9 +164,8 @@ const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
 const mergingComplete = (o: Object): Future<Object> =>
     pure(o);
 
-
 const checksFailed = (_: Context) => (f: Failure<Object>): Future<Object> =>
-    raise(new Error(`${JSON.stringify(f.value)}`));
+    raise(new Error(`${JSON.stringify(f.explain())}`));
 
 const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
     <Result<Object, Value>>pre.chain(curr);
