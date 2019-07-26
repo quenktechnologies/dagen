@@ -121,5 +121,22 @@ describe('dagen', () => {
                 assert(o.GENERIC_PLUGIN_BEFORE_OUTPUT).equal('yes');
 
             }))
+
     })
+
+    it('should pass config to plugins', () => {
+
+        return toPromise(chmod()
+            .chain(() => run(
+                `--plugin ${GENERIC_PLUGIN} --config generic.name=isgeneric ${ORG} `))
+            .map((text: string) => {
+
+                let o = JSON.parse(text);
+
+                assert(o.name).equal('isgeneric');
+
+            }))
+
+    })
+
 });

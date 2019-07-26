@@ -13,6 +13,7 @@ export interface Args {
     templates: string;
     template: string;
     set: string[];
+    config: string[];
     check: string[];
 }
 /**

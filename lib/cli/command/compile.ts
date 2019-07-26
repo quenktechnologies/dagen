@@ -37,6 +37,8 @@ export interface Args {
 
     set: string[],
 
+    config: string[],
+
     check: string[]
 
 }
@@ -83,6 +85,10 @@ export class Compile {
 
             let plugins = new CompositePlugin(plist);
 
+            let config = yield (setValues({})(argv.config));
+
+            plugins.configure(config);
+
             ctx.setPlugin(plugins);
 
             schema = yield (setValues(schema)(argv.set));
@@ -125,6 +131,8 @@ export const extract = (argv: Object): Args => ({
 
     set: <string[]>argv[args.ARGS_SET],
 
-    check: <string[]>argv[args.ARGS_CHECK]
+    check: <string[]>argv[args.ARGS_CHECK],
+
+    config: <string[]>argv[args.ARGS_CONFIG],
 
 });
