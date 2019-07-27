@@ -34,6 +34,10 @@ export declare class Context {
      */
     addDefinitions(defs: Definitions): Context;
     /**
+     * addChecks to the context.
+     */
+    addChecks(checks: Check<Value[]>): Context;
+    /**
      * setPlugin sets the plugin to be used during compilation.
      */
     setPlugin(plugin: Plugin): Context;

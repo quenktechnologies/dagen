@@ -55,6 +55,17 @@ export class Context {
     }
 
     /**
+     * addChecks to the context.
+     */
+    addChecks(checks: Check<Value[]>): Context {
+
+        this.checks = this.checks.concat(checks);
+
+        return this;
+
+    }
+
+    /**
      * setPlugin sets the plugin to be used during compilation.
      */
     setPlugin(plugin: Plugin): Context {

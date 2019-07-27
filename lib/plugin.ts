@@ -1,5 +1,5 @@
 import { Object } from '@quenk/noni/lib/data/json';
-import { Future, pure } from '@quenk/noni/lib/control/monad/future';
+import { Future, pure, parallel } from '@quenk/noni/lib/control/monad/future';
 import { pipeN } from '@quenk/noni/lib/control/monad';
 import {
     Plugin as GeneratorPlugin,
@@ -20,9 +20,15 @@ export type PluginProvider = (c: Context) => Plugin;
 export interface Plugin extends CompilerPlugin, GeneratorPlugin {
 
     /**
-     * configure the Plugin.
+     * configure the plugin's Conf object.
      */
     configure(c: Conf): Future<Conf>
+
+    /**
+     * checkSchema allows a plugin to add check schema to the list
+     * of schema that is applied to the the document.
+     */
+    checkSchema(): Future<Schema[]>
 
 }
 
@@ -48,6 +54,12 @@ export abstract class AbstractPlugin implements Plugin {
     configure(c: Conf): Future<Conf> {
 
         return pure(c);
+
+    }
+
+    checkSchema(): Future<Schema[]> {
+
+        return pure([]);
 
     }
 
@@ -87,6 +99,13 @@ export class CompositePlugin implements Plugin {
 
         let fs = this.plugins.map(p => (c: Conf) => p.configure(c));
         return (pipeN.apply(undefined, fs))(c);
+
+    }
+
+    checkSchema(): Future<Schema[]> {
+
+        return parallel(this.plugins.map(p => p.checkSchema()))
+            .map(list => list.reduce((p, c) => p.concat(c), []));
 
     }
 

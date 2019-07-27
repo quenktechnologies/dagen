@@ -69,16 +69,7 @@ export class Compile {
 
             let file = argv.schema;
 
-            let schema = yield loadSchema(file);
-
-            let defs = yield loadDefinitions(argv.definition);
-
-            let checks = yield loadChecks(argv.check);
-
-            let ctx = new Context(
-                defs,
-                argv.namespace,
-                checks,
+            let ctx = new Context({}, argv.namespace, [],
                 new FileSystemLoader(dirname(file)));
 
             let plist = yield loadPlugins(ctx, argv.plugin);
@@ -88,6 +79,18 @@ export class Compile {
             let config = yield (setValues({})(argv.config));
 
             plugins.configure(config);
+
+            let pluginChecks = yield plugins.checkSchema();
+
+            let schema = yield loadSchema(file);
+
+            let defs = yield loadDefinitions(argv.definition);
+
+            let checks = yield loadChecks(argv.check, pluginChecks);
+
+            ctx.addDefinitions(defs);
+
+            ctx.addChecks(checks);
 
             ctx.setPlugin(plugins);
 

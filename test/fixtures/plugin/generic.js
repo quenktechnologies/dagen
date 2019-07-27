@@ -14,6 +14,27 @@ module.exports = (ctx) => ({
 
     },
 
+    checkSchema() {
+
+        return future.pure([{
+
+            type: 'object',
+
+            properties: {
+
+                timestamp: {
+
+                    type: 'number',
+
+                    optional: true
+
+                }
+
+            }
+        }]);
+
+    },
+
     beforeOutput(s) {
 
         s.GENERIC_PLUGIN_BEFORE_OUTPUT = 'yes';

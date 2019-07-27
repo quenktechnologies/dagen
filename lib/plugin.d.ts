@@ -13,9 +13,14 @@ export declare type PluginProvider = (c: Context) => Plugin;
  */
 export interface Plugin extends CompilerPlugin, GeneratorPlugin {
     /**
-     * configure the Plugin.
+     * configure the plugin's Conf object.
      */
     configure(c: Conf): Future<Conf>;
+    /**
+     * checkSchema allows a plugin to add check schema to the list
+     * of schema that is applied to the the document.
+     */
+    checkSchema(): Future<Schema[]>;
 }
 /**
  * Conf is expected to be a set of key value pairs
@@ -32,6 +37,7 @@ export declare abstract class AbstractPlugin implements Plugin {
     constructor(context: Context);
     abstract name: string;
     configure(c: Conf): Future<Conf>;
+    checkSchema(): Future<Schema[]>;
     beforeOutput(s: Schema): Future<Schema>;
     configureGenerator(gen: Nunjucks): Future<Nunjucks>;
 }
@@ -46,6 +52,7 @@ export declare class CompositePlugin implements Plugin {
      */
     empty(): boolean;
     configure(c: Conf): Future<Conf>;
+    checkSchema(): Future<Schema[]>;
     beforeOutput(s: Schema): Future<Schema>;
     configureGenerator(gen: Nunjucks): Future<Nunjucks>;
 }

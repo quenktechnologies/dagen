@@ -80,13 +80,22 @@ const pluginErr = <A>(e: Error): Future<A> =>
 /**
  * loadChecks from an array of paths.
  */
-export const loadChecks = (paths: string[]): Future<Check<Value>[]> =>
-    <Future<Check<Value>[]>>loadN(paths)
-        .chain((s: Schema[]) => pure(s.map(fromSchema(new CheckContext()))))
-        .catch(checkErr);
+export const loadChecks =
+    (paths: string[], list: Schema[] = []): Future<Check<Value>[]> =>
+        <Future<Check<Value>[]>>loadN(paths)
+            .chain((s: Schema[]) =>
+                pure(s.concat(list).map(fromSchema(new CheckContext()))))
+            .catch(checkErr);
 
 const checkErr = <A>(e: Error): Future<A> =>
     raise(new Error(`Failed loading one or more checks: "${e.message}"`));
+
+/**
+ * loadChecks from an array of paths.
+ */
+export const convertCheckSchema =
+    (s: Schema[] = []): Future<Check<Value>[]> =>
+        pure(s.map(fromSchema(new CheckContext())))
 
 /**
  * setValues applies setValue for each member of the pairs array.

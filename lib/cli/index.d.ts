@@ -3,6 +3,7 @@ import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Value } from '@quenk/noni/lib/data/json';
 import { Definitions } from '../schema/definitions';
 import { Plugin } from '../plugin';
+import { Schema } from '../schema';
 import { Context } from '../compiler';
 export declare const MODULE_SCHEME = "require";
 export declare const EVAL_SCHEME = "eval";
@@ -29,7 +30,11 @@ export declare const loadPlugins: (ctx: Context, paths: string[]) => Future<Plug
 /**
  * loadChecks from an array of paths.
  */
-export declare const loadChecks: (paths: string[]) => Future<import("@quenk/preconditions").Precondition<Value, Value>[]>;
+export declare const loadChecks: (paths: string[], list?: Schema[]) => Future<import("@quenk/preconditions").Precondition<Value, Value>[]>;
+/**
+ * loadChecks from an array of paths.
+ */
+export declare const convertCheckSchema: (s?: Schema[]) => Future<import("@quenk/preconditions").Precondition<Value, Value>[]>;
 /**
  * setValues applies setValue for each member of the pairs array.
  */

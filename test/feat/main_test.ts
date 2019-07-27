@@ -128,7 +128,8 @@ describe('dagen', () => {
 
         return toPromise(chmod()
             .chain(() => run(
-                `--plugin ${GENERIC_PLUGIN} --config generic.name=isgeneric ${ORG} `))
+                `--plugin ${GENERIC_PLUGIN} ` +
+                `--config generic.name=isgeneric ${ORG} `))
             .map((text: string) => {
 
                 let o = JSON.parse(text);
