@@ -32,6 +32,13 @@ const oSchema = {
             }
 
         },
+        tuple: {
+
+            type: 'tuple',
+
+            items: [{ type: 'nubmer' }, { type: 'string' }, { type: 'number' }]
+
+        },
         sum: {
 
             type: 'sum',
@@ -113,40 +120,38 @@ describe('checks', () => {
         it('should invalidate incorrect object schemas', () => {
 
             let w = set('properties.sum.type', 'array', oSchema);
-            w = set('properties.array.type', 'sum', w);
             w = set('properties.object.type', 'array', w);
+            w = set('properties.tuple.type', 'array', w);
+            w = set('properties.array.type', 'sum', w);
             w = set('properties.any', 'foo', w);
 
             must(check(w).takeLeft().explain())
-            .equate(
-              {
-                  'left': {
-                        'left': '',
-                        'right': {
-                                'properties': {
-                                          'any': {
-                                                      'left': {
-                                                                    'left': {
-                                                                                    'left': {
-                                                                                                      'left': '',
-                                                                                                      'right': 'isRecord'
-                                                                                                    },
-                                                                                    'right': 'isRecord'
-                                                                                  },
-                                                                    'right': 'isRecord'
-                                                                  },
-                                                      'right': 'isRecord'
-                                                    }
-                                        }
-                              }
-                      },
-                  'right': {
-                        'type': 'eq',
-                        'variants': 'isRecord'
-                      }
-              }
-            
-            );
+                .equate({
+                    "left": {
+                        "left": "",
+                        "right": {
+                            "properties": {
+                                "any": {
+                                    "left": {
+                                        "left": {
+                                            "left": {
+                                                "left": {
+                                                    "left": "",
+                                                    "right": "isRecord"
+                                                },
+                                                "right": "isRecord"
+                                            },
+                                            "right": "isRecord"
+                                        },
+                                        "right": "isRecord"
+                                    },
+                                    "right": "isRecord"
+                                }
+                            }
+                        }
+                    },
+                    "right": { "type": "eq", "variants": "isRecord" }
+                });
 
         });
 

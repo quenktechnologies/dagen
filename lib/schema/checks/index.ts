@@ -27,6 +27,7 @@ import {
     Schemas,
     ObjectType,
     ArrayType,
+    TupleType,
     SumType
 } from '../';
 import { Providers } from './provider';
@@ -101,6 +102,7 @@ export const fromSchema =
             .caseOf(schema.objectShapeWithProperties, fromObject(c))
             .caseOf(schema.objectShapeWithAdditionalProperties, fromMap(c))
             .caseOf(schema.arrayShape, fromArray(c))
+            .caseOf(schema.tupleShape, fromTuple(c))
             .caseOf(schema.sumShape, fromSum(c))
             .caseOf(schema.refShape, fromRef(c))
             .caseOf(schema.stringShape, () => strings.isString)
@@ -136,6 +138,9 @@ const fromArray = <B>(c: Context<B>) => ({ items }: ArrayType) =>
     every(arrays.isArray,
         arrays.map(fromSchema(c)(items)),
         arrays.map(specs2Checks(c.providers)(items.$checks || [])));
+
+const fromTuple = <B>(c: Context<B>) => ({ items }: TupleType) =>
+    every(arrays.isArray, arrays.tuple(items.map(fromSchema(c))));
 
 const fromSum = <B>(c: Context<B>) => ({ variants }: SumType): Check<B> =>
     reduce(map(variants, fromSchema(c)), reject(''), or);

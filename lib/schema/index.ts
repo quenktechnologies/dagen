@@ -18,6 +18,7 @@ export const TYPE_SUM = 'sum';
 export const TYPE_STRING = 'string';
 export const TYPE_NUMBER = 'number';
 export const TYPE_BOOLEAN = 'boolean';
+export const TYPE_TUPLE = 'tuple';
 
 export const objectShapeWithAllProperties = {
 
@@ -50,6 +51,14 @@ export const arrayShape = {
     type: TYPE_ARRAY,
 
     items: Object
+
+}
+
+export const tupleShape = {
+
+    type: TYPE_TUPLE,
+
+    items: Array
 
 }
 
@@ -163,6 +172,18 @@ export interface ArrayType extends Schema {
 }
 
 /**
+ * TupleType indicates a value is a tuple type.
+ */
+export interface TupleType extends Schema {
+
+    /**
+     * items provides a schema for each member of the tuple.
+     */
+    items: Schema[]
+
+}
+
+/**
  * SumType indicates a value is a sum type.
  */
 export interface SumType extends Schema {
@@ -202,6 +223,11 @@ export const isArrayType = (doc: Value): doc is ArrayType =>
         (!Array.isArray(doc)) &&
         (doc.type === TYPE_ARRAY)) ? true : false;
 
+export const isTupleType = (doc: Value): doc is TupleType =>
+    ((typeof doc === 'object') &&
+        (!Array.isArray(doc)) &&
+        (doc.type === TYPE_TUPLE))
+
 /**
  * isSumType type guard.
  */
@@ -213,7 +239,7 @@ export const isSumType = (doc: Value): doc is SumType =>
 /**
  * isStringType type guard.
  */
-export const isStringType = (doc: Value): doc is Schema  =>
+export const isStringType = (doc: Value): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         (doc.type === TYPE_STRING));

@@ -149,6 +149,57 @@ export const defs: Definitions = {
         }
 
     },
+    tuple: {
+
+        type: 'object',
+
+        properties: {
+
+            definitions: {
+
+                type: 'object',
+
+                optional: true,
+
+                additonalProperties: {
+
+                    type: 'ref',
+
+                    ref: 'schema'
+
+                }
+
+            },
+
+            type: {
+
+                type: 'string'
+
+            },
+            title: {
+
+                type: 'string',
+
+                optional: true
+
+            },
+            items: {
+
+                type: 'array',
+
+                items: {
+
+                    type: 'ref',
+
+                    ref: 'schema'
+
+                }
+
+            }
+
+        }
+
+    },
     sum: {
 
         type: 'object',
@@ -265,6 +316,13 @@ export const defs: Definitions = {
                 type: 'ref',
 
                 ref: 'array'
+
+            },
+            tuple: {
+
+                type: 'ref',
+
+                ref: 'tuple'
 
             },
             sum: {

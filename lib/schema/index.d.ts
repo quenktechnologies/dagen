@@ -13,6 +13,7 @@ export declare const TYPE_SUM = "sum";
 export declare const TYPE_STRING = "string";
 export declare const TYPE_NUMBER = "number";
 export declare const TYPE_BOOLEAN = "boolean";
+export declare const TYPE_TUPLE = "tuple";
 export declare const objectShapeWithAllProperties: {
     type: string;
     properties: ObjectConstructor;
@@ -29,6 +30,10 @@ export declare const objectShapeWithAdditionalProperties: {
 export declare const arrayShape: {
     type: string;
     items: ObjectConstructor;
+};
+export declare const tupleShape: {
+    type: string;
+    items: ArrayConstructor;
 };
 export declare const sumShape: {
     type: string;
@@ -104,6 +109,15 @@ export interface ArrayType extends Schema {
     items: Schema;
 }
 /**
+ * TupleType indicates a value is a tuple type.
+ */
+export interface TupleType extends Schema {
+    /**
+     * items provides a schema for each member of the tuple.
+     */
+    items: Schema[];
+}
+/**
  * SumType indicates a value is a sum type.
  */
 export interface SumType extends Schema {
@@ -128,6 +142,7 @@ export declare const isObjectType: (doc: Value) => doc is ObjectType;
  * isArrayType type guard.
  */
 export declare const isArrayType: (doc: Value) => doc is ArrayType;
+export declare const isTupleType: (doc: Value) => doc is TupleType;
 /**
  * isSumType type guard.
  */
