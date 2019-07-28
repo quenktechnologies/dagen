@@ -67,7 +67,14 @@ export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
 
         let mods = yield loadN(paths);
 
-        let futs = mods.map((m: PluginProvider) => attempt(() => m(ctx)));
+        let futs = mods.map((m: { create: PluginProvider }) => attempt(() => {
+
+            if (typeof m.create !== 'function')
+                throw new Error(`Plugins must export a create function!`);
+
+            return m.create(ctx);
+
+        }));
 
         return parallel(futs);
 

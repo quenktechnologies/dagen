@@ -1,6 +1,6 @@
 const future = require('@quenk/noni/lib/control/monad/future');
 
-module.exports = (ctx) => ({
+module.exports.create = (ctx) => ({
 
     name: '',
 
