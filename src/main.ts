@@ -37,8 +37,24 @@ Options:
         version: require('../package.json').version
     });
 
+const onError = (args:Object) =>   (e: Error) => {
+
+  let file = args['<file>'];
+
+  console.error( `Error occured while processing file "${file}"!`);
+
+  console.error( 'Dumping CLI configuration:');
+
+  console.error(args);
+
+  console.error(e);
+
+  process.exit(-1);
+
+}
+
 Compile
     .enqueue(<Object>args)
     .get()
     .run()
-    .fork(e => { console.error(e); process.exit(-1); }, ()=>{});
+    .fork(onError(<Object>args), ()=>{});
