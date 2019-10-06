@@ -3,15 +3,15 @@ import { Record } from '@quenk/noni/lib/data/record';
 /**
  * takeArrays extracts the columns from a list that are array types.
  */
-export declare const takeArrays: (doc: json.Object) => {};
+export declare const takeArrays: (doc: json.Object) => json.Object;
 /**
  *  * takeObjects extracts type='object' columns.
  *   */
-export declare const takeObjects: (doc: json.Object) => {};
+export declare const takeObjects: (doc: json.Object) => json.Object;
 /**
  * takeSums extracts type='sum' columns.
  */
-export declare const takeSums: (doc: json.Object) => {};
+export declare const takeSums: (doc: json.Object) => json.Object;
 /**
  * functions made available for templates.
  */
