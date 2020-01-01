@@ -11,4 +11,4 @@ export declare type Definition = Schema;
 export interface Definitions {
     [key: string]: Definition;
 }
-export declare const resolve: (defs: Definitions) => (schema: Schema) => import("@quenk/noni/lib/data/either").Either<import("@quenk/preconditions/lib/result/failure").Failure<Schema>, Schema>;
+export declare const resolve: (defs: Definitions) => (schema: Schema) => Result<Schema, Schema>;
