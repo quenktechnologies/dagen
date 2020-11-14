@@ -1,17 +1,18 @@
 import { Value, Object } from '@quenk/noni/lib/data/json';
 import { merge, isRecord } from '@quenk/noni/lib/data/record';
 import { Future, pure, raise } from '@quenk/noni/lib/control/monad/future';
-import { either } from '@quenk/noni/lib/data/either';
 import { Failure } from '@quenk/preconditions/lib/result/failure';
 import { Result } from '@quenk/preconditions/lib/result';
+import { doN, DoFn } from '@quenk/noni/lib/control/monad';
+import { Maybe, nothing, just } from '@quenk/noni/lib/data/maybe';
+
 import { Loader, resolve } from '../schema/loader';
 import { resolve as defResolve } from '../schema/definitions';
 import { Check } from '../schema/checks';
 import { check } from '../schema/checks/builtin';
 import { Schema, expand as schemaExpand } from '../schema';
 import { Definitions } from '../schema/definitions';
-import { doN, DoFn } from '@quenk/noni/lib/control/monad';
-import { Maybe, nothing, just } from '@quenk/noni/lib/data/maybe';
+
 
 /**
  * Plugin for the compiler.
@@ -119,9 +120,11 @@ export class Context {
      */
     definitionMerging(o: Object): Future<Object> {
 
-        return either<Failure<Object>, Object, Future<Object>>
-            (mergingFailed(this))(mergingComplete)(
-                defResolve(this.definitions)(<Schema>o))
+        let eresult = defResolve(this.definitions)(<Schema>o);
+
+        return eresult.isLeft() ?
+            mergingFailed(this, eresult.takeLeft()) :
+            mergingComplete(eresult.takeRight());
 
     }
 
@@ -169,7 +172,7 @@ export class Context {
 
 }
 
-const mergingFailed = (c: Context) => (f: Failure<Object>): Future<Object> =>
+const mergingFailed = (c: Context, f: Failure<Object>): Future<Object> =>
     raise(f.toError({}, c));
 
 const mergingComplete = (o: Object): Future<Object> =>

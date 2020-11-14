@@ -1,10 +1,10 @@
 import { Value, Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
+import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Loader } from '../schema/loader';
 import { Check } from '../schema/checks';
 import { Schema } from '../schema';
 import { Definitions } from '../schema/definitions';
-import { Maybe } from '@quenk/noni/lib/data/maybe';
 /**
  * Plugin for the compiler.
  */
