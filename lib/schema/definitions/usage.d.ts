@@ -1,6 +1,6 @@
 import { Result } from '@quenk/preconditions/lib/result';
 import { Schema } from '../';
-import { Definitions } from './';
+import { Definition, Definitions } from './';
 export declare const SYMBOL = "#";
 /**
  * Ref is a schema whose type value is prefixed by the [[SYMBOL]].
@@ -25,7 +25,7 @@ export declare const isRef: (s: Schema) => boolean;
  *
  * If the string cannot be resolved to a defintion it results in a Failure.
  */
-export declare const evalUsage: (definitions: Definitions) => (def: string) => Result<string, Schema>;
+export declare const evalUsage: (definitions: Definitions) => (def: Usage) => Result<Usage, Definition>;
 /**
  * evalUsages transforms a Usages into a Definitions.
  *

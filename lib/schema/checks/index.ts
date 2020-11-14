@@ -9,6 +9,7 @@ import * as strings from '@quenk/preconditions/lib/string';
 import * as numbers from '@quenk/preconditions/lib/number';
 import * as booleans from '@quenk/preconditions/lib/boolean';
 import * as schema from '../';
+
 import { match } from '@quenk/noni/lib/control/match';
 import { map, reduce, keys } from '@quenk/noni/lib/data/record';
 import {
@@ -22,6 +23,7 @@ import {
     optional
 } from '@quenk/preconditions';
 import { fail } from '@quenk/preconditions/lib/result';
+
 import {
     Schema,
     Schemas,
@@ -38,12 +40,12 @@ export const TYPE_REF = 'ref';
 /**
  * Check is a Precondition that accepts some JSON value as input.
  */
-export type Check<B> = Precondition<json.Value, B>;
+export type Check<T> = Precondition<json.Value, T>;
 
 /**
  * Checks map.
  */
-export type Checks<B> = Preconditions<json.Value, B>;
+export type Checks<B extends json.Object> = Preconditions<json.Value, B>;
 
 /**
  * RefType schema.
@@ -59,7 +61,7 @@ export interface RefType extends Schema {
  *
  * Holds useful data used during the transformation process.
  */
-export class Context<B> {
+export class Context<B extends json.Object> {
 
     constructor(
         public checks: Checks<B> = {},
@@ -95,8 +97,8 @@ export class Context<B> {
  *
  * XXX: checks on prims/externals
  */
-export const fromSchema =
-    <B>(c: Context<B>) => (s: Schema): Check<B> => wrapOptional(s,
+export const fromSchema = <B extends json.Object>
+    (c: Context<B>) => (s: Schema): Check<B> => wrapOptional(s,
         addCustom(c, s, <Check<B>>match(s)
             .caseOf(schema.objectShapeWithAllProperties, fromMapObject(c))
             .caseOf(schema.objectShapeWithProperties, fromObject(c))
@@ -111,43 +113,50 @@ export const fromSchema =
             .caseOf(schema.externalShape, () => identity)
             .end()));
 
-const wrapOptional = <B>(s: Schema, ch: Check<B>): Check<B> =>
+const wrapOptional = <B extends json.Object>
+    (s: Schema, ch: Check<B>): Check<B> =>
     (s.optional === true) ? <Check<B>>optional(ch) : ch;
 
-const addCustom = <B>(c: Context<B>, s: Schema, ch: Check<B>): Check<B> =>
+const addCustom = <B extends json.Object>(c: Context<B>, s: Schema, ch: Check<B>): Check<B> =>
     and<any, any, any>(ch, specs2Checks(c.providers)(s.$checks || []))
 
-const fromObject = <B>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
+const fromObject = <B extends json.Object>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
     every(records.isRecord,
         records.union(map(properties, fromSchema(c))),
         specs2Checks(c.providers)($checks || []));
 
-const fromMap = <B>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
+const fromMap = <B extends json.Object>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
     every(records.isRecord,
         records.map(fromSchema(c)(additionalProperties)),
         specs2Checks(c.providers)($checks || []));
 
-const fromMapObject =
-    <B>(c: Context<B>) => ({ properties, additionalProperties, $checks }: ObjectType) =>
-        every(records.isRecord,
-            records.union(map(properties, fromSchema(c))),
-            records.map(fromSchema(c)(additionalProperties)),
-            specs2Checks(c.providers)($checks || []));
+const fromMapObject = <B extends json.Object>(c: Context<B>) =>
+    ({ properties, additionalProperties, $checks }: ObjectType) =>
+        and(<Precondition<json.Value, json.Object>>records.isRecord,
+            and(records.union(map(properties, fromSchema(c))),
+                and(
+                    records.map(fromSchema(c)(additionalProperties)),
+                    <Precondition<json.Object, B>>specs2Checks(c.providers)(
+                        $checks || []
+                    )
+                )
+            )
+        );
 
-const fromArray = <B>(c: Context<B>) => ({ items }: ArrayType) =>
+const fromArray = <B extends json.Object>(c: Context<B>) => ({ items }: ArrayType) =>
     every(arrays.isArray,
         arrays.map(fromSchema(c)(items)),
         arrays.map(specs2Checks(c.providers)(items.$checks || [])));
 
-const fromTuple = <B>(c: Context<B>) => ({ items }: TupleType) =>
+const fromTuple = <B extends json.Object>(c: Context<B>) => ({ items }: TupleType) =>
     every(arrays.isArray, arrays.tuple(items.map(fromSchema(c))));
 
-const fromSum = <B>(c: Context<B>) => ({ variants }: SumType): Check<B> =>
+const fromSum = <B extends json.Object>(c: Context<B>) => ({ variants }: SumType): Check<B> =>
     reduce(map(variants, fromSchema(c)), reject(''), or);
 
-const fromRef = <B>(c: Context<B>) => ({ ref }: RefType) => refPrec(c)(ref);
+const fromRef = <B extends json.Object>(c: Context<B>) => ({ ref }: RefType) => refPrec(c)(ref);
 
-const refPrec = <B>(c: Context<B>) => (p: string): Check<B> => (v: json.Value) =>
+const refPrec = <B extends json.Object>(c: Context<B>) => (p: string): Check<B> => (v: json.Value) =>
     c.checks.hasOwnProperty(p) ?
         c.checks[p](v) :
         fail(`unknown ref "${p}" known: ${keys(c.checks)}`, v);

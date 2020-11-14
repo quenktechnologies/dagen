@@ -1,5 +1,6 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
+import { Namespace } from '../path/namespace';
 export declare const REF_SYMBOL = "$ref";
 /**
  * Load function.
@@ -49,4 +50,4 @@ export interface Loader {
  * 2. Namespace resolution.
  * 3. Fragment resolution.
  */
-export declare const resolve: (f: Loader, nss: string[]) => (o: Object) => Future<Object>;
+export declare const resolve: (f: Loader, nss: Namespace[]) => (o: Object) => Future<Object>;

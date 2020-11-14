@@ -12,4 +12,4 @@ export declare const isNamespaced: (p: string) => boolean;
  * normalize the use of namespaces in candidate schema using a list of
  * approved namespaces.
  */
-export declare const normalize: (namespaces: string[]) => (o: Object) => Object;
+export declare const normalize: (namespaces: Namespace[]) => (o: Object) => Object;

@@ -3,7 +3,6 @@
  * against a Data Document Schema using the Checks Extension features.
  */
 import * as json from '@quenk/noni/lib/data/json';
-import * as schema from '../';
 import { Precondition, Preconditions } from '@quenk/preconditions';
 import { Schema, Schemas } from '../';
 import { Providers } from './provider';
@@ -11,11 +10,11 @@ export declare const TYPE_REF = "ref";
 /**
  * Check is a Precondition that accepts some JSON value as input.
  */
-export declare type Check<B> = Precondition<json.Value, B>;
+export declare type Check<T> = Precondition<json.Value, T>;
 /**
  * Checks map.
  */
-export declare type Checks<B> = Preconditions<json.Value, B>;
+export declare type Checks<B extends json.Object> = Preconditions<json.Value, B>;
 /**
  * RefType schema.
  */
@@ -27,7 +26,7 @@ export interface RefType extends Schema {
  *
  * Holds useful data used during the transformation process.
  */
-export declare class Context<B> {
+export declare class Context<B extends json.Object> {
     checks: Checks<B>;
     providers: Providers<json.Value>;
     constructor(checks?: Checks<B>, providers?: Providers<json.Value>);
@@ -47,4 +46,4 @@ export declare class Context<B> {
  *
  * XXX: checks on prims/externals
  */
-export declare const fromSchema: <B>(c: Context<B>) => (s: schema.Schema) => Precondition<json.Value, B>;
+export declare const fromSchema: <B extends json.Object>(c: Context<B>) => (s: Schema) => Precondition<json.Value, B>;
