@@ -43,10 +43,11 @@ export const loadN = <M>(paths: string[]): Future<M[]> =>
 /**
  * loadSchema into memory.
  */
-export const loadSchema = (path: string): Future<Object> =>
+export const loadSchema = (path: string): Future<Object> => path ?
     <Future<Object>>load(path)
         .catch(e => raise(new Error(
-            `Error loading schema "${path}": "${e.message}"`)));
+            `Error loading schema "${path}": "${e.message}"`))) :
+    pure({ type: 'object', title: 'Object', additionalProperties: {} }) 
 
 /**
  * loadDefinitions from an array of module paths.

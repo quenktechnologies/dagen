@@ -1,7 +1,8 @@
-import { Value } from '@quenk/noni/lib/data/json';
+import {  Value } from '@quenk/noni/lib/data/json';
 import { identity, every } from '@quenk/preconditions';
+
+import { Providers } from './provider';
 import { Check } from './';
-import { Providers} from './provider';
 
 /**
  * Spec describes a desired Check in JSON.
@@ -25,7 +26,7 @@ export interface Spec {
 /**
  * specs2Checks converts an array of specs into a Check chain.
  */
-export const specs2Checks = <B>(p: Providers<B>) => (specs: Spec[]): Check<B> =>
+export const specs2Checks = <T>(p: Providers<T>) => (specs: Spec[]): Check<T> =>
     (specs.length > 0) ?
         every.apply(null, specs.map(spec2Check(p))) :
         identity;
@@ -35,7 +36,7 @@ export const specs2Checks = <B>(p: Providers<B>) => (specs: Spec[]): Check<B> =>
  *
  * If the name is not found the identity Check is used.
  */
-export const spec2Check = <B>(providers: Providers<B>) => (s: Spec): Check<B> =>
+export const spec2Check = <T>(providers: Providers<T>) => (s: Spec): Check<T> =>
     providers.hasOwnProperty(s.name) ?
         providers[s.name].apply(null, Array.isArray(s.parameters) ?
             s.parameters :

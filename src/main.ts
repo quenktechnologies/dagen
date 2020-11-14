@@ -18,7 +18,7 @@ const args = docopt.docopt(`
 Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
           [--set=KVP...] [--config=CONF...] [--template=TEMPLATE]
-          [--templates=PATH] [--check=PATH...] [--install-check=PATH] <file>
+          [--templates=PATH] [--check=PATH...] [--install-check=PATH] [<file>]
 
 Options:
   -h --help                  Show this screen.
@@ -34,22 +34,22 @@ Options:
   --context PATH             Path to a ES object to merge into the context.
   --version                  Show version.
 `, {
-        version: require('../package.json').version
-    });
+    version: require('../package.json').version
+});
 
-const onError = (args:Object) =>   (e: Error) => {
+const onError = (args: Object) => (e: Error) => {
 
-  let file = args['<file>'];
+    let file = args['<file>'] || '<void>';
 
-  console.error( `Error occured while processing file "${file}"!`);
+    console.error(`Error occured while processing file "${file}"!`);
 
-  console.error( 'Dumping CLI configuration:');
+    console.error('Dumping CLI configuration:');
 
-  console.error(args);
+    console.error(args);
 
-  console.error(e);
+    console.error(e.stack);
 
-  process.exit(-1);
+    process.exit(1);
 
 }
 
@@ -57,4 +57,4 @@ Compile
     .enqueue(<Object>args)
     .get()
     .run()
-    .fork(onError(<Object>args), ()=>{});
+    .fork(onError(<Object>args), () => { });

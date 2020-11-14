@@ -120,7 +120,7 @@ export class Compile {
  */
 export const extract = (argv: Object): Args => ({
 
-    schema: <string>argv['<file>'],
+    schema: <string>argv['<file>'] || '',
 
     plugin: <string[]>argv[args.ARGS_PLUGIN],
 

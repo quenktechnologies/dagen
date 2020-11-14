@@ -12,6 +12,7 @@ const SQL_DEFINITIONS = `${__dirname}/../fixtures/data/definitions/sql.json`;
 const TEMPLATES = `${__dirname}/../fixtures/templates`;
 const TS_TEMPLATE = `company.ts.dagen`;
 const FAIL_TEMPLATE = 'error.ts.dagen';
+const NO_SCHEMA_TEMPLATE = 'noschema.dagen';
 const ORG = `${__dirname}/../fixtures/data/input/org.json`;
 const ORG_CHECK = `${__dirname}/../fixtures/data/checks/org.json`;
 const COMPANY_TS = `${__dirname}/../fixtures/data/output/company_ts.json`;
@@ -139,5 +140,16 @@ describe('dagen', () => {
             }))
 
     })
+
+    it('should work without a schema', () =>
+        toPromise(chmod()
+            .chain(() => run(
+                `--templates ${TEMPLATES} ` +
+                `--template ${NO_SCHEMA_TEMPLATE}`))
+            .map((text: string) => {
+
+                assert(text.trim()).equal('what did you expect?');
+
+            })))
 
 });
