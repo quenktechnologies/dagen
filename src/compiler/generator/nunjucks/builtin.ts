@@ -1,8 +1,11 @@
 import * as typ from '@quenk/noni/lib/data/type';
-import * as schema from '../../../schema';
 import * as json from '@quenk/noni/lib/data/json';
 import * as arrays from '@quenk/noni/lib/data/array';
+import * as strings from '@quenk/noni/lib/data/string';
+import * as schema from '../../../schema';
+
 import { get, set } from 'property-seek';
+
 import { Record, merge, rmerge, reduce } from '@quenk/noni/lib/data/record';
 
 /**
@@ -59,7 +62,14 @@ export const functions: Record<Function> = {
     'takeObjects': takeObjects,
     'takeSums': takeSums,
     'contains': arrays.contains,
-    'pathjoin': pathJoin
+    'pathjoin': pathJoin,
+    'startsWith': strings.startsWith,
+    'endsWith': strings.endsWith,
+    'includes': strings.contains,
+    'camelCase': strings.camelCase,
+    'capitalize': strings.capitalize,
+    'uncapitalize': strings.uncapitalize,
+    'propercase': strings.propercase
 
 };
 
@@ -72,6 +82,10 @@ export const filters: Record<Function> = {
     'error': console.error,
     'log': console.log,
     'info': console.info,
-  'mergevariants': mergeVariants
+    'mergevariants': mergeVariants,
+    'camelcase': strings.camelCase,
+    'capitalize': strings.capitalize,
+    'uncapitalize': strings.uncapitalize,
+    'propercase': strings.propercase
 
 };
