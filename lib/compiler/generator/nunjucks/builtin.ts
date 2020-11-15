@@ -67,9 +67,13 @@ export const functions: Record<Function> = {
     'endsWith': strings.endsWith,
     'includes': strings.contains,
     'camelCase': strings.camelCase,
+    'classCase': strings.classCase,
     'capitalize': strings.capitalize,
     'uncapitalize': strings.uncapitalize,
-    'propercase': strings.propercase
+    'propercase': strings.propercase,
+    'alpha': strings.alpha,
+    'numeric': strings.numeric,
+    'alphanumeric': strings.alphaNumeric
 
 };
 
@@ -84,8 +88,12 @@ export const filters: Record<Function> = {
     'info': console.info,
     'mergevariants': mergeVariants,
     'camelcase': strings.camelCase,
+    'classcase': strings.classCase,
     'capitalize': strings.capitalize,
     'uncapitalize': strings.uncapitalize,
-    'propercase': strings.propercase
+    'propercase': strings.propercase,
+    'alpha': strings.alpha,
+    'numeric': strings.numeric,
+    'alphanumeric': strings.alphaNumeric
 
 };
