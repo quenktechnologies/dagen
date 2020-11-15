@@ -66,14 +66,15 @@ export const functions: Record<Function> = {
     'startsWith': strings.startsWith,
     'endsWith': strings.endsWith,
     'includes': strings.contains,
-    'camelCase': strings.camelCase,
-    'classCase': strings.classCase,
+    'camelCase': strings.camelcase,
+    'classCase': strings.classcase,
     'capitalize': strings.capitalize,
+    'modulecase': strings.modulecase,
     'uncapitalize': strings.uncapitalize,
     'propercase': strings.propercase,
     'alpha': strings.alpha,
     'numeric': strings.numeric,
-    'alphanumeric': strings.alphaNumeric
+    'alphanumeric': strings.alphanumeric
 
 };
 
@@ -87,13 +88,14 @@ export const filters: Record<Function> = {
     'log': console.log,
     'info': console.info,
     'mergevariants': mergeVariants,
-    'camelcase': strings.camelCase,
-    'classcase': strings.classCase,
+    'camelcase': strings.camelcase,
+    'classcase': strings.classcase,
+    'modulecase': strings.modulecase,
     'capitalize': strings.capitalize,
     'uncapitalize': strings.uncapitalize,
     'propercase': strings.propercase,
     'alpha': strings.alpha,
     'numeric': strings.numeric,
-    'alphanumeric': strings.alphaNumeric
+    'alphanumeric': strings.alphanumeric
 
 };
