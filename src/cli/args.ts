@@ -7,4 +7,5 @@ export const ARGS_CONFIG = '--config';
 export const ARGS_DEFINITIONS = '--definitions';
 export const ARGS_TEMPLATE = '--template';
 export const ARGS_TEMPLATES = '--templates';
-
+export const ARGS_OUT = '--out';
+export const ARGS_EXT = '--ext';

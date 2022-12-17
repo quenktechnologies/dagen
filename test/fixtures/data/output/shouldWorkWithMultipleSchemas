@@ -1,0 +1,27 @@
+{ 
+
+
+    "id": true ,
+
+    "name": true 
+
+}
+
+{ 
+
+
+    "id": true ,
+
+    "number": true 
+
+}
+
+{ 
+
+
+    "id": true ,
+
+    "username": true 
+
+}
+

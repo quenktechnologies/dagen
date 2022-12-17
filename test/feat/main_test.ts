@@ -1,12 +1,23 @@
-import { assert } from '@quenk/test/lib/assert';
+import * as os from 'os';
+
+import {
+    exec
+} from 'child_process';
+
+import {
+    assert
+} from '@quenk/test/lib/assert';
 import {
     Future,
     pure,
     toPromise,
-    fromCallback
+    fromCallback,
+    doFuture,
+    voidPure
 } from '@quenk/noni/lib/control/monad/future';
-import { readTextFile } from '@quenk/noni/lib/io/file';
-import { exec } from 'child_process';
+import {
+    readTextFile
+} from '@quenk/noni/lib/io/file';
 
 const SQL_DEFINITIONS = `${__dirname}/../fixtures/data/definitions/sql.json`;
 const TEMPLATES = `${__dirname}/../fixtures/templates`;
@@ -21,6 +32,9 @@ const COMPANY = `${__dirname}/../fixtures/data/input/company.json`;
 const COMPANY_SQL = `${__dirname}/../fixtures/data/output/company_sql.json`;
 const GENERIC_PLUGIN = `${__dirname}/../fixtures/plugin/generic`;
 const BIN = `${__dirname}/../../lib/main.js`;
+const ACCOUNT = `${__dirname}/../fixtures/data/input/account.json`;
+const USER = `${__dirname}/../fixtures/data/input/user.json`;
+const PROFILE = `${__dirname}/../fixtures/data/input/profile.json`;
 
 const chmod = () =>
     fromCallback(cb => exec(`chmod +x ${BIN} `, cb));
@@ -96,7 +110,10 @@ describe('dagen', () => {
                 `--template ${FAIL_TEMPLATE} ` +
                 `--definitions ${SQL_DEFINITIONS} ` +
                 `--namespace ts ${COMPANY} `))
-            .catch(e => { console.error(e); return pure('true') })
+            .catch(e => {
+                console.error(e);
+                return pure('true')
+            })
             .map((r: string) => assert(r).equal('true'))))
 
     it('should apply checks', () =>
@@ -152,4 +169,44 @@ describe('dagen', () => {
 
             })))
 
-});
+    it('should work with multiple schemas', () => doFuture(function*() {
+
+        yield chmod();
+
+        let result = yield run(`--templates ${TEMPLATES} ` +
+            `--template ${TS_TEMPLATE} ` +
+            `${PROFILE} ${ACCOUNT} ${USER}`);
+
+        let path = `${__dirname}/../fixtures/data/output/` +
+            `shouldWorkWithMultipleSchemas`;
+
+        let expected = yield readTextFile(path);
+
+        assert(result).equal(expected);
+
+        return voidPure;
+
+    }))
+
+    it('should work with the --out flag', () => doFuture(function*() {
+
+        yield chmod();
+
+        yield run(`--templates ${TEMPLATES} ` +
+            `--template ${TS_TEMPLATE} ` +
+            `--ext json ` +
+            `--out ${os.tmpdir()} ` +
+            `${PROFILE}`);
+
+        let result = yield readTextFile(`${os.tmpdir()}/profile.json`);
+
+        let expected = yield readTextFile(
+            `${__dirname}/../fixtures/data/output/profile.json`);
+
+        assert(result).equal(expected);
+
+        return voidPure;
+
+    }))
+
+})

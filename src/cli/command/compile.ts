@@ -1,12 +1,22 @@
 import * as args from '../args';
 import * as nunjucks from 'nunjucks';
-import { Future, pure } from '@quenk/noni/lib/control/monad/future';
-import { dirname } from 'path';
+import * as path from 'path';
+
+import {
+    Future,
+    doFuture,
+    voidPure,
+    batch
+} from '@quenk/noni/lib/control/monad/future';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
+import { distribute, empty } from '@quenk/noni/lib/data/array';
+import { writeFile } from '@quenk/noni/lib/io/file';
+
 import { Context } from '../../compiler';
 import { FileSystemLoader } from '../../schema/loader/file-system';
 import { Nunjucks } from '../../compiler/generator/nunjucks';
+import { CompositePlugin } from '../../plugin';
 import {
     loadSchema,
     loadDefinitions,
@@ -15,15 +25,15 @@ import {
     loadPlugins
 } from '../';
 import { Command } from './';
-import { doN, DoFn } from '@quenk/noni/lib/control/monad';
-import { CompositePlugin } from '../../plugin';
+
+export const MAX_WORKLOAD = 50;
 
 /**
  * Args is the normalized form of the command line arguments.
  */
 export interface Args {
 
-    schema: string,
+    schema: string[],
 
     plugin: string[],
 
@@ -39,7 +49,11 @@ export interface Args {
 
     config: string[],
 
-    check: string[]
+    check: string[],
+
+    ext: string,
+
+    out: string
 
 }
 
@@ -61,53 +75,76 @@ export class Compile {
 
     run(): Future<void> {
 
-        let that = this;
+        let { argv } = this;
 
-        return doN(<DoFn<void, Future<void>>>function*() {
-
-            let argv = that.argv;
-
-            let file = argv.schema;
-
-            let ctx = new Context({}, argv.namespace, [],
-                new FileSystemLoader(dirname(file)));
-
-            let plist = yield loadPlugins(ctx, argv.plugin);
-
-            let plugins = new CompositePlugin(plist);
+        return doFuture(function*() {
 
             let config = yield (setValues({})(argv.config));
 
-            plugins.configure(config);
-
-            let pluginChecks = yield plugins.checkSchema();
-
-            let schema = yield loadSchema(file);
-
             let defs = yield loadDefinitions(argv.definition);
 
-            let checks = yield loadChecks(argv.check, pluginChecks);
+            // The empty string ensures we still output when no schema provided.
+            let schemas = empty(argv.schema) ? [''] : argv.schema;
 
-            ctx.addDefinitions(defs);
+            yield batch(distribute(schemas.map(file =>
+                doFuture(function*() {
 
-            ctx.addChecks(checks);
+                    let ctx = new Context({}, argv.namespace, [],
+                        new FileSystemLoader(path.dirname(file)));
 
-            ctx.setPlugin(plugins);
+                    let plist = yield loadPlugins(ctx, argv.plugin);
 
-            schema = yield (setValues(schema)(argv.set));
+                    let plugins = new CompositePlugin(plist);
 
-            let s: Object = yield ctx.compile(schema);
+                    plugins.configure(config);
 
-            let gen = yield plugins.configureGenerator(Nunjucks
-                .create(argv.template,
-                    new nunjucks.FileSystemLoader(argv.templates)));
+                    let pluginChecks = yield plugins.checkSchema();
 
-            let out = yield argv.template ? gen.render(s) :
-                pure(JSON.stringify(s));
+                    let schema = yield loadSchema(file);
 
-            console.log(out);
+                    let checks = yield loadChecks(argv.check, pluginChecks);
 
-            return pure(undefined);
+                    ctx.addDefinitions(defs);
+
+                    ctx.addChecks(checks);
+
+                    ctx.setPlugin(plugins);
+
+                    schema = yield (setValues(schema)(argv.set));
+
+                    let s: Object = yield ctx.compile(schema);
+
+                    let gen = yield plugins.configureGenerator(Nunjucks
+                        .create(argv.template,
+                            new nunjucks.FileSystemLoader(argv.templates)));
+
+                    let content = argv.template ?
+                        yield gen.render(s)
+                        : JSON.stringify(s);
+
+                    if (argv.out) {
+
+                        let filename = path.basename(file, path.extname(file));
+
+                        if (argv.ext)
+                            filename = `${filename}.${argv.ext}`;
+
+                        let dir = path.isAbsolute(argv.out) ? argv.out :
+                            require.resolve(path.join(process.cwd(), argv.out));
+
+                        yield writeFile(path.join(dir, filename), content);
+
+                    } else {
+
+                        console.log(content);
+
+                    }
+
+                    return voidPure;
+
+                })), MAX_WORKLOAD));
+
+            return voidPure;
 
         });
 
@@ -120,7 +157,7 @@ export class Compile {
  */
 export const extract = (argv: Object): Args => ({
 
-    schema: <string>argv['<file>'] || '',
+    schema: <string[]>argv['<file>'],
 
     plugin: <string[]>argv[args.ARGS_PLUGIN],
 
@@ -137,5 +174,9 @@ export const extract = (argv: Object): Args => ({
     check: <string[]>argv[args.ARGS_CHECK],
 
     config: <string[]>argv[args.ARGS_CONFIG],
+
+    ext: <string>argv[args.ARGS_EXT] || '',
+
+    out: <string>argv[args.ARGS_OUT] || ''
 
 });

@@ -1,17 +1,19 @@
+import { isAbsolute, join } from 'path';
+import { set } from 'property-seek';
+
 import { Object } from '@quenk/noni/lib/data/json';
 import {
     Future,
     attempt,
     parallel,
     raise,
-    pure
+    pure,
+    doFuture
 } from '@quenk/noni/lib/control/monad/future';
-import { set } from 'property-seek';
-import { isAbsolute, join } from 'path';
-import { doN, DoFn } from '@quenk/noni/lib/control/monad';
 import { Value } from '@quenk/noni/lib/data/json';
 import { startsWith } from '@quenk/noni/lib/data/string';
 import { merge } from '@quenk/noni/lib/data/record';
+
 import { Check, Context as CheckContext, fromSchema } from '../schema/checks';
 import { Definitions } from '../schema/definitions';
 import { Plugin, PluginProvider } from '../plugin';
@@ -47,7 +49,7 @@ export const loadSchema = (path: string): Future<Object> => path ?
     <Future<Object>>load(path)
         .catch(e => raise(new Error(
             `Error loading schema "${path}": "${e.message}"`))) :
-    pure({ type: 'object', title: 'Object', additionalProperties: {} }) 
+    pure({ type: 'object', title: 'Object', additionalProperties: {} })
 
 /**
  * loadDefinitions from an array of module paths.
@@ -64,26 +66,23 @@ const defsErr = (e: Error) =>
  * loadPlugins from an array of plugin paths.
  */
 export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
-    doN(<DoFn<Plugin[], Future<Plugin[]>>>function*() {
+    doFuture<Plugin[]>(function*() {
 
         let mods = yield loadN(paths);
 
-        let futs = mods.map((m: { create: PluginProvider }) => attempt(() => {
+        return parallel(mods.map((m: { create: PluginProvider }) =>
+            attempt(() => {
 
-            if (typeof m.create !== 'function')
-                throw new Error(`Plugins must export a create function!`);
+                if (typeof m.create !== 'function')
+                    throw new Error(`Plugins must export a create function!`);
 
-            return m.create(ctx);
+                return m.create(ctx);
 
-        }));
-
-        return parallel(futs);
-
-    })
-        .catch(pluginErr);
-
-const pluginErr = <A>(e: Error): Future<A> =>
-    raise(new Error(`Failed loading one or more plugins: "${e.message}"`));
+            })))
+            .catch((e: Error) =>
+                raise(new Error(`Failed loading one or more plugins: ` +
+                    `"${e.message}"`)))
+    });
 
 /**
  * loadChecks from an array of paths.
