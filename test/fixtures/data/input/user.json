@@ -4,6 +4,8 @@
 
     "type": "object",
 
+    "meta.schema.isModel": 1,
+
     "properties": {
 
         "id": {

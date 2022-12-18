@@ -19,7 +19,7 @@ Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
           [--set=KVP...] [--config=CONF...] [--template=TEMPLATE]
           [--templates=PATH] [--check=PATH...] [--install-check=PATH] 
-          [--context PATH] [--out PATH] [--ext EXT] [<file>...]
+          [--context PATH...] [--out PATH] [--ext EXT] [--exclude=EXPR...] [<file>...]
 
 Options:
   -h --help                  Show this screen.
@@ -37,6 +37,8 @@ Options:
                              written to STDOUT.
   --ext EXT                  Extension to use when writing output file. Defaults
                              to none.
+  --exclude EXPR             A path expression to evaluate against each schema
+                             to determine whether to exclude it or not.
   --version                  Show version.
 `, {
     version: require('../package.json').version

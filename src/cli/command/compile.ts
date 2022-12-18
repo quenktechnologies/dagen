@@ -25,6 +25,7 @@ import {
     loadPlugins
 } from '../';
 import { Command } from './';
+import { evaluate } from '../../schema/path';
 
 export const MAX_WORKLOAD = 50;
 
@@ -53,7 +54,9 @@ export interface Args {
 
     ext: string,
 
-    out: string
+    out: string,
+
+    exclude: string[]
 
 }
 
@@ -89,6 +92,8 @@ export class Compile {
             yield batch(distribute(schemas.map(file =>
                 doFuture(function*() {
 
+
+
                     let ctx = new Context({}, argv.namespace, [],
                         new FileSystemLoader(path.dirname(file)));
 
@@ -113,6 +118,9 @@ export class Compile {
                     schema = yield (setValues(schema)(argv.set));
 
                     let s: Object = yield ctx.compile(schema);
+
+                    if (argv.exclude.some(expr => evaluate(s, expr)))
+                        return voidPure;
 
                     let gen = yield plugins.configureGenerator(Nunjucks
                         .create(argv.template,
@@ -177,6 +185,8 @@ export const extract = (argv: Object): Args => ({
 
     ext: <string>argv[args.ARGS_EXT] || '',
 
-    out: <string>argv[args.ARGS_OUT] || ''
+    out: <string>argv[args.ARGS_OUT] || '',
+
+    exclude: <string[]>argv[args.ARGS_EXCLUDE] || []
 
 });

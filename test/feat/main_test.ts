@@ -188,6 +188,26 @@ describe('dagen', () => {
 
     }))
 
+    it('should exclude schema', () => doFuture(function*() {
+
+        yield chmod();
+
+        let result = yield run(`--templates ${TEMPLATES} ` +
+            `--template ${TS_TEMPLATE} ` +
+            `--exclude meta.schema.isModel ` +
+            `${PROFILE} ${ACCOUNT} ${USER}`);
+
+        let path = `${__dirname}/../fixtures/data/output/` +
+            `shouldExcludeSchema`;
+
+        let expected = yield readTextFile(path);
+
+        assert(result).equal(expected);
+
+        return voidPure;
+
+    }))
+
     it('should work with the --out flag', () => doFuture(function*() {
 
         yield chmod();
