@@ -7,3 +7,6 @@ export declare const ARGS_CONFIG = "--config";
 export declare const ARGS_DEFINITIONS = "--definitions";
 export declare const ARGS_TEMPLATE = "--template";
 export declare const ARGS_TEMPLATES = "--templates";
+export declare const ARGS_OUT = "--out";
+export declare const ARGS_EXT = "--ext";
+export declare const ARGS_EXCLUDE = "--exclude";

@@ -18,10 +18,10 @@ export interface Spec {
 /**
  * specs2Checks converts an array of specs into a Check chain.
  */
-export declare const specs2Checks: <T>(p: Providers<T>) => (specs: Spec[]) => import("@quenk/preconditions").Precondition<Value, T>;
+export declare const specs2Checks: <T>(p: Providers<T>) => (specs: Spec[]) => Check<T>;
 /**
  * spec2Check converts a Spec to a Check using the spec name.
  *
  * If the name is not found the identity Check is used.
  */
-export declare const spec2Check: <T>(providers: Providers<T>) => (s: Spec) => import("@quenk/preconditions").Precondition<Value, T>;
+export declare const spec2Check: <T>(providers: Providers<T>) => (s: Spec) => Check<T>;

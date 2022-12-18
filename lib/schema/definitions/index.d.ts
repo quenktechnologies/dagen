@@ -4,7 +4,7 @@ export { Result };
 /**
  * Definition is a schema that can be re-used elsewhere in the document.
  */
-export declare type Definition = Schema;
+export type Definition = Schema;
 /**
  * Definitions
  */

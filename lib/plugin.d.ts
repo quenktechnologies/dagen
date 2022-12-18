@@ -6,7 +6,7 @@ import { Schema } from './schema';
 /**
  * PluginProvider type.
  */
-export declare type PluginProvider = (c: Context) => Plugin;
+export type PluginProvider = (c: Context) => Plugin;
 /**
  * Plugin allows various stages of data generation to be intercepted and
  * modified before final output.

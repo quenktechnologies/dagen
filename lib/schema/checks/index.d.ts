@@ -10,11 +10,11 @@ export declare const TYPE_REF = "ref";
 /**
  * Check is a Precondition that accepts some JSON value as input.
  */
-export declare type Check<T> = Precondition<json.Value, T>;
+export type Check<T> = Precondition<json.Value, T>;
 /**
  * Checks map.
  */
-export declare type Checks<B extends json.Object> = Preconditions<json.Value, B>;
+export type Checks<B extends json.Object> = Preconditions<json.Value, B>;
 /**
  * RefType schema.
  */
@@ -46,4 +46,4 @@ export declare class Context<B extends json.Object> {
  *
  * XXX: checks on prims/externals
  */
-export declare const fromSchema: <B extends json.Object>(c: Context<B>) => (s: Schema) => Precondition<json.Value, B>;
+export declare const fromSchema: <B extends json.Object>(c: Context<B>) => (s: Schema) => Check<B>;

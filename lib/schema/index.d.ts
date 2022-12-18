@@ -58,7 +58,7 @@ export declare const refShape: {
 /**
  * Root is the top level schema that describes an entire data document.
  */
-export declare type Root = ObjectType | SumType;
+export type Root = ObjectType | SumType;
 /**
  * Schema describes the allowed value or shape of a data value
  * for a value somewhere in a JSON document.

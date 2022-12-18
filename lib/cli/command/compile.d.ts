@@ -2,11 +2,12 @@ import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Object } from '@quenk/noni/lib/data/json';
 import { Maybe } from '@quenk/noni/lib/data/maybe';
 import { Command } from './';
+export declare const MAX_WORKLOAD = 50;
 /**
  * Args is the normalized form of the command line arguments.
  */
 export interface Args {
-    schema: string;
+    schema: string[];
     plugin: string[];
     namespace: string[];
     definition: string[];
@@ -15,6 +16,9 @@ export interface Args {
     set: string[];
     config: string[];
     check: string[];
+    ext: string;
+    out: string;
+    exclude: string[];
 }
 /**
  * Compile command.

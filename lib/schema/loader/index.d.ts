@@ -5,11 +5,11 @@ export declare const REF_SYMBOL = "$ref";
 /**
  * Load function.
  */
-export declare type Load = (path: string) => Future<Object>;
+export type Load = (path: string) => Future<Object>;
 /**
  * Create function.
  */
-export declare type Create = (path: string) => Loader;
+export type Create = (path: string) => Loader;
 /**
  * Loader is the type of function used to load a JSON object fragment
  * into memory.

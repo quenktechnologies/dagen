@@ -5,11 +5,11 @@ export declare const SYMBOL = "#";
 /**
  * Ref is a schema whose type value is prefixed by the [[SYMBOL]].
  */
-export declare type Ref = Schema;
+export type Ref = Schema;
 /**
  * Usage of a definition refernece.
  */
-export declare type Usage = string;
+export type Usage = string;
 /**
  * Usages is a map of paths to desired references.
  */
