@@ -47,7 +47,7 @@ export const loadN = <M>(paths: string[]): Future<M[]> =>
  */
 export const loadSchema = (path: string): Future<Object> => path ?
     <Future<Object>>load(path)
-        .catch(e => raise(new Error(
+        .trap(e => raise(new Error(
             `Error loading schema "${path}": "${e.message}"`))) :
     pure({ type: 'object', title: 'Object', additionalProperties: {} })
 
@@ -57,7 +57,7 @@ export const loadSchema = (path: string): Future<Object> => path ?
 export const loadDefinitions = (paths: string[]): Future<Definitions> =>
     <Future<Definitions>>loadN(paths)
         .map(defs => defs.reduce(merge, {}))
-        .catch(defsErr);
+        .trap(defsErr);
 
 const defsErr = (e: Error) =>
     raise(new Error(`Failed loading one or more definitions: "${e.message}"`));
@@ -79,7 +79,7 @@ export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
                 return m.create(ctx);
 
             })))
-            .catch((e: Error) =>
+            .trap((e: Error) =>
                 raise(new Error(`Failed loading one or more plugins: ` +
                     `"${e.message}"`)))
     });
@@ -92,7 +92,7 @@ export const loadChecks =
         <Future<Check<Value>[]>>loadN(paths)
             .chain((s: Schema[]) =>
                 pure(s.concat(list).map(fromSchema(new CheckContext()))))
-            .catch(checkErr);
+            .trap(checkErr);
 
 const checkErr = <A>(e: Error): Future<A> =>
     raise(new Error(`Failed loading one or more checks: "${e.message}"`));
