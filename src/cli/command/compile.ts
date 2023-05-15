@@ -138,7 +138,7 @@ export class Compile {
                             filename = `${filename}.${argv.ext}`;
 
                         let dir = path.isAbsolute(argv.out) ? argv.out :
-                            require.resolve(path.join(process.cwd(), argv.out));
+                            path.resolve(path.join(process.cwd(), argv.out));
 
                         yield writeFile(path.join(dir, filename), content);
 

@@ -16,7 +16,7 @@ import {
     voidPure
 } from '@quenk/noni/lib/control/monad/future';
 import {
-    readTextFile
+    readTextFile, removeFile
 } from '@quenk/noni/lib/io/file';
 
 const SQL_DEFINITIONS = `${__dirname}/../fixtures/data/definitions/sql.json`;
@@ -110,7 +110,7 @@ describe('dagen', () => {
                 `--template ${FAIL_TEMPLATE} ` +
                 `--definitions ${SQL_DEFINITIONS} ` +
                 `--namespace ts ${COMPANY} `))
-            .catch(e => {
+            .trap(e => {
                 console.error(e);
                 return pure('true')
             })
@@ -224,6 +224,31 @@ describe('dagen', () => {
             `${__dirname}/../fixtures/data/output/profile.json`);
 
         assert(result).equal(expected);
+
+        return voidPure;
+
+    }))
+
+    it('should work with a relative --out flag', () => doFuture(function*() {
+
+        yield removeFile('./profile.json');
+
+        yield chmod();
+
+        yield run(`--templates ${TEMPLATES} ` +
+            `--template ${TS_TEMPLATE} ` +
+            `--ext json ` +
+            `--out . `+
+            `${PROFILE}`);
+
+        let result = yield readTextFile('./profile.json');
+
+        let expected = yield readTextFile(
+            `${__dirname}/../fixtures/data/output/profile.json`);
+
+        assert(result).equal(expected);
+
+        yield removeFile('./profile.json');
 
         return voidPure;
 
