@@ -18,7 +18,7 @@ const args = docopt.docopt(`
 Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
           [--set=KVP...] [--config=CONF...] [--template=TEMPLATE]
-          [--templates=PATH] [--check=PATH...] [--install-check=PATH] 
+          [--templates=PATH...] [--check=PATH...] [--install-check=PATH] 
           [--context PATH...] [--out PATH] [--ext EXT] [--exclude=EXPR...] [<file>...]
 
 Options:

@@ -42,7 +42,7 @@ export interface Args {
 
     definition: string[],
 
-    templates: string,
+    templates: string[],
 
     template: string,
 
@@ -123,8 +123,8 @@ export class Compile {
                         return voidPure;
 
                     let gen = yield plugins.configureGenerator(Nunjucks
-                        .create(argv.template,
-                            new nunjucks.FileSystemLoader(argv.templates)));
+                        .create(argv.template, argv.templates.map(path =>
+                            new nunjucks.FileSystemLoader(path))));
 
                     let content = argv.template ?
                         yield gen.render(s)
@@ -173,7 +173,7 @@ export const extract = (argv: Object): Args => ({
 
     definition: <string[]>argv[args.ARGS_DEFINITIONS],
 
-    templates: <string>argv[args.ARGS_TEMPLATES] || process.cwd(),
+    templates: <string[]>argv[args.ARGS_TEMPLATES] || [process.cwd()],
 
     template: <string>argv[args.ARGS_TEMPLATE],
 
