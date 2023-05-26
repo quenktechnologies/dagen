@@ -28,11 +28,11 @@ export class Nunjucks implements Generator<string> {
         public template: string,
         public env: Environment) { }
 
-    static create(template: string, loaders: nunjucks.ILoader): Nunjucks {
+    static create(template: string, loaders: nunjucks.ILoader[]): Nunjucks {
 
         return new Nunjucks(template,
             addFilters(addFunctions(
-                new Environment([loaders], {
+                new Environment(loaders, {
                     autoescape: false,
                     throwOnUndefined: true,
                     trimBlocks: true,

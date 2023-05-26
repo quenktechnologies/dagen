@@ -20,6 +20,6 @@ export declare class Nunjucks implements Generator<string> {
     template: string;
     env: Environment;
     constructor(template: string, env: Environment);
-    static create(template: string, loaders: nunjucks.ILoader): Nunjucks;
+    static create(template: string, loaders: nunjucks.ILoader[]): Nunjucks;
     render(document: Object): Future<string>;
 }

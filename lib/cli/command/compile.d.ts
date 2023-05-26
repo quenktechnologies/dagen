@@ -11,7 +11,7 @@ export interface Args {
     plugin: string[];
     namespace: string[];
     definition: string[];
-    templates: string;
+    templates: string[];
     template: string;
     set: string[];
     config: string[];
