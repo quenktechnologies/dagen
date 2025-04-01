@@ -1,4 +1,6 @@
 import {  Value } from '@quenk/noni/lib/data/json';
+import { Type } from '@quenk/noni/lib/data/type';
+
 import { identity, every } from '@quenk/preconditions';
 
 import { Providers } from './provider';
@@ -29,7 +31,7 @@ export interface Spec {
 export const specs2Checks = <T>(p: Providers<T>) => (specs: Spec[]): Check<T> =>
     (specs.length > 0) ?
         every.apply(null, specs.map(spec2Check(p))) :
-        identity;
+        <Type>identity;
 
 /**
  * spec2Check converts a Spec to a Check using the spec name.
@@ -41,4 +43,4 @@ export const spec2Check = <T>(providers: Providers<T>) => (s: Spec): Check<T> =>
         providers[s.name].apply(null, Array.isArray(s.parameters) ?
             s.parameters :
             []) :
-        identity;
+        <Type>identity;

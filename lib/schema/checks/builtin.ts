@@ -36,9 +36,9 @@ export const providers: Providers<Value> = {
 
     pattern: (s: string) => strings.matches(new RegExp(s)),
 
-    maxItems: arrays.max,
+    maxItems: arrays.maxItems,
 
-    minItems: arrays.min
+    minItems: arrays.minItems
 
 }
 
