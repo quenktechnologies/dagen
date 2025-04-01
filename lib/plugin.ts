@@ -1,12 +1,15 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future, pure, parallel } from '@quenk/noni/lib/control/monad/future';
-import { pipeN } from '@quenk/noni/lib/control/monad';
+import { pipeN as pn} from '@quenk/noni/lib/control/monad';
 import {
     Plugin as GeneratorPlugin,
     Nunjucks
 } from './compiler/generator/nunjucks';
 import { Context, Plugin as CompilerPlugin } from './compiler';
 import { Schema } from './schema';
+import { Type } from '@quenk/noni/lib/data/type';
+
+const pipeN:Type = pn;
 
 /**
  * PluginProvider type.

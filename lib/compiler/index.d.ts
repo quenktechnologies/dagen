@@ -72,7 +72,7 @@ export declare class Context {
      *
      * This stage determines whether the object is fit for use.
      */
-    checkStage(o: Object): Future<Object>;
+    checkStage(o: Object): Future<any>;
     /**
      * compile a JSON document into a valid document schema.
      */

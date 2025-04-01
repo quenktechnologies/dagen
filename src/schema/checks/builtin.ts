@@ -8,6 +8,7 @@ import { Providers } from './provider';
 import { Root, ObjectType, Schema } from '../';
 import { Definitions } from '../definitions';
 import { Check, Context, fromSchema } from './';
+import { Type } from '@quenk/noni/lib/data/type';
 
 /**
  * providers available for the '$checks' section.
@@ -20,25 +21,25 @@ export const providers: Providers<Value> = {
 
     nn: cons(prec.notNull),
 
-    gt: numbers.gt,
+    gt: <Type>numbers.gt,
 
-    lt: numbers.lt,
+    lt: <Type>numbers.lt,
 
-    uppercase: cons(strings.uppercase),
+    uppercase: <Type>cons(strings.uppercase),
 
-    lowercase: cons(strings.lower),
+    lowercase: <Type>cons(strings.lower),
 
-    maxLength: strings.maxLength,
+    maxLength: <Type>strings.maxLength,
 
-    minLength: strings.minLength,
+    minLength: <Type>strings.minLength,
 
-    trim: cons(strings.trim),
+    trim: <Type>cons(strings.trim),
 
-    pattern: (s: string) => strings.matches(new RegExp(s)),
+    pattern: <Type>((s: string) => strings.matches(new RegExp(s))),
 
-    maxItems: arrays.maxItems,
+    maxItems: <Type>arrays.maxItems,
 
-    minItems: arrays.minItems
+    minItems: <Type>arrays.minItems
 
 }
 
@@ -440,5 +441,5 @@ export const root: Root = {
 
 export const check: Check<Schema> = fromSchema<Schema>((
     new Context<Schema>({}, providers))
-    .addChecks(root.definitions))(root);
+    .addChecks(<Type>root.definitions))(root);
 

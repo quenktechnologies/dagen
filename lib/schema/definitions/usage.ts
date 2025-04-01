@@ -14,6 +14,7 @@ import {
     TYPE_SUM
 } from '../';
 import { Definition, Definitions } from './';
+import { Type } from '@quenk/noni/lib/data/type';
 
 export const SYMBOL = '#';
 
@@ -77,9 +78,9 @@ export const pull =
     (work: Usages) => (path: string) => (schema: Schema): Usages =>
         <Usages>match(schema)
             .caseOf({ type: TYPE_OBJECT }, pullObject(work)(path))
-            .caseOf({ type: TYPE_ARRAY }, pullArray(work)(path))
-            .caseOf({ type: TYPE_SUM }, pullSum(work)(path))
-            .orElse(pullOther(work)(path))
+            .caseOf((<Type>{ type: TYPE_ARRAY }), pullArray(work)(path))
+            .caseOf((<Type>{ type: TYPE_SUM }), pullSum(work)(path))
+            .orElse((<Type>pullOther(work))(path))
             .end();
 
 const pullObject =
@@ -89,7 +90,7 @@ const pullObject =
             pullProperties(work)(path)(schema.properties) : {};
 
         let adds = hasPullableAdditionalRefs(schema) ?
-            pullAdditional(work)(path)(schema.additionalProperties) : {}
+            pullAdditional(work)(path)(<Type>schema.additionalProperties) : {}
 
         return merge(work, merge(props, adds));
 

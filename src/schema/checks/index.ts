@@ -34,6 +34,7 @@ import {
 } from '../';
 import { Providers } from './provider';
 import { specs2Checks } from './spec';
+import { Type } from '@quenk/noni/lib/data/type';
 
 export const TYPE_REF = 'ref';
 
@@ -105,7 +106,7 @@ export const fromSchema = <B extends json.Object>
             .caseOf(schema.objectShapeWithAdditionalProperties, fromMap(c))
             .caseOf(schema.arrayShape, fromArray(c))
             .caseOf(schema.tupleShape, fromTuple(c))
-            .caseOf(schema.sumShape, fromSum(c))
+            .caseOf(<Type>schema.sumShape, fromSum(c))
             .caseOf(schema.refShape, fromRef(c))
             .caseOf(schema.stringShape, () => strings.isString)
             .caseOf(schema.numberShape, () => numbers.isNumber)
@@ -122,20 +123,20 @@ const addCustom = <B extends json.Object>(c: Context<B>, s: Schema, ch: Check<B>
 
 const fromObject = <B extends json.Object>(c: Context<B>) => ({ properties, $checks }: ObjectType) =>
     every(records.isRecord,
-        records.union(map(properties, fromSchema(c))),
+        <Type>records.union(<Type>map(<Type>properties, fromSchema(c))),
         specs2Checks(c.providers)($checks || []));
 
 const fromMap = <B extends json.Object>(c: Context<B>) => ({ additionalProperties, $checks }: ObjectType) =>
     every(records.isRecord,
-        records.map(fromSchema(c)(additionalProperties)),
+       <Type> records.map(fromSchema(c)(<Type>additionalProperties)),
         specs2Checks(c.providers)($checks || []));
 
 const fromMapObject = <B extends json.Object>(c: Context<B>) =>
     ({ properties, additionalProperties, $checks }: ObjectType) =>
         and(<Precondition<json.Value, json.Object>>records.isRecord,
-            and(records.union(map(properties, fromSchema(c))),
+            and(records.union(map(<Type>properties, fromSchema(c))),
                 and(
-                    records.map(fromSchema(c)(additionalProperties)),
+                    records.map(fromSchema(c)(<Type>additionalProperties)),
                     <Precondition<json.Object, B>>specs2Checks(c.providers)(
                         $checks || []
                     )

@@ -213,7 +213,7 @@ export interface SumType extends Schema {
 export const isObjectType = (doc: Value): doc is ObjectType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc['type'] === TYPE_OBJECT)) ? true : false;
+        ((<{type:string}>doc)['type'] === TYPE_OBJECT)) ? true : false;
 
 /**
  * isArrayType type guard.
@@ -221,12 +221,12 @@ export const isObjectType = (doc: Value): doc is ObjectType =>
 export const isArrayType = (doc: Value): doc is ArrayType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_ARRAY)) ? true : false;
+        ((<{type:string}>doc).type === TYPE_ARRAY)) ? true : false;
 
 export const isTupleType = (doc: Value): doc is TupleType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_TUPLE))
+        ((<{type:string}>doc).type === TYPE_TUPLE))
 
 /**
  * isSumType type guard.
@@ -234,7 +234,7 @@ export const isTupleType = (doc: Value): doc is TupleType =>
 export const isSumType = (doc: Value): doc is SumType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_SUM)) ? true : false;
+        ((<{type:string}>doc).type === TYPE_SUM)) ? true : false;
 
 /**
  * isStringType type guard.
@@ -242,7 +242,7 @@ export const isSumType = (doc: Value): doc is SumType =>
 export const isStringType = (doc: Value): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_STRING));
+        ((<{type:string}>doc).type === TYPE_STRING));
 
 /**
  * isNumberType type guard.
@@ -250,7 +250,7 @@ export const isStringType = (doc: Value): doc is Schema =>
 export const isNumberType = (doc: Value): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_NUMBER));
+        ((<{type:string}>doc).type === TYPE_NUMBER));
 
 /**
  * isBooleanType type guard.
@@ -258,7 +258,7 @@ export const isNumberType = (doc: Value): doc is Schema =>
 export const isBooleanType = (doc: Value): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        (doc.type === TYPE_BOOLEAN));
+        ((<{type:string}>doc).type === TYPE_BOOLEAN));
 
 /**
  * isExternalType type guard.
@@ -266,7 +266,7 @@ export const isBooleanType = (doc: Value): doc is Schema =>
 export const isExternalType = (doc: Value): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
-        ([TYPE_OBJECT, TYPE_ARRAY].indexOf(String(doc.type)) < 0)) ? true : false;
+        ([TYPE_OBJECT, TYPE_ARRAY].indexOf(String((<{type:string}>doc).type)) < 0)) ? true : false;
 
 /**
  * expand a JSON object by expanding schema short-hand.

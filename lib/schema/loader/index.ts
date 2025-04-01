@@ -19,6 +19,7 @@ import { flatten, unflatten } from '@quenk/noni/lib/data/record/path';
 import { match } from '@quenk/noni/lib/control/match';
 import { Namespace, normalize } from '../path/namespace';
 import { PATH_SEPARATOR, expandObject } from '../path';
+import { Type } from '@quenk/noni/lib/data/type';
 
 export const REF_SYMBOL = '$ref';
 
@@ -110,9 +111,9 @@ const divide = (o: Object): [Object, Object] =>
  */
 const fetch = (f: Loader, nss: Namespace[]) => (v: Value)
     : Future<Object> => <Future<Object>>match(v)
-        .caseOf(String, fetchObject(f, nss))
+        .caseOf(<Type>String, fetchObject(f, nss))
         .caseOf(Array, fetchObjects(f, nss))
-        .orElse(fetchWrongReferenceType)
+        .orElse(<Type>fetchWrongReferenceType)
         .end();
 
 const fetchObject = (f: Loader, nss: Namespace[]) => (path: string)
@@ -121,7 +122,7 @@ const fetchObject = (f: Loader, nss: Namespace[]) => (path: string)
         .load(path)
         .chain((val: Value) => <Future<Object>>match(val)
             .caseOf({}.constructor, resolve(f.create(path), nss))
-            .orElse(rejectNonObject)
+            .orElse(<Type>rejectNonObject)
             .end());
 
 const rejectNonObject = (value: Value) =>

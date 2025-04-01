@@ -30,7 +30,7 @@ export interface Spec {
  */
 export const specs2Checks = <T>(p: Providers<T>) => (specs: Spec[]): Check<T> =>
     (specs.length > 0) ?
-        every.apply(null, specs.map(spec2Check(p))) :
+        <Type>every.apply(null, <Type>(specs.map(<Type>spec2Check(<Type>p)))) :
         <Type>identity;
 
 /**

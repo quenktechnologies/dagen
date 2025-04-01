@@ -5,6 +5,7 @@ import { Future, fromCallback } from '@quenk/noni/lib/control/monad/future';
 import { reduce } from '@quenk/noni/lib/data/record';
 import { functions, filters } from './builtin';
 import { Generator } from '../';
+import { Type } from '@quenk/noni/lib/data/type';
 
 /**
  * Plugin for the nunjucks generate.
@@ -44,7 +45,7 @@ export class Nunjucks implements Generator<string> {
 
     render(document: Object): Future<string> {
 
-        return fromCallback(cb => (this.env.render(this.template, { document }, cb)));
+        return fromCallback((cb:Type) => (this.env.render(this.template, { document }, cb)));
 
     }
 

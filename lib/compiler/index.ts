@@ -12,6 +12,7 @@ import { Check } from '../schema/checks';
 import { check } from '../schema/checks/builtin';
 import { Schema, expand as schemaExpand } from '../schema';
 import { Definitions } from '../schema/definitions';
+import { Type } from '@quenk/noni/lib/data/type';
 
 
 /**
@@ -137,8 +138,8 @@ export class Context {
 
         return this
             .checks
-            .reduce(chainCheck, check(o))
-            .fold(checksFailed(this), (o: Object) => pure(o));
+            .reduce(chainCheck, <Type>check(o))
+            .fold(<Type>checksFailed(this), (o: Type) => pure(o));
 
     }
 

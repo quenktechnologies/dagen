@@ -13,6 +13,7 @@ import {
 import { Value } from '@quenk/noni/lib/data/json';
 import { startsWith } from '@quenk/noni/lib/data/string';
 import { merge } from '@quenk/noni/lib/data/record';
+import { Type } from '@quenk/noni/lib/data/type';
 
 import { Check, Context as CheckContext, fromSchema } from '../schema/checks';
 import { Definitions } from '../schema/definitions';
@@ -31,7 +32,7 @@ export const load = <M>(path: string): Future<M> => attempt(() => {
     let p = isAbsolute(path) ? path :
         require.resolve(join(process.cwd(), path));
 
-    let m = require.main.require(p);
+    let m = (<Type>require).main.require(p);
     return m.default ? m.default : m;
 
 });
@@ -56,7 +57,7 @@ export const loadSchema = (path: string): Future<Object> => path ?
  */
 export const loadDefinitions = (paths: string[]): Future<Definitions> =>
     <Future<Definitions>>loadN(paths)
-        .map(defs => defs.reduce(merge, {}))
+        .map(defs => defs.reduce(<Type>merge, {}))
         .trap(defsErr);
 
 const defsErr = (e: Error) =>
@@ -90,7 +91,7 @@ export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
 export const loadChecks =
     (paths: string[], list: Schema[] = []): Future<Check<Value>[]> =>
         <Future<Check<Value>[]>>loadN(paths)
-            .chain((s: Schema[]) =>
+            .chain((s: Type[]) =>
                 pure(s.concat(list).map(fromSchema(new CheckContext()))))
             .trap(checkErr);
 
