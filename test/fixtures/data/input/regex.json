@@ -1,0 +1,27 @@
+{
+
+    "title": "User",
+
+    "type": "object",
+
+    "meta.schema.isModel": 1,
+
+    "properties": {
+
+        "id": {
+
+            "type": "number"
+
+        },
+
+        "username": {
+
+            "type": "string",
+
+            "pattern": "^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$"
+
+        }
+
+    }
+
+}

@@ -1,0 +1,1 @@
+{"type":"object","title":"Company","procedures":{"create":{"imports":{"Settings as SettingsType":"@anole/types/lib/Settings"},"parameters":{"data":"SettingsType"}}},"extras":["a","b","c"],"GENERIC_PLUGIN_BEFORE_OUTPUT":"yes","name":""}
