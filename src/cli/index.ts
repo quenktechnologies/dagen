@@ -1,4 +1,4 @@
-import { isAbsolute, join } from 'path';
+import { extname, isAbsolute, join } from 'path';
 import { set } from 'property-seek';
 
 import { Object } from '@quenk/noni/lib/data/json';
@@ -20,6 +20,7 @@ import { Definitions } from '../schema/definitions';
 import { Plugin, PluginProvider } from '../plugin';
 import { Schema } from '../schema';
 import { Context } from '../compiler';
+import { readJSONFile } from '@quenk/noni/lib/io/file';
 
 export const MODULE_SCHEME = 'require';
 export const EVAL_SCHEME = 'eval';
@@ -32,9 +33,14 @@ export const load = <M>(path: string): Future<M> => attempt(() => {
     let p = isAbsolute(path) ? path :
         require.resolve(join(process.cwd(), path));
 
+    let ext = extname(p);
+
+    if(ext === '.json') {
+      return readJSONFile(p);
+    } else {
     let m = (<Type>require).main.require(p);
     return m.default ? m.default : m;
-
+    }
 });
 
 /**

@@ -59,7 +59,7 @@ export class Context {
     /**
      * addChecks to the context.
      */
-    addChecks(checks: Check<Value[]>): Context {
+    addChecks(checks: Check<Value>[]): Context {
 
         this.checks = this.checks.concat(checks);
 

@@ -3,6 +3,15 @@
 
     "id": true ,
 
+    "name": true 
+
+}
+
+{ 
+
+
+    "id": true ,
+
     "number": true 
 
 }
@@ -13,15 +22,6 @@
     "id": true ,
 
     "username": true 
-
-}
-
-{ 
-
-
-    "id": true ,
-
-    "name": true 
 
 }
 

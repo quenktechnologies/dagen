@@ -144,7 +144,7 @@ describe('dagen', () => {
                 `--definitions ${SQL_DEFINITIONS}`,
                 `--namespace ts ${COMPANY}`
             ],
-            error: 'foo'
+            error: 'throwAnError'
         },
         {
             title: 'should work with the --out flag',
@@ -168,7 +168,7 @@ describe('dagen', () => {
                 `--out .`,
                 `${PROFILE}`
             ],
-            outPath: PROFILE,
+            outPath: `${process.cwd()}/profile.json`,
             path: `shouldWorkWithARelativeOutFlag`
         }
     ])('$title', async ({ args, error, path, outPath, nogenerate }) => {
@@ -178,6 +178,7 @@ describe('dagen', () => {
             }
 
             let result = await run(args);
+            if (outPath) result = await readTextFile(outPath);
             await writeTextFile(fixturePath(path), result);
             return;
         }
@@ -187,10 +188,8 @@ describe('dagen', () => {
             try {
                 await run(args);
             } catch (e) {
-              console.error('THE ERROR ', e);
-                msg = (e.message as Error).message;
+                msg = (e as Error).message;
             }
-console.error('msg is se ', msg);
             expect(msg.includes(error)).toBe(true);
             return;
         }

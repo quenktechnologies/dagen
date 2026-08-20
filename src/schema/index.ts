@@ -5,7 +5,8 @@
  * Note that the types represent fully expanded schema and do not take
  * short-hand into account.
  */
-import { Object, Value } from '@quenk/noni/lib/data/json';
+import { Object as JSONObject, Value as JSONValue } from '@quenk/noni/lib/data/json';
+
 import { merge, map, isRecord } from '@quenk/noni/lib/data/record';
 import { isString } from '@quenk/noni/lib/data/type';
 import { id } from '@quenk/noni/lib/data/function';
@@ -111,7 +112,7 @@ export type Root = ObjectType | SumType;
  * Schema describes the allowed value or shape of a data value
  * for a value somewhere in a JSON document.
  */
-export interface Schema extends Object {
+export interface Schema extends JSONObject {
 
     /**
      * type indicates the type the value should be treated as.
@@ -199,7 +200,7 @@ export interface SumType extends Schema {
      */
     discriminator: {
 
-        [key: string]: Value
+        [key: string]: JSONValue
 
         type: string
 
@@ -210,7 +211,7 @@ export interface SumType extends Schema {
 /**
  * isObjectType type guard.
  */
-export const isObjectType = (doc: Value): doc is ObjectType =>
+export const isObjectType = (doc: JSONValue): doc is ObjectType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc)['type'] === TYPE_OBJECT)) ? true : false;
@@ -218,12 +219,12 @@ export const isObjectType = (doc: Value): doc is ObjectType =>
 /**
  * isArrayType type guard.
  */
-export const isArrayType = (doc: Value): doc is ArrayType =>
+export const isArrayType = (doc: JSONValue): doc is ArrayType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_ARRAY)) ? true : false;
 
-export const isTupleType = (doc: Value): doc is TupleType =>
+export const isTupleType = (doc: JSONValue): doc is TupleType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_TUPLE))
@@ -231,7 +232,7 @@ export const isTupleType = (doc: Value): doc is TupleType =>
 /**
  * isSumType type guard.
  */
-export const isSumType = (doc: Value): doc is SumType =>
+export const isSumType = (doc: JSONValue): doc is SumType =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_SUM)) ? true : false;
@@ -239,7 +240,7 @@ export const isSumType = (doc: Value): doc is SumType =>
 /**
  * isStringType type guard.
  */
-export const isStringType = (doc: Value): doc is Schema =>
+export const isStringType = (doc: JSONValue): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_STRING));
@@ -247,7 +248,7 @@ export const isStringType = (doc: Value): doc is Schema =>
 /**
  * isNumberType type guard.
  */
-export const isNumberType = (doc: Value): doc is Schema =>
+export const isNumberType = (doc: JSONValue): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_NUMBER));
@@ -255,7 +256,7 @@ export const isNumberType = (doc: Value): doc is Schema =>
 /**
  * isBooleanType type guard.
  */
-export const isBooleanType = (doc: Value): doc is Schema =>
+export const isBooleanType = (doc: JSONValue): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ((<{type:string}>doc).type === TYPE_BOOLEAN));
@@ -263,7 +264,7 @@ export const isBooleanType = (doc: Value): doc is Schema =>
 /**
  * isExternalType type guard.
  */
-export const isExternalType = (doc: Value): doc is Schema =>
+export const isExternalType = (doc: JSONValue): doc is Schema =>
     ((typeof doc === 'object') &&
         (!Array.isArray(doc)) &&
         ([TYPE_OBJECT, TYPE_ARRAY].indexOf(String((<{type:string}>doc).type)) < 0)) ? true : false;
@@ -278,41 +279,41 @@ export const isExternalType = (doc: Value): doc is Schema =>
  * 4. When a property of the `variants` section of a sum type is a string.
  * 5. When a property of the `definitions` section of the root schema is a string.
  */
-export const expand = (o: Object): Object => match(o)
+export const expand = (o: JSONObject): JSONObject => match(o)
     .caseOf({ type: TYPE_OBJECT }, expandObjectType)
     .caseOf({ type: TYPE_ARRAY }, expandArrayType)
     .caseOf({ type: TYPE_SUM }, expandSumType)
     .orElse(id)
     .end();
 
-const expandObjectType = (o: Object) =>
+const expandObjectType = (o: JSONObject) =>
     merge(merge(merge(o, expandProperties(o)),
         expandAdditonalProperties(o)),
         expandDefinitions(o));
 
-const expandProperties = (o: Object): Object =>
+const expandProperties = (o: JSONObject): JSONObject =>
     isRecord(o['properties']) ?
-        { properties: map(<Object>o['properties'], expandType) } :
+        { properties: map(<JSONObject>o['properties'], expandType) } :
         {};
 
-const expandAdditonalProperties = (o: Object): Object =>
+const expandAdditonalProperties = (o: JSONObject): JSONObject =>
     isString(o['additionalProperties']) ?
         { additionalProperties: { type: o['additionalProperties'] } } :
         {};
 
-const expandDefinitions = (o: Object): Object =>
+const expandDefinitions = (o: JSONObject): JSONObject =>
     isRecord(o['definitions']) ?
-        { definitions: map(<Object>o['definitions'], expandType) } :
+        { definitions: map(<JSONObject>o['definitions'], expandType) } :
         {};
 
-const expandArrayType = (o: Object) =>
+const expandArrayType = (o: JSONObject) =>
     merge(o, { items: expandType(o['items']) });
 
-const expandSumType = (o: Object): Object =>
+const expandSumType = (o: JSONObject): JSONObject =>
     merge(o, isRecord(o['variants']) ?
-        { variants: map(<Object>o['variants'], expandType) } :
+        { variants: map(<JSONObject>o['variants'], expandType) } :
         {});
 
-const expandType = (value: Value) => isString(value) ?
+const expandType = (value: JSONValue) => isString(value) ?
     { type: value } :
     isRecord(value) ? expand(value) : value;

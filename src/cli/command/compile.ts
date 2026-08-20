@@ -4,8 +4,6 @@ import * as path from 'path';
 
 import {
     Future,
-    doFuture,
-    voidPure,
     batch
 } from '@quenk/noni/lib/control/monad/future';
 import { Object } from '@quenk/noni/lib/data/json';
@@ -77,37 +75,34 @@ export class Compile {
     }
 
     run(): Future<void> {
+      return Future.do(async () => {
 
         let { argv } = this;
 
-        return doFuture(function*() {
+            let config = await (setValues({})(argv.config));
 
-            let config = yield (setValues({})(argv.config));
-
-            let defs = yield loadDefinitions(argv.definition);
+            let defs = await loadDefinitions(argv.definition);
 
             // The empty string ensures we still output when no schema provided.
             let schemas = empty(argv.schema) ? [''] : argv.schema;
 
-            yield batch(distribute(schemas.map(file =>
-                doFuture(function*() {
-
-
+            let results = await batch(distribute(schemas.map(file =>
+                Future.do(async (): Promise<string | undefined> => {
 
                     let ctx = new Context({}, argv.namespace, [],
                         new FileSystemLoader(path.dirname(file)));
 
-                    let plist = yield loadPlugins(ctx, argv.plugin);
+                    let plist = await loadPlugins(ctx, argv.plugin);
 
                     let plugins = new CompositePlugin(plist);
 
                     plugins.configure(config);
 
-                    let pluginChecks = yield plugins.checkSchema();
+                    let pluginChecks = await plugins.checkSchema();
 
-                    let schema = yield loadSchema(file);
+                    let schema = await loadSchema(file);
 
-                    let checks = yield loadChecks(argv.check, pluginChecks);
+                    let checks = await loadChecks(argv.check, pluginChecks);
 
                     ctx.addDefinitions(defs);
 
@@ -115,19 +110,19 @@ export class Compile {
 
                     ctx.setPlugin(plugins);
 
-                    schema = yield (setValues(schema)(argv.set));
+                    schema = await (setValues(schema)(argv.set));
 
-                    let s: Object = yield ctx.compile(schema);
+                    let s: Object = await ctx.compile(schema);
 
                     if (argv.exclude.some(expr => evaluate(s, expr)))
-                        return voidPure;
+                        return undefined;
 
-                    let gen = yield plugins.configureGenerator(Nunjucks
+                    let gen = await plugins.configureGenerator(Nunjucks
                         .create(argv.template, argv.templates.map(path =>
                             new nunjucks.FileSystemLoader(path))));
 
                     let content = argv.template ?
-                        yield gen.render(s)
+                        await gen.render(s)
                         : JSON.stringify(s);
 
                     if (argv.out) {
@@ -140,19 +135,23 @@ export class Compile {
                         let dir = path.isAbsolute(argv.out) ? argv.out :
                             path.resolve(path.join(process.cwd(), argv.out));
 
-                        yield writeFile(path.join(dir, filename), content);
+                        await writeFile(path.join(dir, filename), content);
 
-                    } else {
-
-                        console.log(content);
+                        return undefined;
 
                     }
 
-                    return voidPure;
+                    return content;
 
-                })), MAX_WORKLOAD));
+                })
+            ), MAX_WORKLOAD));
 
-            return voidPure;
+            // Printing happens here, sequentially, once every file has
+            // finished compiling, so that output order always matches the
+            // order the schema files were given in regardless of which
+            // file's Future settled first.
+            for (let content of results.flat())
+                if (content !== undefined) console.log(content);
 
         });
 
