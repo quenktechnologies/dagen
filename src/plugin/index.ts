@@ -1,5 +1,5 @@
-import { Type } from '@quenk/noni/lib/data/type';
-import { Object, Value } from '@quenk/noni/lib/data/json';
+import { Type, isFunction } from '@quenk/noni/lib/data/type';
+import { Object } from '@quenk/noni/lib/data/json';
 import { Future, pure, parallel } from '@quenk/noni/lib/control/monad/future';
 import { pipeN as pn } from '@quenk/noni/lib/control/monad';
 import {
@@ -35,7 +35,7 @@ export interface Plugin extends CompilerPlugin, GeneratorPlugin {
     /**
      * onOutput is called before the final output of the generated code.
      */
-    onOutput(s: Schema, output:Value): Promise<Value>;
+    onOutput(s: Schema, output: string): Promise<string>;
 }
 
 /**
@@ -70,10 +70,9 @@ export abstract class AbstractPlugin implements Plugin {
         return pure(s);
     }
 
-    async onOutput(_: Schema, output: Value): Promise<Value> {
-        return (output);
+    async onOutput(_: Schema, output: string): Promise<string> {
+        return output;
     }
-
 }
 
 /**
@@ -118,11 +117,12 @@ export class CompositePlugin implements Plugin {
         return pipeN.apply(undefined, fs)(s);
     }
 
-    async onOutput(s: Schema, output: Value): Promise<Value> {
-      let finalOutput = output;
-      for(let plugin of this.plugins) {
-        finalOutput = await plugin.onOutput(s, finalOutput);
-      }
-      return finalOutput;
+    async onOutput(s: Schema, output: string): Promise<string> {
+        let finalOutput = output;
+        for (let plugin of this.plugins) {
+            if (isFunction(plugin.onOutput))
+                finalOutput = await plugin.onOutput(s, finalOutput);
+        }
+        return finalOutput;
     }
 }

@@ -12,6 +12,8 @@ import { Context } from '../../compiler';
 import { FileSystemLoader } from '../../schema/loader/file-system';
 import { Nunjucks } from '../../compiler/generator/nunjucks';
 import { CompositePlugin } from '../../plugin';
+import { PrettyPlugin } from '../../plugin/pretty';
+import { Schema } from '../../schema';
 import {
     loadSchema,
     loadDefinitions,
@@ -51,6 +53,8 @@ export interface Args {
     out: string;
 
     exclude: string[];
+
+    pretty: string;
 }
 
 /**
@@ -90,9 +94,12 @@ export class Compile {
 
                             let plist = await loadPlugins(ctx, argv.plugin);
 
+                            if (argv.pretty)
+                                plist.push(new PrettyPlugin(ctx, argv.pretty));
+
                             let plugins = new CompositePlugin(plist);
 
-                            plugins.configure(config);
+                            await plugins.configure(config);
 
                             let pluginChecks = await plugins.checkSchema();
 
@@ -126,9 +133,12 @@ export class Compile {
                                 )
                             );
 
-                            let content = await plugins.onOutput(schema, argv.template
-                                ? await gen.render(s)
-                                : JSON.stringify(s));
+                            let content = await plugins.onOutput(
+                                <Schema>s,
+                                argv.template
+                                    ? await gen.render(s)
+                                    : JSON.stringify(s)
+                            );
 
                             if (argv.out) {
                                 let filename = path.basename(
@@ -196,5 +206,7 @@ export const extract = (argv: Object): Args => ({
 
     out: <string>argv[args.ARGS_OUT] || '',
 
-    exclude: <string[]>argv[args.ARGS_EXCLUDE] || []
+    exclude: <string[]>argv[args.ARGS_EXCLUDE] || [],
+
+    pretty: <string>argv[args.ARGS_PRETTY] || ''
 });

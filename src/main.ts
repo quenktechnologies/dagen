@@ -18,7 +18,8 @@ Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
           [--set=KVP...] [--config=CONF...] [--template=TEMPLATE]
           [--templates=PATH...] [--check=PATH...] [--install-check=PATH] 
-          [--context PATH...] [--out PATH] [--ext EXT] [--exclude=EXPR...] [<file>...]
+          [--context PATH...] [--out PATH] [--ext EXT] [--exclude=EXPR...]
+          [--pretty=PARSER] [<file>...]
 
 Options:
   -h --help                  Show this screen.
@@ -38,6 +39,8 @@ Options:
                              to none.
   --exclude EXPR             A path expression to evaluate against each schema
                              to determine whether to exclude it or not.
+  --pretty PARSER            Format output using prettier with the given
+                             parser name (e.g. babel, typescript, json).
   --version                  Show version.
 `,
     {

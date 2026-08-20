@@ -136,6 +136,16 @@ describe('dagen', () => {
             path: `shouldLoadFilesWithRegexes`
         },
         {
+            title: 'should format output with --pretty',
+            args: [
+                `--templates ${TEMPLATES}`,
+                `--template ${TS_TEMPLATE}`,
+                `--pretty json`,
+                `${PROFILE}`
+            ],
+            path: `shouldFormatOutputWithPretty`
+        },
+        {
             title: 'should catch errors in templates',
             args: [
                 `--templates ${TEMPLATES}`,

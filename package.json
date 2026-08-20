@@ -5,7 +5,8 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "vitest run"
+    "test": "vitest run",
+    "fmt": "prettier --write src test"
   },
   "bin": {
     "dagen": "./lib/main.js"

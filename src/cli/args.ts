@@ -10,3 +10,4 @@ export const ARGS_TEMPLATES = '--templates';
 export const ARGS_OUT = '--out';
 export const ARGS_EXT = '--ext';
 export const ARGS_EXCLUDE = '--exclude';
+export const ARGS_PRETTY = '--pretty';
