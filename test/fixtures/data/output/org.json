@@ -1,1 +1,13 @@
-{"procedures":{"create":{"imports":{"Settings as SettingsType":"@anole/types/lib/Settings"},"parameters":{"data":"SettingsType"}}},"type":"object","title":"Company","extras":["a","b","c"]}
+{
+    "procedures": {
+        "create": {
+            "imports": {
+                "Settings as SettingsType": "@anole/types/lib/Settings"
+            },
+            "parameters": { "data": "SettingsType" }
+        }
+    },
+    "type": "object",
+    "title": "Company",
+    "extras": ["a", "b", "c"]
+}

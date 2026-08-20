@@ -1,10 +1,8 @@
-import {Future} from '@quenk/noni/lib/control/monad/future';
+import { Future } from '@quenk/noni/lib/control/monad/future';
 
 /**
- * Command 
+ * Command
  */
 export interface Command<R> {
-
-  run(): Future<R>;
-
+    run(): Future<R>;
 }

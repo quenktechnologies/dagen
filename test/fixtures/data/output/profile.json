@@ -1,8 +1,5 @@
-{ 
+{
+    "id": true,
 
-
-    "id": true ,
-
-    "name": true 
-
+    "name": true
 }

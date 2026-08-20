@@ -11,7 +11,5 @@ export type Provider<B> = (...value: Value[]) => Check<B>;
  * or more arguments.
  */
 export interface Providers<B> {
-
-    [key: string]: Provider<B>
-
+    [key: string]: Provider<B>;
 }

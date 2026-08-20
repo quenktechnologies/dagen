@@ -14,18 +14,15 @@ import { Schema, expand as schemaExpand } from '../schema';
 import { Definitions } from '../schema/definitions';
 import { Type } from '@quenk/noni/lib/data/type';
 
-
 /**
  * Plugin for the compiler.
  */
 export interface Plugin {
-
     /**
-     * beforeOutput is applied to the schema before output of te 
+     * beforeOutput is applied to the schema before output of te
      * generated code.
      */
-    beforeOutput(s: Schema): Future<Schema>
-
+    beforeOutput(s: Schema): Future<Schema>;
 }
 
 /**
@@ -36,12 +33,12 @@ export interface Plugin {
  * @property loader     - Loader used to resolve fragment references.
  */
 export class Context {
-
     constructor(
         public definitions: Definitions,
         public namespaces: string[],
         public checks: Check<Value>[],
-        public loader: Loader) { }
+        public loader: Loader
+    ) {}
 
     plugins: Maybe<Plugin> = nothing();
 
@@ -49,33 +46,27 @@ export class Context {
      * addDefinitions to the Context.
      */
     addDefinitions(defs: Definitions): Context {
-
         this.definitions = merge(this.definitions, defs);
 
         return this;
-
     }
 
     /**
      * addChecks to the context.
      */
     addChecks(checks: Check<Value>[]): Context {
-
         this.checks = this.checks.concat(checks);
 
         return this;
-
     }
 
     /**
      * setPlugin sets the plugin to be used during compilation.
      */
     setPlugin(plugin: Plugin): Context {
-
         this.plugins = just(plugin);
 
         return this;
-
     }
 
     /**
@@ -85,9 +76,7 @@ export class Context {
      * their owners.
      */
     fragmentResolution(o: Object): Future<Object> {
-
-        return (resolve(this.loader, this.namespaces)(o))
-
+        return resolve(this.loader, this.namespaces)(o);
     }
 
     /**
@@ -97,9 +86,7 @@ export class Context {
      * to full JSON objects in supported places.
      */
     schemaExpansion(o: Object): Future<Object> {
-
         return pure(schemaExpand(o));
-
     }
 
     /**
@@ -109,10 +96,11 @@ export class Context {
      * under their respective names.
      */
     definitionRegistration(o: Object): Future<Context> {
-
-        return pure(isRecord(o.definitions) ?
-            this.addDefinitions(<Definitions>o.definitions) : this);
-
+        return pure(
+            isRecord(o.definitions)
+                ? this.addDefinitions(<Definitions>o.definitions)
+                : this
+        );
     }
 
     /**
@@ -120,13 +108,11 @@ export class Context {
      * At this stage all usage of defined types are resolved.
      */
     definitionMerging(o: Object): Future<Object> {
-
         let eresult = defResolve(this.definitions)(<Schema>o);
 
-        return eresult.isLeft() ?
-            mergingFailed(this, eresult.takeLeft()) :
-            mergingComplete(eresult.takeRight());
-
+        return eresult.isLeft()
+            ? mergingFailed(this, eresult.takeLeft())
+            : mergingComplete(eresult.takeRight());
     }
 
     /**
@@ -135,23 +121,18 @@ export class Context {
      * This stage determines whether the object is fit for use.
      */
     checkStage(o: Object) {
-
-        return this
-            .checks
+        return this.checks
             .reduce(chainCheck, <Type>check(o))
             .fold(<Type>checksFailed(this), (o: Type) => pure(o));
-
     }
 
     /**
      * compile a JSON document into a valid document schema.
      */
     compile(doc: Object): Future<Object> {
-
         let that = this;
 
-        return doN(<DoFn<Object, Future<Object>>>function*() {
-
+        return doN(<DoFn<Object, Future<Object>>>function* () {
             doc = yield that.fragmentResolution(doc);
 
             doc = yield that.schemaExpansion(doc);
@@ -164,23 +145,20 @@ export class Context {
 
             if (that.plugins.isJust())
                 return that.plugins.get().beforeOutput(<Schema>doc);
-            else
-                return pure(doc);
-
+            else return pure(doc);
         });
-
     }
-
 }
 
 const mergingFailed = (c: Context, f: Failure<Object>): Future<Object> =>
     raise(f.toError({}, c));
 
-const mergingComplete = (o: Object): Future<Object> =>
-    pure(o);
+const mergingComplete = (o: Object): Future<Object> => pure(o);
 
-const checksFailed = (_: Context) => (f: Failure<Object>): Future<Object> =>
-    raise(new Error(`${JSON.stringify(f.explain())}`));
+const checksFailed =
+    (_: Context) =>
+    (f: Failure<Object>): Future<Object> =>
+        raise(new Error(`${JSON.stringify(f.explain())}`));
 
 const chainCheck = (pre: Result<Value, Value>, curr: Check<Value>) =>
     <Result<Object, Value>>pre.chain(curr);

@@ -1,11 +1,9 @@
 {
-
     "title": "Company",
     "type": "object",
     "sql:table": "company",
     "ts:module": "entities",
     "properties": {
-
         "name": "#name",
 
         "sql:slogan": "#text",
@@ -13,27 +11,17 @@
         "ts:slogan": "string",
 
         "sql:comment": {
-
-          "type": "#text"
-
+            "type": "#text"
         },
 
         "reg": {
-
             "type": "string"
-
         },
         "mailing_address": {
-
             "$ref": "./address.json"
-
         },
         "dot\\.com": {
-
             "type": "string"
-
         }
-
     }
-
 }

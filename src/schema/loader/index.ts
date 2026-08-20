@@ -38,7 +38,6 @@ export type Create = (path: string) => Loader;
  * into memory.
  */
 export interface Loader {
-
     /**
      * load an object fragment into memory using the specified path.
      */
@@ -51,7 +50,6 @@ export interface Loader {
      * path for the new Loader to use as its CWD.
      */
     create: Create;
-
 }
 
 /**
@@ -59,18 +57,16 @@ export interface Loader {
  * into memory.
  */
 export interface Loader {
-
     /**
      * load an object fragment into memory using the specified path.
      */
-    load: (path: string) => Future<Object>
+    load: (path: string) => Future<Object>;
 
     /**
      * create a new Loader instance that will operate relative to the
      * cwd specified.
      */
-    create: (cwd: string) => Loader
-
+    create: (cwd: string) => Loader;
 }
 
 /**
@@ -81,17 +77,18 @@ export interface Loader {
  * 2. Namespace resolution.
  * 3. Fragment resolution.
  */
-export const resolve = (f: Loader, nss: Namespace[]) => (o: Object)
-    : Future<Object> => {
+export const resolve =
+    (f: Loader, nss: Namespace[]) =>
+    (o: Object): Future<Object> => {
+        let [ref, reg] = divide(normalize(nss)(expandObject(o)));
+        let resolved = eraseRefProperties(map(<Object>ref, fetch(f, nss)));
 
-    let [ref, reg] = divide((normalize(nss)(expandObject(o))));
-    let resolved = eraseRefProperties(map(<Object>ref, fetch(f, nss)));
-
-    return pure(unflatten(reg))
-        .chain((regs: Object) => constructFragment(resolved)
-            .map((refs: Object) => rmerge(regs, refs)));
-
-}
+        return pure(unflatten(reg)).chain((regs: Object) =>
+            constructFragment(resolved).map((refs: Object) =>
+                rmerge(regs, refs)
+            )
+        );
+    };
 
 /**
  * divide an object into two flattened maps of ref properties
@@ -99,39 +96,46 @@ export const resolve = (f: Loader, nss: Namespace[]) => (o: Object)
  * @private
  */
 const divide = (o: Object): [Object, Object] =>
-    <[Object, Object]>partition(flatten(o), (_, k: string) =>
-        k.indexOf(REF_SYMBOL) > -1);
+    <[Object, Object]>(
+        partition(flatten(o), (_, k: string) => k.indexOf(REF_SYMBOL) > -1)
+    );
 
 /**
  * fetch a schema using a Loader function and the value
- * of the ref property. 
+ * of the ref property.
  *
  * Only accepts strings and arrays, anything else is an unwanted error.
  * @private
  */
-const fetch = (f: Loader, nss: Namespace[]) => (v: Value)
-    : Future<Object> => <Future<Object>>match(v)
-        .caseOf(<Type>String, fetchObject(f, nss))
-        .caseOf(Array, fetchObjects(f, nss))
-        .orElse(<Type>fetchWrongReferenceType)
-        .end();
+const fetch =
+    (f: Loader, nss: Namespace[]) =>
+    (v: Value): Future<Object> =>
+        <Future<Object>>match(v)
+            .caseOf(<Type>String, fetchObject(f, nss))
+            .caseOf(Array, fetchObjects(f, nss))
+            .orElse(<Type>fetchWrongReferenceType)
+            .end();
 
-const fetchObject = (f: Loader, nss: Namespace[]) => (path: string)
-    : Future<Object> =>
-    f
-        .load(path)
-        .chain((val: Value) => <Future<Object>>match(val)
-            .caseOf({}.constructor, resolve(f.create(path), nss))
-            .orElse(<Type>rejectNonObject)
-            .end());
+const fetchObject =
+    (f: Loader, nss: Namespace[]) =>
+    (path: string): Future<Object> =>
+        f.load(path).chain(
+            (val: Value) => <Future<Object>>match(val)
+                    .caseOf({}.constructor, resolve(f.create(path), nss))
+                    .orElse(<Type>rejectNonObject)
+                    .end()
+        );
 
 const rejectNonObject = (value: Value) =>
-    raise(new Error(`References must only point to objects! ` +
-        `Not : '${typeof value}'!`));
+    raise(
+        new Error(
+            `References must only point to objects! ` +
+                `Not : '${typeof value}'!`
+        )
+    );
 
 const fetchObjects = (f: Loader, nss: Namespace[]) => (list: Value[]) =>
-    parallel(list.map(fetch(f, nss)))
-        .map(l => l.reduce(rmerge, {}));
+    parallel(list.map(fetch(f, nss))).map(l => l.reduce(rmerge, {}));
 
 const fetchWrongReferenceType = (value: Value) =>
     raise(new Error(`Cannot use type '${typeof value}' as a reference!`));
@@ -139,9 +143,10 @@ const fetchWrongReferenceType = (value: Value) =>
 /**
  * eraseRefProperties from a flat map of fragments (symbol only).
  */
-const eraseRefProperties =
-    (resolved: Record<Future<Object>>): Record<Future<Object>> =>
-        reduce(resolved, {}, (p, c, k) => merge(p, { [unref(k)]: c }));
+const eraseRefProperties = (
+    resolved: Record<Future<Object>>
+): Record<Future<Object>> =>
+    reduce(resolved, {}, (p, c, k) => merge(p, { [unref(k)]: c }));
 
 const unref = (k: string) =>
     k
@@ -156,14 +161,18 @@ const unref = (k: string) =>
  * @private
  */
 const constructFragment = (o: Record<Future<Object>>): Future<Object> =>
-    parallel(tagFutures(o))
-        .map(reconcile);
+    parallel(tagFutures(o)).map(reconcile);
 
 const tagFutures = (o: Record<Future<Object>>) =>
-    values(map(o, (p: Future<Object>, key) =>
-        p.map((value: Object) => ({ key, value }))));
+    values(
+        map(o, (p: Future<Object>, key) =>
+            p.map((value: Object) => ({ key, value }))
+        )
+    );
 
-const reconcile = (vals: { key: string, value: Object }[]) =>
-    vals.reduce((p, { key, value }) => (key === '') ?
-        rmerge(p, value) :
-        set(key, value, p), {});
+const reconcile = (vals: { key: string; value: Object }[]) =>
+    vals.reduce(
+        (p, { key, value }) =>
+            key === '' ? rmerge(p, value) : set(key, value, p),
+        {}
+    );

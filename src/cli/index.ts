@@ -28,20 +28,21 @@ export const EVAL_SCHEME = 'eval';
 /**
  * load reads a module into memory using node's require machinery.
  */
-export const load = <M>(path: string): Future<M> => attempt(() => {
+export const load = <M>(path: string): Future<M> =>
+    attempt(() => {
+        let p = isAbsolute(path)
+            ? path
+            : require.resolve(join(process.cwd(), path));
 
-    let p = isAbsolute(path) ? path :
-        require.resolve(join(process.cwd(), path));
+        let ext = extname(p);
 
-    let ext = extname(p);
-
-    if(ext === '.json') {
-      return readJSONFile(p);
-    } else {
-    let m = (<Type>require).main.require(p);
-    return m.default ? m.default : m;
-    }
-});
+        if (ext === '.json') {
+            return readJSONFile(p);
+        } else {
+            let m = (<Type>require).main.require(p);
+            return m.default ? m.default : m;
+        }
+    });
 
 /**
  * loadN loads one or more modules into memory.
@@ -52,11 +53,18 @@ export const loadN = <M>(paths: string[]): Future<M[]> =>
 /**
  * loadSchema into memory.
  */
-export const loadSchema = (path: string): Future<Object> => path ?
-    <Future<Object>>load(path)
-        .trap(e => raise(new Error(
-            `Error loading schema "${path}": "${e.message}"`))) :
-    pure({ type: 'object', title: 'Object', additionalProperties: {} })
+export const loadSchema = (path: string): Future<Object> =>
+    path
+        ? <Future<Object>>(
+              load(path).trap(e =>
+                  raise(
+                      new Error(
+                          `Error loading schema "${path}": "${e.message}"`
+                      )
+                  )
+              )
+          )
+        : pure({ type: 'object', title: 'Object', additionalProperties: {} });
 
 /**
  * loadDefinitions from an array of module paths.
@@ -73,33 +81,40 @@ const defsErr = (e: Error) =>
  * loadPlugins from an array of plugin paths.
  */
 export const loadPlugins = (ctx: Context, paths: string[]): Future<Plugin[]> =>
-    doFuture<Plugin[]>(function*() {
-
+    doFuture<Plugin[]>(function* () {
         let mods = yield loadN(paths);
 
-        return parallel(mods.map((m: { create: PluginProvider }) =>
-            attempt(() => {
+        return parallel(
+            mods.map((m: { create: PluginProvider }) =>
+                attempt(() => {
+                    if (typeof m.create !== 'function')
+                        throw new Error(
+                            `Plugins must export a create function!`
+                        );
 
-                if (typeof m.create !== 'function')
-                    throw new Error(`Plugins must export a create function!`);
-
-                return m.create(ctx);
-
-            })))
-            .trap((e: Error) =>
-                raise(new Error(`Failed loading one or more plugins: ` +
-                    `"${e.message}"`)))
+                    return m.create(ctx);
+                })
+            )
+        ).trap((e: Error) =>
+            raise(
+                new Error(
+                    `Failed loading one or more plugins: ` + `"${e.message}"`
+                )
+            )
+        );
     });
 
 /**
  * loadChecks from an array of paths.
  */
-export const loadChecks =
-    (paths: string[], list: Schema[] = []): Future<Check<Value>[]> =>
-        <Future<Check<Value>[]>>loadN(paths)
-            .chain((s: Type[]) =>
-                pure(s.concat(list).map(fromSchema(new CheckContext()))))
-            .trap(checkErr);
+export const loadChecks = (
+    paths: string[],
+    list: Schema[] = []
+): Future<Check<Value>[]> => <Future<Check<Value>[]>>loadN(paths)
+        .chain((s: Type[]) =>
+            pure(s.concat(list).map(fromSchema(new CheckContext())))
+        )
+        .trap(checkErr);
 
 const checkErr = <A>(e: Error): Future<A> =>
     raise(new Error(`Failed loading one or more checks: "${e.message}"`));
@@ -107,15 +122,15 @@ const checkErr = <A>(e: Error): Future<A> =>
 /**
  * loadChecks from an array of paths.
  */
-export const convertCheckSchema =
-    (s: Schema[] = []): Future<Check<Value>[]> =>
-        pure(s.map(fromSchema(new CheckContext())))
+export const convertCheckSchema = (s: Schema[] = []): Future<Check<Value>[]> =>
+    pure(s.map(fromSchema(new CheckContext())));
 
 /**
  * setValues applies setValue for each member of the pairs array.
  */
 export const setValues =
-    <O extends Object>(o: O) => (pairs: string[]): Future<O> =>
+    <O extends Object>(o: O) =>
+    (pairs: string[]): Future<O> =>
         pairs.reduce((p, c) => p.chain(o => setValue(o)(c)), pure(o));
 
 /**
@@ -125,13 +140,13 @@ export const setValues =
  * that supports loading module by prefixing the value with 'require://'.
  */
 export const setValue =
-    <O extends Object>(o: O) => (pair: string): Future<O> => {
-
+    <O extends Object>(o: O) =>
+    (pair: string): Future<O> => {
         let [path, value] = pair.split('=');
 
-        return startsWith(MODULE_SCHEME, value) ?
-            load(value.split(`${MODULE_SCHEME}://`)[1])
-                .map(<M>(m: M) => set(path, m, o)) :
-            pure(set(path, value, o));
-
-    }
+        return startsWith(MODULE_SCHEME, value)
+            ? load(value.split(`${MODULE_SCHEME}://`)[1]).map(<M>(m: M) =>
+                  set(path, m, o)
+              )
+            : pure(set(path, value, o));
+    };

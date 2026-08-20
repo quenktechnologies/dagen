@@ -7,15 +7,11 @@
             "type": "VARCHAR"
         },
         "slogan": {
-
             "type": "TEXT"
-
         },
-        "comment":{"type":"TEXT"},
+        "comment": { "type": "TEXT" },
         "dot.com": {
-
             "type": "string"
-
         },
         "reg": {
             "type": "string"

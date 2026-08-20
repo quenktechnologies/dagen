@@ -8,12 +8,11 @@ import { Compile } from './cli/command/compile';
 const BIN = path.basename(__filename);
 
 export const defaultOptions = () => ({
-
     templates: process.cwd()
-
 });
 
-const args = docopt.docopt(`
+const args = docopt.docopt(
+    `
 
 Usage:
    ${BIN} [--namespace=NAMESPACE...] [--plugin=PATH...] [--definitions=PATH...]
@@ -40,12 +39,13 @@ Options:
   --exclude EXPR             A path expression to evaluate against each schema
                              to determine whether to exclude it or not.
   --version                  Show version.
-`, {
-    version: require('../package.json').version
-});
+`,
+    {
+        version: require('../package.json').version
+    }
+);
 
 const onError = (args: Object) => (e: Error) => {
-
     let file = args['<file>'] || '<void>';
 
     console.error(`Error occured while processing file "${file}"!`);
@@ -57,11 +57,9 @@ const onError = (args: Object) => (e: Error) => {
     console.error(e.stack);
 
     process.exit(1);
+};
 
-}
-
-Compile
-    .enqueue(<Object>args)
+Compile.enqueue(<Object>args)
     .get()
     .run()
-    .fork(onError(<Object>args), () => { });
+    .fork(onError(<Object>args), () => {});

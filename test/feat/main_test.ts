@@ -35,9 +35,8 @@ const _run = (args: string[]): Future<string> =>
             if (err) return cb(err);
 
             if (etext) {
-              return cb(new Error(etext))
+                return cb(new Error(etext));
             }
-
 
             cb(undefined, text);
         });

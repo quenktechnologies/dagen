@@ -11,44 +11,44 @@ import { Type } from '@quenk/noni/lib/data/type';
  * Plugin for the nunjucks generate.
  */
 export interface Plugin {
-
     /**
-     * configureGenerator is applied to the nunjucks Environment to allow 
+     * configureGenerator is applied to the nunjucks Environment to allow
      * it to be configured before use.
      */
-    configureGenerator(env: Nunjucks): Future<Nunjucks>
-
+    configureGenerator(env: Nunjucks): Future<Nunjucks>;
 }
 
 /**
  * Nunjucks output generators.
  */
 export class Nunjucks implements Generator<string> {
-
     constructor(
         public template: string,
-        public env: Environment) { }
+        public env: Environment
+    ) {}
 
     static create(template: string, loaders: nunjucks.ILoader[]): Nunjucks {
-
-        return new Nunjucks(template,
-            addFilters(addFunctions(
-                new Environment(loaders, {
-                    autoescape: false,
-                    throwOnUndefined: true,
-                    trimBlocks: true,
-                    lstripBlocks: true,
-                    noCache: true
-                }))));
-
+        return new Nunjucks(
+            template,
+            addFilters(
+                addFunctions(
+                    new Environment(loaders, {
+                        autoescape: false,
+                        throwOnUndefined: true,
+                        trimBlocks: true,
+                        lstripBlocks: true,
+                        noCache: true
+                    })
+                )
+            )
+        );
     }
 
     render(document: Object): Future<string> {
-
-        return fromCallback((cb:Type) => (this.env.render(this.template, { document }, cb)));
-
+        return fromCallback((cb: Type) =>
+            this.env.render(this.template, { document }, cb)
+        );
     }
-
 }
 
 const addFunctions = (env: nunjucks.Environment): nunjucks.Environment =>

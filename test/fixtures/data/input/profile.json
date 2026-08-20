@@ -1,33 +1,21 @@
 {
-
     "title": "Profile",
 
     "type": "object",
 
     "meta": {
-
         "schema": {
-
             "isModel": true
-
         }
-
     },
 
     "properties": {
-
         "id": {
-
             "type": "number"
-
         },
 
         "name": {
-
             "type": "string"
-
         }
-
     }
-
 }

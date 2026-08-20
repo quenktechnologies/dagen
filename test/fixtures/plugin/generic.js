@@ -1,52 +1,37 @@
 const future = require('@quenk/noni/lib/control/monad/future');
 
-module.exports.create = (ctx) => ({
-
+module.exports.create = ctx => ({
     name: '',
 
     configure(c) {
-
-        if(c.generic)
-            this.name = c.generic.name;
+        if (c.generic) this.name = c.generic.name;
 
         return future.pure(c);
-
-
     },
 
     checkSchema() {
+        return future.pure([
+            {
+                type: 'object',
 
-        return future.pure([{
+                properties: {
+                    timestamp: {
+                        type: 'number',
 
-            type: 'object',
-
-            properties: {
-
-                timestamp: {
-
-                    type: 'number',
-
-                    optional: true
-
+                        optional: true
+                    }
                 }
-
             }
-        }]);
-
+        ]);
     },
 
     beforeOutput(s) {
-
         s.GENERIC_PLUGIN_BEFORE_OUTPUT = 'yes';
         s.name = this.name;
         return future.pure(s);
-
     },
 
     configureGenerator(g) {
-
         return future.pure(g);
-
     }
-
-})
+});
