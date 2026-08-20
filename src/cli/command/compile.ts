@@ -126,9 +126,9 @@ export class Compile {
                                 )
                             );
 
-                            let content = argv.template
+                            let content = await plugins.onOutput(schema, argv.template
                                 ? await gen.render(s)
-                                : JSON.stringify(s);
+                                : JSON.stringify(s));
 
                             if (argv.out) {
                                 let filename = path.basename(

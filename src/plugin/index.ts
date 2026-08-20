@@ -1,13 +1,13 @@
-import { Object } from '@quenk/noni/lib/data/json';
+import { Type } from '@quenk/noni/lib/data/type';
+import { Object, Value } from '@quenk/noni/lib/data/json';
 import { Future, pure, parallel } from '@quenk/noni/lib/control/monad/future';
 import { pipeN as pn } from '@quenk/noni/lib/control/monad';
 import {
     Plugin as GeneratorPlugin,
     Nunjucks
-} from './compiler/generator/nunjucks';
-import { Context, Plugin as CompilerPlugin } from './compiler';
-import { Schema } from './schema';
-import { Type } from '@quenk/noni/lib/data/type';
+} from '../compiler/generator/nunjucks';
+import { Context, Plugin as CompilerPlugin } from '../compiler';
+import { Schema } from '../schema';
 
 const pipeN: Type = pn;
 
@@ -31,6 +31,11 @@ export interface Plugin extends CompilerPlugin, GeneratorPlugin {
      * of schema that is applied to the the document.
      */
     checkSchema(): Future<Schema[]>;
+
+    /**
+     * onOutput is called before the final output of the generated code.
+     */
+    onOutput(s: Schema, output:Value): Promise<Value>;
 }
 
 /**
@@ -57,13 +62,18 @@ export abstract class AbstractPlugin implements Plugin {
         return pure([]);
     }
 
+    configureGenerator(gen: Nunjucks): Future<Nunjucks> {
+        return pure(gen);
+    }
+
     beforeOutput(s: Schema): Future<Schema> {
         return pure(s);
     }
 
-    configureGenerator(gen: Nunjucks): Future<Nunjucks> {
-        return pure(gen);
+    async onOutput(_: Schema, output: Value): Promise<Value> {
+        return (output);
     }
+
 }
 
 /**
@@ -92,13 +102,6 @@ export class CompositePlugin implements Plugin {
         );
     }
 
-    beforeOutput(s: Schema): Future<Schema> {
-        if (this.empty()) return pure(s);
-
-        let fs = this.plugins.map(p => (s: Schema) => p.beforeOutput(s));
-        return pipeN.apply(undefined, fs)(s);
-    }
-
     configureGenerator(gen: Nunjucks): Future<Nunjucks> {
         if (this.empty()) return pure(gen);
 
@@ -106,5 +109,20 @@ export class CompositePlugin implements Plugin {
             p => (g: Nunjucks) => p.configureGenerator(g)
         );
         return pipeN.apply(undefined, fs)(gen);
+    }
+
+    beforeOutput(s: Schema): Future<Schema> {
+        if (this.empty()) return pure(s);
+
+        let fs = this.plugins.map(p => (s: Schema) => p.beforeOutput(s));
+        return pipeN.apply(undefined, fs)(s);
+    }
+
+    async onOutput(s: Schema, output: Value): Promise<Value> {
+      let finalOutput = output;
+      for(let plugin of this.plugins) {
+        finalOutput = await plugin.onOutput(s, finalOutput);
+      }
+      return finalOutput;
     }
 }
